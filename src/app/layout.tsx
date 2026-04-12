@@ -4,8 +4,31 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'lex-lab.de — KI-Tools für Juristen',
-  description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts im deutschen Rechts- und Steuermarkt.',
+  metadataBase: new URL('https://www.lex-lab.de'),
+  title: {
+    default: 'lex-lab.de — KI-Tools für Juristen',
+    template: '%s | lex-lab.de',
+  },
+  description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
+  keywords: ['KI Tools Juristen', 'Legal Tech Deutschland', 'Steuerrecht KI', 'M&A Tools', 'Rechtsanwalt KI', 'Legal AI', 'Prompt Bibliothek Recht'],
+  authors: [{ name: 'lex-lab.de' }],
+  creator: 'lex-lab.de',
+  openGraph: {
+    type: 'website',
+    locale: 'de_DE',
+    url: 'https://www.lex-lab.de',
+    siteName: 'lex-lab.de',
+    title: 'lex-lab.de — KI-Tools für Juristen',
+    description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'lex-lab.de — KI-Tools für Juristen',
+    description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt.',
+  },
+  alternates: {
+    canonical: 'https://www.lex-lab.de',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

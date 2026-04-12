@@ -36,6 +36,15 @@ const workflowBorder: Record<Rechtsgebiet, string> = {
   'Venture Capital': 'border-l-orange-400',
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'lex-lab.de',
+  url: 'https://www.lex-lab.de',
+  description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt',
+  inLanguage: 'de-DE',
+}
+
 export default function HomePage() {
   const topTools = [...mockTools].sort((a, b) => b.votes - a.votes).slice(0, 3)
   const promptOfDay = mockPrompts[0]
@@ -44,6 +53,7 @@ export default function HomePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* HERO */}
       <section className="pt-16 pb-14 text-center">
         <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-3 py-1 mb-6">
