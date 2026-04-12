@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Cpu, ExternalLink } from 'lucide-react'
+import { Cpu } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { NewsArticle } from '@/types'
 
@@ -173,7 +173,6 @@ export default function NewsPage() {
                   )}
                   <div className="ml-auto flex items-center gap-1.5">
                     <span className="text-xs text-gray-400">{relativeDate(article.publishedAt)}</span>
-                    {hasUrl && <ExternalLink className="w-3.5 h-3.5 text-gray-300 group-hover:text-blue-500 transition-colors" />}
                   </div>
                 </div>
 

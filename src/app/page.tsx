@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Flame, Calendar, BookOpen, Copy, Zap, Building2, TrendingUp, Briefcase, ExternalLink } from 'lucide-react'
+import { ArrowRight, Flame, Calendar, BookOpen, Copy, Zap, Building2, TrendingUp, Briefcase } from 'lucide-react'
 import { mockTools, mockWorkflows, mockPrompts, mockNews, mockEvents } from '@/lib/mock-data'
 import { ToolCard } from '@/components/ToolCard'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
@@ -318,7 +318,6 @@ export default async function HomePage() {
                     {article.aiGenerated && <span className="ml-2 text-gray-300">· KI-Zusammenfassung</span>}
                   </p>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-gray-300 flex-shrink-0 mt-0.5 group-hover:text-blue-400 transition-colors" />
               </a>
             ))}
           </div>

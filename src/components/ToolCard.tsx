@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Tool } from '@/types'
 import { RechtsgebietTag } from './RechtsgebietTag'
-import { ExternalLink, ChevronUp } from 'lucide-react'
+import { ChevronUp } from 'lucide-react'
 
 export function ToolCard({ tool }: { tool: Tool }) {
   const storageKey = `voted_${tool.id}`
@@ -91,7 +91,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
           onClick={e => e.stopPropagation()}
           className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
         >
-          Ansehen <ExternalLink className="w-3 h-3" />
+          Ansehen →
         </a>
         <button
           onClick={handleVote}

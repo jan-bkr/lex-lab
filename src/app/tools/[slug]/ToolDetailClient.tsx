@@ -3,7 +3,7 @@
 import { use, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ExternalLink, ChevronUp, Copy, Check, ArrowLeft } from 'lucide-react'
+import { ChevronUp, Copy, Check, ArrowLeft } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { ToolCard } from '@/components/ToolCard'
 import { createClient } from '@/lib/supabase/client'
@@ -249,8 +249,7 @@ export default function ToolDetailPage({
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-colors text-sm"
           >
-            Tool ansehen
-            <ExternalLink className="w-4 h-4" />
+            Tool ansehen →
           </a>
 
           {/* Upvote */}
