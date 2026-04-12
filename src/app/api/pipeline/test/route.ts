@@ -24,14 +24,19 @@ export async function GET(): Promise<Response> {
     )
   }
 
-  const item = feed.items[4]
-  if (!item) {
-    return Response.json({ error: 'No fifth item in feed' }, { status: 500 })
+  // Find first item with a broken umlaut in the title
+  const broken = feed.items.find(i => i.title && (i.title.includes('Ã') || i.title.includes('â€')))
+
+  if (!broken) {
+    // No broken titles found — return all titles so we can inspect them
+    return Response.json({
+      message: 'No broken titles found in feed',
+      allTitles: feed.items.map(i => i.title ?? ''),
+    })
   }
 
   return Response.json({
-    rawTitle: item.title,
-    fixedTitle: fixEncoding(item.title ?? ''),
-    wouldInsert: true,
+    rawTitle: broken.title,
+    fixedTitle: fixEncoding(broken.title ?? ''),
   })
 }
