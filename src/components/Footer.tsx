@@ -11,13 +11,16 @@ export default function Footer() {
     <footer className="border-t border-gray-100 bg-white mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 bg-blue-600 rounded-md flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-[11px] leading-none">§</span>
+          <div className="flex items-center gap-2">
+            <svg width="22" height="22" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="28" height="28" rx="6" fill="#111827"/>
+              <text x="5" y="13" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="white" letterSpacing="-0.5">lex</text>
+              <text x="5" y="23" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#2563EB" letterSpacing="-0.5">lab</text>
+            </svg>
+            <div className="flex flex-col leading-none">
+              <span className="font-display font-bold text-[13px] tracking-tight text-gray-700">lex-lab.de</span>
+              <span className="text-[9px] text-gray-400 tracking-widest uppercase font-medium">Legal AI</span>
             </div>
-            <span className="font-display font-bold text-[13px] tracking-tight text-gray-700">
-              lex-lab<span className="text-gray-400 font-normal">.de</span>
-            </span>
           </div>
           <div className="flex items-center gap-4 text-xs text-gray-400">
             <Link href="/impressum" className="hover:text-gray-600 transition-colors">Impressum</Link>

@@ -23,13 +23,16 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-[13px] leading-none">§</span>
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="28" height="28" rx="6" fill="#111827"/>
+              <text x="5" y="13" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="white" letterSpacing="-0.5">lex</text>
+              <text x="5" y="23" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#2563EB" letterSpacing="-0.5">lab</text>
+            </svg>
+            <div className="flex flex-col leading-none">
+              <span className="font-display font-bold text-[13px] tracking-tight text-gray-900">lex-lab.de</span>
+              <span className="text-[9px] text-gray-400 tracking-widest uppercase font-medium">Legal AI</span>
             </div>
-            <span className="font-display font-bold text-[15px] tracking-tight text-gray-900">
-              lex-lab<span className="text-gray-400 font-normal">.de</span>
-            </span>
           </Link>
 
           {/* Desktop nav */}
