@@ -80,9 +80,9 @@ export default function NewsPage() {
     fetchNews()
   }, [])
 
-  const filtered = articles.filter(
-    a => activeFilter === 'Alle' || a.category === activeFilter
-  )
+  const filtered = articles
+    .filter(a => activeFilter === 'Alle' || a.category === activeFilter)
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
