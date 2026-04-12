@@ -10,7 +10,7 @@ export const RSS_SOURCES: RssSource[] = [
   { name: 'M&A Magazin',         url: 'https://www.m-und-a.de/feed/',                   category: 'M&A'             },
   { name: 'Datenschutz-Notizen', url: 'https://www.datenschutz-notizen.de/feed/',        category: 'Regulierung'     },
   { name: 'TaxTech Blog',        url: 'https://www.taxtech.blog/feed',                  category: 'Legal Tech'      },
-  { name: 'Tax & Bytes',         url: 'https://www.taxandbytes.de/rss',                 category: 'Legal Tech'      },
+  { name: 'Steuerberater Web',    url: 'https://steuerberater-web.de/feed/',             category: 'Steuerrecht'     },
   { name: 'The Decoder',         url: 'https://the-decoder.de/feed/',                   category: 'Legal Tech'      },
   { name: 'AI News',             url: 'https://ainews.de/feed',                         category: 'Legal Tech'      },
   { name: 'Gründerszene',        url: 'https://www.gruenderszene.de/feed',               category: 'Venture Capital' },
