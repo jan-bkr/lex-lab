@@ -24,7 +24,9 @@ export default function ImpressumPage() {
           <p>
             Jan Becker<br />
             Rechtsanwalt (zugelassen in der Bundesrepublik Deutschland)<br />
-            <span className="text-amber-600 font-medium">PLACEHOLDER_ADRESSE</span><br />
+            c/o BZG &amp; Partner<br />
+            Lippstädter Str. 54<br />
+            48155 Münster<br />
             E-Mail: <a href="mailto:kontakt@lex-lab.de" className="text-blue-600 hover:text-blue-700">kontakt@lex-lab.de</a><br />
             Website: <a href="https://www.lex-lab.de" className="text-blue-600 hover:text-blue-700">www.lex-lab.de</a>
           </p>
@@ -67,7 +69,9 @@ export default function ImpressumPage() {
           </h2>
           <p>
             Jan Becker<br />
-            <span className="text-amber-600 font-medium">PLACEHOLDER_ADRESSE</span>
+            c/o BZG &amp; Partner<br />
+            Lippstädter Str. 54<br />
+            48155 Münster
           </p>
         </section>
 
