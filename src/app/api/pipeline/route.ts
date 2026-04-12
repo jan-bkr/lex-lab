@@ -1,33 +1,15 @@
 import Parser from 'rss-parser'
-import https from 'https'
-import http from 'http'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES, type RssSource } from '@/lib/rss-sources'
 
 // Do not cache — always run fresh
 export const dynamic = 'force-dynamic'
 
-const fetchFeed = async (url: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http
-    client.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; lex-lab-bot/1.0)',
-        'Accept': 'application/rss+xml, application/xml, text/xml',
-      },
-    }, (res) => {
-      const chunks: Buffer[] = []
-      res.on('data', (chunk: Buffer) => chunks.push(chunk))
-      res.on('end', () => {
-        const buffer = Buffer.concat(chunks)
-        resolve(buffer.toString('utf8'))
-      })
-      res.on('error', reject)
-    }).on('error', reject)
-  })
-}
-
-const parser = new Parser()
+const parser = new Parser({
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (compatible; lex-lab-bot/1.0)',
+  },
+})
 
 function slugify(title: string): string {
   return title
@@ -91,10 +73,9 @@ async function processSource(
 ): Promise<PipelineResult> {
   const result: PipelineResult = { source: source.name, processed: 0, inserted: 0, skipped: 0 }
 
-  let feed: Awaited<ReturnType<typeof parser.parseString>>
+  let feed: Awaited<ReturnType<typeof parser.parseURL>>
   try {
-    const xml = await fetchFeed(source.url)
-    feed = await parser.parseString(xml)
+    feed = await parser.parseURL(source.url)
   } catch (e) {
     result.error = e instanceof Error ? e.message : String(e)
     console.error(`[pipeline] ${source.name} — feed fetch failed:`, result.error)
