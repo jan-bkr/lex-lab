@@ -1,9 +1,10 @@
 import Link from 'next/link'
-import { ArrowRight, Flame, Calendar, BookOpen, Copy, Zap, Building2, TrendingUp, Briefcase } from 'lucide-react'
+import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase } from 'lucide-react'
 import { mockTools, mockWorkflows, mockPrompts, mockNews, mockEvents } from '@/lib/mock-data'
 import { ToolCard } from '@/components/ToolCard'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { PromptOfDay } from '@/components/PromptOfDay'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { formatDistanceToNow, format } from 'date-fns'
 import { de } from 'date-fns/locale'
@@ -267,32 +268,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold text-xl text-gray-900">Prompt des Tages</h2>
-            <Link href="/prompts" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              Alle <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 flex flex-col gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <RechtsgebietTag tag={promptOfDay.rechtsgebiet[0]} />
-                <span className="text-xs text-gray-400 font-medium">{promptOfDay.useCase}</span>
-              </div>
-              <h3 className="font-display font-bold text-base text-gray-900 leading-snug mb-3">{promptOfDay.title}</h3>
-              <div className="prompt-fade bg-white/60 rounded-lg p-3 max-h-20 overflow-hidden">
-                <p className="text-xs text-gray-600 font-mono leading-relaxed">{promptOfDay.promptText}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 pt-2">
-              <button className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
-                <Copy className="w-3 h-3" /> Prompt kopieren
-              </button>
-              <span className="text-xs text-gray-400">Täglich neu kuratiert</span>
-            </div>
-          </div>
-        </section>
+        <PromptOfDay prompt={promptOfDay} />
       </div>
 
       {/* NEWS + EVENTS */}

@@ -6,8 +6,8 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.lex-lab.de'),
   title: {
-    default: 'lex-lab.de — KI-Tools für Juristen',
-    template: '%s | lex-lab.de',
+    default: 'lex·lab.de — KI-Tools für Juristen',
+    template: '%s | lex·lab.de',
   },
   description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
   keywords: ['KI Tools Juristen', 'Legal Tech Deutschland', 'Steuerrecht KI', 'M&A Tools', 'Rechtsanwalt KI', 'Legal AI', 'Prompt Bibliothek Recht'],

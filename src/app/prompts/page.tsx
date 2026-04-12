@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Copy, Check, Star } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
+import { PromptModal } from '@/components/PromptModal'
 import { createClient } from '@/lib/supabase/client'
 import { mockPrompts } from '@/lib/mock-data'
 import { Prompt, Rechtsgebiet } from '@/types'
@@ -39,60 +40,45 @@ function mapRow(row: PromptRow): PromptWithDay {
   }
 }
 
-function PromptCard({ prompt }: { prompt: PromptWithDay }) {
-  const [copied, setCopied] = useState(false)
-
-  async function handleCopy() {
-    await navigator.clipboard.writeText(prompt.promptText)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
+function PromptCard({
+  prompt,
+  onClick,
+}: {
+  prompt: PromptWithDay
+  onClick: () => void
+}) {
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-5 flex flex-col gap-3 hover:shadow-md hover:border-gray-200 transition-all duration-200">
-      <div>
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h2 className="font-display font-semibold text-[14px] text-gray-900 leading-snug">
-            {prompt.title}
-          </h2>
-          {prompt.isPromptOfDay && (
-            <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border border-amber-200 flex-shrink-0 whitespace-nowrap">
-              <Star className="w-2.5 h-2.5" />
-              Prompt des Tages
-            </span>
-          )}
+    <div
+      onClick={onClick}
+      className="bg-white border border-gray-100 rounded-xl p-5 flex flex-col gap-3 hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer group"
+    >
+      {/* Top row: badge + tags */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-wrap gap-1.5">
+          {prompt.rechtsgebiet.map(tag => (
+            <RechtsgebietTag key={tag} tag={tag} />
+          ))}
         </div>
-        {prompt.useCase && (
-          <p className="text-xs text-gray-500">{prompt.useCase}</p>
+        {prompt.isPromptOfDay && (
+          <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border border-amber-200 flex-shrink-0 whitespace-nowrap">
+            <Star className="w-2.5 h-2.5" />
+            Prompt des Tages
+          </span>
         )}
       </div>
 
-      <div className="relative overflow-hidden h-14">
-        <p className="text-xs text-gray-400 font-mono leading-relaxed prompt-fade">
-          {prompt.promptText.slice(0, 120)}
-        </p>
-      </div>
+      {/* Title */}
+      <h2 className="font-display font-semibold text-[14px] text-gray-900 leading-snug group-hover:text-blue-600 transition-colors">
+        {prompt.title}
+      </h2>
 
-      <div className="flex flex-wrap gap-1.5">
-        {prompt.rechtsgebiet.map(tag => (
-          <RechtsgebietTag key={tag} tag={tag} />
-        ))}
-      </div>
+      {/* Use case */}
+      {prompt.useCase && (
+        <p className="text-sm text-gray-500 leading-snug">{prompt.useCase}</p>
+      )}
 
-      <button
-        onClick={handleCopy}
-        className={`inline-flex items-center justify-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border transition-all mt-auto ${
-          copied
-            ? 'bg-green-50 border-green-200 text-green-600'
-            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600'
-        }`}
-      >
-        {copied ? (
-          <><Check className="w-3 h-3" /> Kopiert!</>
-        ) : (
-          <><Copy className="w-3 h-3" /> Prompt kopieren</>
-        )}
-      </button>
+      {/* CTA hint */}
+      <p className="text-xs text-blue-600 font-medium mt-auto">Prompt ansehen →</p>
     </div>
   )
 }
@@ -101,6 +87,7 @@ export default function PromptsPage() {
   const [prompts, setPrompts] = useState<PromptWithDay[]>([])
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<Rechtsgebiet | 'Alle'>('Alle')
+  const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDay | null>(null)
 
   useEffect(() => {
     async function fetchPrompts() {
@@ -167,9 +154,13 @@ export default function PromptsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(p => (
-            <PromptCard key={p.id} prompt={p} />
+            <PromptCard key={p.id} prompt={p} onClick={() => setSelectedPrompt(p)} />
           ))}
         </div>
+      )}
+
+      {selectedPrompt && (
+        <PromptModal prompt={selectedPrompt} onClose={() => setSelectedPrompt(null)} />
       )}
     </div>
   )
