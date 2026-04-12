@@ -2,7 +2,13 @@
 
 import { useState } from 'react'
 
-export function NewsletterForm({ variant = 'inline' }: { variant?: 'inline' | 'page' }) {
+export function NewsletterForm({
+  variant = 'inline',
+  successMessage,
+}: {
+  variant?: 'inline' | 'page'
+  successMessage?: string
+}) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -37,7 +43,7 @@ export function NewsletterForm({ variant = 'inline' }: { variant?: 'inline' | 'p
     return (
       <div className={variant === 'page' ? 'text-center py-4' : ''}>
         <p className="text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 inline-block">
-          ✓ Angemeldet! Schau in dein Postfach für die Bestätigung.
+          {successMessage ?? '✓ Angemeldet! Schau in dein Postfach für die Bestätigung.'}
         </p>
       </div>
     )

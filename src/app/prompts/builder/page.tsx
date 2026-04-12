@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Briefcase, Building2, TrendingUp, ArrowLeft, Loader2, Copy, Check, Zap } from 'lucide-react'
+import { Briefcase, Building2, TrendingUp, ArrowLeft, Loader2, Copy, Check, Zap, Lock } from 'lucide-react'
+import Link from 'next/link'
+import { NewsletterForm } from '@/components/NewsletterForm'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Step = 1 | 2 | 3
+type Step = 1 | 2 | 3 | 4
 
 interface FormState {
   rechtsgebiet: string[]
@@ -78,27 +80,29 @@ const DETAILTIEFE_OPTIONS = [
 const SPRACHE_OPTIONS = ['Deutsch (Standard)', 'Englisch']
 
 const MAX_CHARS = 800
+const DAILY_LIMIT = 10
 
 // ─── Step Indicator ───────────────────────────────────────────────────────────
 
 function StepIndicator({ step }: { step: Step }) {
+  const displayStep = step === 4 ? 3 : step
   return (
     <div className="flex items-center gap-2 mb-8">
-      {([1, 2, 3] as Step[]).map(s => (
+      {([1, 2, 3] as const).map(s => (
         <div key={s} className="flex items-center gap-2">
           <div
             className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
-              s === step
+              s === displayStep
                 ? 'bg-blue-600 text-white'
-                : s < step
+                : s < displayStep
                 ? 'bg-blue-100 text-blue-600'
                 : 'bg-gray-100 text-gray-400'
             }`}
           >
-            {s < step ? <Check className="w-3.5 h-3.5" /> : s}
+            {s < displayStep ? <Check className="w-3.5 h-3.5" /> : s}
           </div>
           {s < 3 && (
-            <div className={`w-8 h-px ${s < step ? 'bg-blue-200' : 'bg-gray-200'}`} />
+            <div className={`w-8 h-px ${s < displayStep ? 'bg-blue-200' : 'bg-gray-200'}`} />
           )}
         </div>
       ))}
@@ -106,6 +110,23 @@ function StepIndicator({ step }: { step: Step }) {
         {step === 1 ? 'Aufgabe' : step === 2 ? 'Details' : 'Ergebnis'}
       </span>
     </div>
+  )
+}
+
+// ─── Remaining counter ────────────────────────────────────────────────────────
+
+function RemainingCounter({ remaining }: { remaining: number | null }) {
+  if (remaining === null) return null
+  const color =
+    remaining === 0
+      ? 'text-red-500'
+      : remaining <= 3
+      ? 'text-amber-500'
+      : 'text-gray-400'
+  return (
+    <p className={`text-xs text-center mt-2 ${color}`}>
+      Noch {remaining} von {DAILY_LIMIT} kostenlosen Builds heute verfügbar
+    </p>
   )
 }
 
@@ -121,6 +142,7 @@ export default function BuilderPage() {
     sprache: SPRACHE_OPTIONS[0],
   })
   const [generatedPrompt, setGeneratedPrompt] = useState('')
+  const [remaining, setRemaining] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -147,8 +169,17 @@ export default function BuilderPage() {
         body: JSON.stringify(form),
       })
       const data = await res.json()
+
+      if (res.status === 429) {
+        setStep(4)
+        setLoading(false)
+        return
+      }
+
       if (!res.ok) throw new Error(data.error ?? 'Unbekannter Fehler')
+
       setGeneratedPrompt(data.prompt)
+      if (typeof data.remaining === 'number') setRemaining(data.remaining)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fehler bei der Generierung.')
     } finally {
@@ -182,7 +213,7 @@ export default function BuilderPage() {
       </div>
 
       <div className="mt-8">
-        <StepIndicator step={step} />
+        {step !== 4 && <StepIndicator step={step} />}
 
         {/* ── STEP 1 ── */}
         {step === 1 && (
@@ -321,6 +352,9 @@ export default function BuilderPage() {
               <p className="text-center text-xs text-gray-400 mt-2 flex items-center justify-center gap-1">
                 <Zap className="w-3 h-3" /> Generierung dauert ca. 5–10 Sekunden
               </p>
+              <p className="text-center text-xs text-gray-400 mt-1">
+                Täglich 10 kostenlose Builds · Kein Account nötig
+              </p>
             </div>
           </div>
         )}
@@ -418,6 +452,9 @@ export default function BuilderPage() {
                   </a>
                 </div>
 
+                {/* Remaining counter */}
+                <RemainingCounter remaining={remaining} />
+
                 {/* Divider + reset */}
                 <div className="border-t border-gray-100 pt-4 text-center">
                   <button
@@ -429,6 +466,54 @@ export default function BuilderPage() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── STEP 4 — Limit reached ── */}
+        {step === 4 && (
+          <div className="max-w-lg mx-auto text-center space-y-6 py-4">
+            {/* Icon */}
+            <div className="flex justify-center">
+              <div className="w-16 h-16 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-center">
+                <Lock className="w-8 h-8 text-amber-500" />
+              </div>
+            </div>
+
+            {/* Heading + text */}
+            <div>
+              <h2 className="font-display text-2xl text-gray-900 mb-3">
+                Tägliches Limit erreicht
+              </h2>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Du hast heute {DAILY_LIMIT} Prompts generiert. Komm morgen wieder für{' '}
+                {DAILY_LIMIT} neue kostenlose Builds — oder abonniere den Newsletter für
+                frühen Zugang zu LexLab Pro.
+              </p>
+            </div>
+
+            {/* Newsletter signup */}
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 text-left">
+              <p className="text-sm font-semibold text-blue-900 mb-1">LexLab Pro — früher Zugang</p>
+              <p className="text-xs text-blue-700 mb-4">
+                Trag dich ein und wir melden uns, wenn LexLab Pro mit unbegrenzten Builds startet.
+              </p>
+              <NewsletterForm successMessage="✓ Du bist auf der Liste! Wir melden uns wenn LexLab Pro startet." />
+            </div>
+
+            {/* Divider + fallback */}
+            <div className="border-t border-gray-100 pt-4 space-y-2">
+              <Link
+                href="/prompts"
+                className="block text-sm text-blue-600 hover:text-blue-700 transition-colors font-medium"
+              >
+                Oder: Prompt manuell erstellen → Zur Prompt-Bibliothek
+              </Link>
+            </div>
+
+            {/* Fine print */}
+            <p className="text-xs text-gray-400">
+              Das Limit gilt pro Gerät und Tag. Es wird täglich um Mitternacht zurückgesetzt.
+            </p>
           </div>
         )}
       </div>
