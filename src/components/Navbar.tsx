@@ -8,6 +8,7 @@ const navLinks = [
   { href: '/tools', label: 'Tools' },
   { href: '/workflows', label: 'Workflows' },
   { href: '/prompts', label: 'Prompts' },
+  { href: '/beitraege', label: 'Beiträge' },
   { href: '/news', label: 'News' },
   { href: '/events', label: 'Events' },
 ]

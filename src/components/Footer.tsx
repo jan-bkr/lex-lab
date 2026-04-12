@@ -23,24 +23,12 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex gap-12">
-            <div>
-              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Plattform</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/tools" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Tools</Link>
-                <Link href="/workflows" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Workflows</Link>
-                <Link href="/prompts" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Prompts</Link>
-                <Link href="/news" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">News</Link>
-                <Link href="/events" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Events</Link>
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Rechtliches</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/impressum" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Impressum</Link>
-                <Link href="/datenschutz" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Datenschutz</Link>
-                <Link href="/kontakt" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Kontakt</Link>
-              </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Rechtliches</p>
+            <div className="flex flex-col gap-2">
+              <Link href="/impressum" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Impressum</Link>
+              <Link href="/datenschutz" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Datenschutz</Link>
+              <Link href="/kontakt" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Kontakt</Link>
             </div>
           </div>
         </div>
