@@ -11,11 +11,13 @@ export default function Footer() {
     <footer className="border-t border-gray-100 bg-white mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center">
-            <span className="font-display font-extrabold text-[15px] tracking-tight text-gray-700">lex</span>
-            <span className="font-display font-extrabold text-[15px] tracking-tight text-blue-600">·</span>
-            <span className="font-display font-light text-[15px] tracking-tight text-gray-700">lab</span>
-            <span className="font-display font-extrabold text-[15px] tracking-tight text-blue-600 ml-0.5">.de</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-5 bg-blue-600 rounded-md flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-[11px] leading-none">§</span>
+            </div>
+            <span className="font-display font-bold text-[13px] tracking-tight text-gray-700">
+              lex-lab<span className="text-gray-400 font-normal">.de</span>
+            </span>
           </div>
           <div className="flex items-center gap-4 text-xs text-gray-400">
             <Link href="/impressum" className="hover:text-gray-600 transition-colors">Impressum</Link>

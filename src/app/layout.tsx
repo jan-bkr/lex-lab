@@ -32,6 +32,9 @@ export const metadata: Metadata = {
   verification: {
     google: 'BZAgD_Ti6XbDu2S8ZW_H3nWMJUWGBK2xS3yDOES3PmU',
   },
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563EB'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' fill='white' font-size='18' font-family='serif' font-weight='bold'>§</text></svg>",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -23,11 +23,13 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <Link href="/" className="flex items-center group">
-            <span className="font-display font-extrabold text-[17px] tracking-tight text-gray-900">lex</span>
-            <span className="font-display font-extrabold text-[17px] tracking-tight text-blue-600">·</span>
-            <span className="font-display font-light text-[17px] tracking-tight text-gray-900">lab</span>
-            <span className="font-display font-extrabold text-[17px] tracking-tight text-blue-600 ml-0.5">.de</span>
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-[13px] leading-none">§</span>
+            </div>
+            <span className="font-display font-bold text-[15px] tracking-tight text-gray-900">
+              lex-lab<span className="text-gray-400 font-normal">.de</span>
+            </span>
           </Link>
 
           {/* Desktop nav */}
