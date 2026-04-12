@@ -1,5 +1,4 @@
 import Parser from 'rss-parser'
-import { Buffer } from 'buffer'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES, type RssSource } from '@/lib/rss-sources'
 
@@ -7,24 +6,10 @@ import { RSS_SOURCES, type RssSource } from '@/lib/rss-sources'
 export const dynamic = 'force-dynamic'
 
 const parser = new Parser({
-  timeout: 10_000,
   headers: {
     'User-Agent': 'Mozilla/5.0 (compatible; lex-lab-bot/1.0)',
-    'Accept-Charset': 'utf-8',
-  },
-  xml2js: {
-    explicitCharkey: true,
   },
 })
-
-const fixEncoding = (str: string): string => {
-  if (!str) return ''
-  try {
-    return Buffer.from(str, 'latin1').toString('utf8')
-  } catch {
-    return str
-  }
-}
 
 function slugify(title: string): string {
   return title
@@ -102,7 +87,7 @@ async function processSource(
 
   for (const item of items) {
     result.processed++
-    const title = fixEncoding(item.title?.trim() ?? '')
+    const title = item.title?.trim() ?? ''
     const link  = item.link?.trim()
 
     if (!title || !link) {
@@ -135,8 +120,7 @@ async function processSource(
     }
 
     // Summarise with Claude
-    const rawSnippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
-    const snippet = fixEncoding(rawSnippet)
+    const snippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
     let summary: string
     try {
       summary = await summariseWithClaude(title, snippet.slice(0, 1000))

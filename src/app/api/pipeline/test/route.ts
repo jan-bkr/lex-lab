@@ -1,29 +1,14 @@
 import Parser from 'rss-parser'
-import { Buffer } from 'buffer'
 import { RSS_SOURCES } from '@/lib/rss-sources'
 
 // Do not cache
 export const dynamic = 'force-dynamic'
 
 const parser = new Parser({
-  timeout: 10_000,
   headers: {
     'User-Agent': 'Mozilla/5.0 (compatible; lex-lab-bot/1.0)',
-    'Accept-Charset': 'utf-8',
-  },
-  xml2js: {
-    explicitCharkey: true,
   },
 })
-
-const fixEncoding = (str: string): string => {
-  if (!str) return ''
-  try {
-    return Buffer.from(str, 'latin1').toString('utf8')
-  } catch {
-    return str
-  }
-}
 
 interface SourceResult {
   source: string
@@ -42,13 +27,12 @@ export async function GET(): Promise<Response> {
       try {
         const feed = await parser.parseURL(source.url)
         const items = feed.items ?? []
-        const rawTitle = items[0]?.title?.trim() ?? '(no title)'
         return {
           source: source.name,
           url: source.url,
           status: 'ok',
           itemCount: items.length,
-          latestTitle: fixEncoding(rawTitle),
+          latestTitle: items[0]?.title?.trim() ?? '(no title)',
         }
       } catch (e) {
         return {
