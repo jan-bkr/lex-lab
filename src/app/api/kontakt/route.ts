@@ -39,7 +39,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const { error } = await resend.emails.send({
       from: 'lex-lab.de <kontakt@lex-lab.de>',
-      to: 'kontakt@lex-lab.de',
+      to: 'janniklas.becker612@gmail.com',
       replyTo: email,
       subject: `[lex-lab.de Kontakt] ${subject} — ${name}`,
       html: `
