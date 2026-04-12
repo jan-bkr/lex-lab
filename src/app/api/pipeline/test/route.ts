@@ -60,9 +60,9 @@ export async function GET(): Promise<Response> {
     )
   }
 
-  const item = feed.items[2]
+  const item = feed.items[3]
   if (!item) {
-    return Response.json({ error: 'No third item in feed' }, { status: 500 })
+    return Response.json({ error: 'No fourth item in feed' }, { status: 500 })
   }
 
   const title = fixRSSEncoding(item.title?.trim() ?? '')
@@ -158,6 +158,8 @@ export async function GET(): Promise<Response> {
 
   return Response.json({
     status: 'inserted',
+    rawTitle: item.title,
+    fixedTitle: fixRSSEncoding(item.title ?? ''),
     title,
     slug,
     summary,
