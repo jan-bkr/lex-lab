@@ -1,5 +1,4 @@
 import Parser from 'rss-parser'
-import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES } from '@/lib/rss-sources'
 import { fixEncoding } from '@/lib/clean-text'
 
@@ -12,31 +11,9 @@ const parser = new Parser({
   },
 })
 
-function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 80)
-}
-
-interface ClaudeTextContent {
-  type: 'text'
-  text: string
-}
-
-interface ClaudeResponse {
-  content: ClaudeTextContent[]
-}
-
 export async function GET(): Promise<Response> {
   const source = RSS_SOURCES.find(s => s.name === 'Finance Magazin')!
 
-  console.log(`[pipeline/test] Fetching ${source.name} feed…`)
-
-  // 1. Fetch feed
   let feed: Awaited<ReturnType<typeof parser.parseURL>>
   try {
     feed = await parser.parseURL(source.url)
@@ -47,114 +24,14 @@ export async function GET(): Promise<Response> {
     )
   }
 
-  const item = feed.items[3]
+  const item = feed.items[4]
   if (!item) {
-    return Response.json({ error: 'No fourth item in feed' }, { status: 500 })
+    return Response.json({ error: 'No fifth item in feed' }, { status: 500 })
   }
-
-  const rawTitle = item.title ?? ''
-  const title = fixEncoding(rawTitle.trim())
-  const link  = item.link?.trim() ?? ''
-
-  if (!title || !link) {
-    return Response.json({ error: 'Item has no title or link' }, { status: 500 })
-  }
-
-  console.log(`[pipeline/test] Raw title: "${rawTitle}"`)
-  console.log(`[pipeline/test] Fixed title: "${title}"`)
-
-  // 2. Check for duplicate
-  const { data: existing } = await adminSupabase
-    .from('news_articles')
-    .select('id')
-    .eq('source_url', link)
-    .maybeSingle()
-
-  if (existing) {
-    return Response.json({
-      status: 'skipped',
-      reason: 'Article already exists in database',
-      rawTitle,
-      fixedTitle: fixEncoding(rawTitle),
-      source_url: link,
-    })
-  }
-
-  // 3. Summarise with Claude
-  const snippet = fixEncoding(item.contentSnippet ?? item.summary ?? item.content ?? '')
-  console.log(`[pipeline/test] Calling Claude API…`)
-
-  let summary: string
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 200,
-        messages: [
-          {
-            role: 'user',
-            content: `Fasse diesen Artikel in 2-3 prägnanten deutschen Sätzen zusammen. Fokus auf das Wesentliche für Juristen und Steuerberater. Titel: ${title}. Inhalt: ${snippet.slice(0, 1000)}. Antworte nur mit der Zusammenfassung, kein Präambel.`,
-          },
-        ],
-      }),
-    })
-
-    if (!res.ok) {
-      throw new Error(`Claude API error: ${res.status} ${await res.text()}`)
-    }
-
-    const json = (await res.json()) as ClaudeResponse
-    summary = fixEncoding(json.content[0]?.text?.trim() ?? '')
-  } catch (e) {
-    return Response.json(
-      { error: `Claude summarisation failed: ${e instanceof Error ? e.message : String(e)}` },
-      { status: 500 }
-    )
-  }
-
-  console.log(`[pipeline/test] Summary: "${summary}"`)
-
-  // 4. Insert into Supabase
-  const pubDate = item.isoDate ? new Date(item.isoDate) : item.pubDate ? new Date(item.pubDate) : null
-  const publishedAt = pubDate?.toISOString() ?? new Date().toISOString()
-  const slug = slugify(title) + '-' + Date.now()
-
-  const { error: insertError } = await adminSupabase.from('news_articles').insert({
-    title,
-    slug,
-    summary,
-    source_url: link,
-    source_name: source.name,
-    category: source.category,
-    published_at: publishedAt,
-    ai_generated: true,
-  })
-
-  if (insertError) {
-    return Response.json(
-      { error: `DB insert failed: ${insertError.message}` },
-      { status: 500 }
-    )
-  }
-
-  console.log(`[pipeline/test] Inserted successfully`)
 
   return Response.json({
-    status: 'inserted',
-    rawTitle,
-    fixedTitle: fixEncoding(rawTitle),
-    title,
-    slug,
-    summary,
-    source_url: link,
-    source_name: source.name,
-    category: source.category,
-    published_at: publishedAt,
+    rawTitle: item.title,
+    fixedTitle: fixEncoding(item.title ?? ''),
+    wouldInsert: true,
   })
 }
