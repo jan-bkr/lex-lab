@@ -3,7 +3,7 @@ import { NewsletterForm } from '@/components/NewsletterForm'
 
 export const metadata: Metadata = {
   title: 'Beiträge',
-  description: 'Gedanken, Erfahrungen und Einblicke aus der Praxis — von Jan Becker, Rechtsanwalt.',
+  description: 'Gedanken, Erfahrungen und Einblicke aus der Praxis.',
 }
 
 export default function BeitraegePage() {
