@@ -1,7 +1,20 @@
 import Parser from 'rss-parser'
+import { TextDecoder } from 'util'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES } from '@/lib/rss-sources'
 import { cleanText } from '@/lib/clean-text'
+
+const fixRSSEncoding = (str: string): string => {
+  if (!str) return ''
+  try {
+    const bytes = new Uint8Array(str.split('').map(c => c.charCodeAt(0) & 0xff))
+    const decoded = new TextDecoder('utf-8').decode(bytes)
+    if (!decoded.includes('\uFFFD')) return decoded
+    return str
+  } catch {
+    return str
+  }
+}
 
 // Do not cache
 export const dynamic = 'force-dynamic'
@@ -52,7 +65,7 @@ export async function GET(): Promise<Response> {
     return Response.json({ error: 'No third item in feed' }, { status: 500 })
   }
 
-  const title = cleanText(item.title?.trim() ?? '')
+  const title = fixRSSEncoding(item.title?.trim() ?? '')
   const link  = item.link?.trim() ?? ''
 
   if (!title || !link) {
@@ -78,7 +91,7 @@ export async function GET(): Promise<Response> {
   }
 
   // 3. Summarise with Claude
-  const snippet = cleanText(item.contentSnippet ?? item.summary ?? item.content ?? '')
+  const snippet = fixRSSEncoding(item.contentSnippet ?? item.summary ?? item.content ?? '')
   console.log(`[pipeline/test] Title before Claude: "${title}"`)
   console.log(`[pipeline/test] Calling Claude API…`)
 
