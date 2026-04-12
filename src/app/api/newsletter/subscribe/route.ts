@@ -29,7 +29,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Diese E-Mail-Adresse ist bereits angemeldet.' }, { status: 409 })
   }
 
-  // Insert subscriber
+  // Insert subscriber — must succeed before attempting email
   const { error: insertError } = await adminSupabase
     .from('newsletter_subscribers')
     .insert({ email, confirmed: true })
@@ -39,12 +39,13 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Anmeldung fehlgeschlagen. Bitte versuche es erneut.' }, { status: 500 })
   }
 
-  // Send welcome email via Resend
-  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 'placeholder') {
+  // Send welcome email via Resend (failure does NOT roll back the subscription)
+  const apiKey = process.env.RESEND_API_KEY
+  if (apiKey && apiKey !== 'placeholder') {
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY)
-      await resend.emails.send({
-        from: 'lex-lab.de <newsletter@lex-lab.de>',
+      const resend = new Resend(apiKey)
+      const { error: resendError } = await resend.emails.send({
+        from: 'lex-lab.de <onboarding@resend.dev>',
         to: email,
         subject: 'Willkommen bei lex-lab.de',
         html: `
@@ -57,10 +58,14 @@ export async function POST(request: Request): Promise<Response> {
           </div>
         `,
       })
+      if (resendError) {
+        console.error('[newsletter] resend error:', resendError)
+      }
     } catch (e) {
-      // Don't fail the subscription if email sending fails
-      console.error('[newsletter] resend error:', e)
+      console.error('[newsletter] resend exception:', e)
     }
+  } else {
+    console.warn('[newsletter] RESEND_API_KEY not set — skipping welcome email')
   }
 
   return Response.json({ success: true })
