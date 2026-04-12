@@ -132,7 +132,7 @@ export default function SubmitToolPage() {
       <div className="mb-8">
         <h1 className="font-display text-3xl text-gray-900">Tool einreichen</h1>
         <p className="text-gray-500 mt-1 text-sm">
-          Schlage ein KI-Tool für die lex-lab.de Datenbank vor.
+          Schlage ein KI-Tool für die LexLab-Datenbank vor.
         </p>
       </div>
 

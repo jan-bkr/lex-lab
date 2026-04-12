@@ -119,7 +119,7 @@ const workflowBorder: Record<Rechtsgebiet, string> = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'lex-lab.de',
+  name: 'LexLab',
   url: 'https://www.lex-lab.de',
   description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt',
   inLanguage: 'de-DE',
@@ -185,8 +185,14 @@ export default async function HomePage() {
           <Zap className="w-3 h-3 text-blue-500" />
           <span className="text-xs text-blue-600 font-medium">Täglich kuratiert — KI für den deutschen Rechtsmarkt</span>
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-gray-900 leading-tight tracking-tight">
-          KI für Juristen.<br /><span className="text-blue-600">Täglich</span> kuratiert.
+        <h1>
+          <span className="block font-display text-5xl sm:text-6xl lg:text-7xl text-gray-900 leading-tight tracking-tight">
+            KI für Juristen.
+          </span>
+          <span className="block font-display text-3xl sm:text-4xl lg:text-5xl leading-tight tracking-tight mt-2">
+            <span className="text-blue-600">Täglich</span>
+            <span className="text-gray-900"> kuratiert.</span>
+          </span>
         </h1>
         <p className="mt-5 text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
           Die besten Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.

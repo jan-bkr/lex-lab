@@ -20,24 +20,24 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.lex-lab.de'),
   title: {
-    default: 'lex-lab.de — KI-Tools für Juristen',
-    template: '%s | lex-lab.de',
+    default: 'LexLab — KI-Tools für Juristen',
+    template: '%s | LexLab',
   },
   description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
   keywords: ['KI Tools Juristen', 'Legal Tech Deutschland', 'Steuerrecht KI', 'M&A Tools', 'Rechtsanwalt KI', 'Legal AI', 'Prompt Bibliothek Recht'],
-  authors: [{ name: 'lex-lab.de' }],
-  creator: 'lex-lab.de',
+  authors: [{ name: 'LexLab' }],
+  creator: 'LexLab',
   openGraph: {
     type: 'website',
     locale: 'de_DE',
     url: 'https://www.lex-lab.de',
-    siteName: 'lex-lab.de',
-    title: 'lex-lab.de — KI-Tools für Juristen',
+    siteName: 'LexLab',
+    title: 'LexLab — KI-Tools für Juristen',
     description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'lex-lab.de — KI-Tools für Juristen',
+    title: 'LexLab — KI-Tools für Juristen',
     description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt.',
   },
   alternates: {

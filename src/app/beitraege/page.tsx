@@ -77,6 +77,63 @@ export default function BeitraegePage() {
         </div>
       </div>
 
+      {/* Teaser card 2: TaxGraph */}
+      <div className="relative bg-white border border-gray-100 rounded-xl p-6 mb-8 shadow-sm">
+
+        {/* Coming soon banner */}
+        <div className="flex justify-end mb-4">
+          <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
+            📝 Wird bald veröffentlicht
+          </span>
+        </div>
+
+        {/* Author row */}
+        <div className="flex items-center gap-3 mb-4">
+          <img
+            src="/jan-becker.jpg"
+            alt="Jan Becker"
+            className="w-10 h-10 rounded-full object-cover object-top flex-shrink-0"
+          />
+          <div>
+            <p className="text-sm font-semibold text-gray-900 leading-none">Jan Becker</p>
+            <p className="text-xs text-gray-400 mt-0.5">Rechtsanwalt · Demnächst</p>
+          </div>
+        </div>
+
+        {/* Category badge */}
+        <div className="mb-3">
+          <span className="text-[11px] font-semibold text-purple-600 bg-purple-50 border border-purple-100 rounded-md px-2 py-0.5 uppercase tracking-wide">
+            Tool-Review
+          </span>
+        </div>
+
+        {/* Title */}
+        <h2 className="font-display text-2xl text-gray-900 leading-snug mb-3">
+          TaxGraph im Praxistest: Der Claude-Konnektor für deutsches Steuerrecht
+        </h2>
+
+        {/* Preview text */}
+        <p className="text-sm text-gray-600 leading-relaxed mb-6">
+          TaxGraph ist ein MCP-Konnektor für Claude, der direkten Zugriff auf deutsches Steuerrecht, BMF-Schreiben und aktuelle Rechtsprechung ermöglicht — direkt in der Claude-Oberfläche ohne Copy-Paste. Ich habe TaxGraph intensiv in meiner täglichen Kanzleiarbeit getestet. Mein Fazit: Was funktioniert wirklich, wo sind die Grenzen, und lohnt sich der Einsatz für Steuerrechtler und M&A-Anwälte? Der vollständige Erfahrungsbericht erscheint in Kürze.
+        </p>
+
+        {/* Bottom row */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-gray-50">
+          <div className="flex items-center gap-2">
+            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
+              ✦ Wertvoll
+            </button>
+            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
+              💡 Interessant
+            </button>
+            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
+              ⚖ Praxisrelevant
+            </button>
+          </div>
+          <span className="text-xs text-gray-400">💬 Kommentare folgen</span>
+        </div>
+      </div>
+
       {/* Newsletter CTA */}
       <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
         <p className="text-sm font-medium text-blue-900 mb-1">Beiträge erscheinen in Kürze.</p>
