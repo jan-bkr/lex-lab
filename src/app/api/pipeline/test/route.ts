@@ -1,20 +1,7 @@
 import Parser from 'rss-parser'
-import { TextDecoder } from 'util'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES } from '@/lib/rss-sources'
-import { cleanText } from '@/lib/clean-text'
-
-const fixRSSEncoding = (str: string): string => {
-  if (!str) return ''
-  try {
-    const bytes = new Uint8Array(str.split('').map(c => c.charCodeAt(0) & 0xff))
-    const decoded = new TextDecoder('utf-8').decode(bytes)
-    if (!decoded.includes('\uFFFD')) return decoded
-    return str
-  } catch {
-    return str
-  }
-}
+import { fixEncoding } from '@/lib/clean-text'
 
 // Do not cache
 export const dynamic = 'force-dynamic'
@@ -65,14 +52,16 @@ export async function GET(): Promise<Response> {
     return Response.json({ error: 'No fourth item in feed' }, { status: 500 })
   }
 
-  const title = fixRSSEncoding(item.title?.trim() ?? '')
+  const rawTitle = item.title ?? ''
+  const title = fixEncoding(rawTitle.trim())
   const link  = item.link?.trim() ?? ''
 
   if (!title || !link) {
-    return Response.json({ error: 'First item has no title or link' }, { status: 500 })
+    return Response.json({ error: 'Item has no title or link' }, { status: 500 })
   }
 
-  console.log(`[pipeline/test] Item: "${title}"`)
+  console.log(`[pipeline/test] Raw title: "${rawTitle}"`)
+  console.log(`[pipeline/test] Fixed title: "${title}"`)
 
   // 2. Check for duplicate
   const { data: existing } = await adminSupabase
@@ -85,14 +74,14 @@ export async function GET(): Promise<Response> {
     return Response.json({
       status: 'skipped',
       reason: 'Article already exists in database',
-      title,
+      rawTitle,
+      fixedTitle: fixEncoding(rawTitle),
       source_url: link,
     })
   }
 
   // 3. Summarise with Claude
-  const snippet = fixRSSEncoding(item.contentSnippet ?? item.summary ?? item.content ?? '')
-  console.log(`[pipeline/test] Title before Claude: "${title}"`)
+  const snippet = fixEncoding(item.contentSnippet ?? item.summary ?? item.content ?? '')
   console.log(`[pipeline/test] Calling Claude API…`)
 
   let summary: string
@@ -121,7 +110,7 @@ export async function GET(): Promise<Response> {
     }
 
     const json = (await res.json()) as ClaudeResponse
-    summary = cleanText(json.content[0]?.text?.trim() ?? '')
+    summary = fixEncoding(json.content[0]?.text?.trim() ?? '')
   } catch (e) {
     return Response.json(
       { error: `Claude summarisation failed: ${e instanceof Error ? e.message : String(e)}` },
@@ -158,8 +147,8 @@ export async function GET(): Promise<Response> {
 
   return Response.json({
     status: 'inserted',
-    rawTitle: item.title,
-    fixedTitle: fixRSSEncoding(item.title ?? ''),
+    rawTitle,
+    fixedTitle: fixEncoding(rawTitle),
     title,
     slug,
     summary,

@@ -1,32 +1,33 @@
 /**
- * Replace common Windows-1252 / Latin-1 sequences that appear in
- * RSS feeds whose XML is mis-declared as UTF-8.
- * En-dash (U+2013) and em-dash (U+2014) differ only in their last byte
- * (0x93 vs 0x94 in CP-1252), so we use explicit Unicode escapes as keys.
+ * Fix UTF-8 bytes misread as Windows-1252/Latin-1 by rss-parser.
+ * Apply to item.title and item.contentSnippet before use.
  */
-const ENCODING_MAP: Record<string, string> = {
-  'Ã¼': 'ü', 'Ã¶': 'ö', 'Ã¤': 'ä',
-  'Ãœ': 'Ü', 'Ã–': 'Ö', 'Ã„': 'Ä',
-  'ÃŸ': 'ß',
-  'Ã©': 'é', 'Ã¨': 'è', 'Ã ': 'à',
-  'Ã¢': 'â', 'Ã®': 'î', 'Ã´': 'ô', 'Ã»': 'û',
-  // â€ + 0x93 (CP-1252 en-dash) → –
-  ['â\u0080\u0093']: '\u2013',
-  // â€ + 0x94 (CP-1252 em-dash) → —
-  ['â\u0080\u0094']: '\u2014',
-  // opening/closing double quotes
-  'â€œ': '\u201c', 'â€\u009d': '\u201d',
-  // opening/closing single quotes
-  'â€˜': '\u2018', 'â€™': '\u2019',
-  // ellipsis
-  'â€¦': '\u2026',
-  // guillemets and non-breaking space
-  'Â«': '«', 'Â»': '»', 'Â ': ' ',
-  // stray control char 0x13 → en-dash
-  '\u0013': '\u2013',
-}
-
-export const cleanText = (str: string): string => {
+export const fixEncoding = (str: string): string => {
   if (!str) return ''
-  return Object.entries(ENCODING_MAP).reduce((s, [k, v]) => s.replaceAll(k, v), str)
+  return str
+    .replace(/â€ž/g, '„')
+    .replace(/â€œ/g, '"')
+    .replace(/â€/g, '"')
+    .replace(/â€˜/g, '\u2018')
+    .replace(/â€™/g, '\u2019')
+    .replace(/â€"/g, '\u2013')
+    .replace(/â€"/g, '\u2014')
+    .replace(/â€¦/g, '\u2026')
+    .replace(/Ã¤/g, 'ä')
+    .replace(/Ã¶/g, 'ö')
+    .replace(/Ã¼/g, 'ü')
+    .replace(/Ã„/g, 'Ä')
+    .replace(/Ã–/g, 'Ö')
+    .replace(/Ãœ/g, 'Ü')
+    .replace(/ÃŸ/g, 'ß')
+    .replace(/Ã©/g, 'é')
+    .replace(/Ã /g, 'à')
+    .replace(/Ã¨/g, 'è')
+    .replace(/Ã®/g, 'î')
+    .replace(/Ã´/g, 'ô')
+    .replace(/Ã»/g, 'û')
+    .replace(/Â«/g, '«')
+    .replace(/Â»/g, '»')
+    .replace(/Â·/g, '·')
+    .replace(/Â /g, ' ')
 }
