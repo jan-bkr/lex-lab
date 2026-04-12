@@ -29,9 +29,11 @@ export default function BeitraegePage() {
 
         {/* Author row */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-xs font-bold tracking-tight">JB</span>
-          </div>
+          <img
+            src="/jan-becker.jpg"
+            alt="Jan Becker"
+            className="w-10 h-10 rounded-full object-cover object-top flex-shrink-0"
+          />
           <div>
             <p className="text-sm font-semibold text-gray-900 leading-none">Jan Becker</p>
             <p className="text-xs text-gray-400 mt-0.5">Rechtsanwalt · Demnächst</p>
