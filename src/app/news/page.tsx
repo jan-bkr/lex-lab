@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ExternalLink, Cpu } from 'lucide-react'
+import { Cpu } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { mockNews } from '@/lib/mock-data'
 import { NewsArticle } from '@/types'
@@ -125,47 +125,50 @@ export default function NewsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map(article => (
-            <div
-              key={article.id}
-              className="bg-white border border-gray-100 rounded-xl p-5 hover:shadow-sm hover:border-gray-200 transition-all duration-200"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <span
-                      className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border ${sourceStyle(article.sourceName)}`}
-                    >
-                      {article.sourceName}
-                    </span>
-                    {article.aiGenerated && (
-                      <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 font-medium">
-                        <Cpu className="w-2.5 h-2.5" />
-                        KI-Zusammenfassung
-                      </span>
-                    )}
-                    <span className="text-xs text-gray-400 ml-auto">
-                      {relativeDate(article.publishedAt)}
-                    </span>
-                  </div>
-                  <h2 className="font-display font-semibold text-[14px] text-gray-900 leading-snug mb-1">
-                    {article.title}
-                  </h2>
-                  <p className="text-sm text-gray-500 leading-relaxed">{article.summary}</p>
-                </div>
-                {article.sourceUrl !== '#' && (
-                  <a
-                    href={article.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 text-gray-300 hover:text-blue-600 transition-colors mt-0.5"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
+          {filtered.map(article => {
+            const hasUrl = article.sourceUrl && article.sourceUrl !== '#'
+            const cardClass = `bg-white border border-gray-100 rounded-xl p-5 transition-all duration-200 ${
+              hasUrl ? 'cursor-pointer hover:shadow-md hover:border-gray-200' : 'hover:shadow-sm'
+            }`
+            const inner = (
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border ${sourceStyle(article.sourceName)}`}
+                >
+                  {article.sourceName}
+                </span>
+                {article.aiGenerated && (
+                  <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 font-medium">
+                    <Cpu className="w-2.5 h-2.5" />
+                    KI-Zusammenfassung
+                  </span>
                 )}
+                <span className="text-xs text-gray-400 ml-auto">
+                  {relativeDate(article.publishedAt)}
+                </span>
+                <h2 className="w-full font-display font-semibold text-[14px] text-gray-900 leading-snug mb-0.5">
+                  {article.title}
+                </h2>
+                <p className="w-full text-sm text-gray-500 leading-relaxed">{article.summary}</p>
               </div>
-            </div>
-          ))}
+            )
+
+            return hasUrl ? (
+              <a
+                key={article.id}
+                href={article.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cardClass}
+              >
+                {inner}
+              </a>
+            ) : (
+              <div key={article.id} className={cardClass}>
+                {inner}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
