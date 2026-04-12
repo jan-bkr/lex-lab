@@ -47,9 +47,9 @@ export async function GET(): Promise<Response> {
     )
   }
 
-  const item = feed.items[1]
+  const item = feed.items[2]
   if (!item) {
-    return Response.json({ error: 'No second item in feed' }, { status: 500 })
+    return Response.json({ error: 'No third item in feed' }, { status: 500 })
   }
 
   const title = cleanText(item.title?.trim() ?? '')
