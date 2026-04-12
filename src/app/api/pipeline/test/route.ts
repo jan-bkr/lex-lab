@@ -28,9 +28,9 @@ interface ClaudeResponse {
 
 export async function GET(): Promise<Response> {
   // Use only the LTO source with max 1 article (no age gate for easier testing)
-  const lto = RSS_SOURCES.find(s => s.name === 'LTO')!
+  const lto = RSS_SOURCES.find(s => s.name === 'JUVE')!
 
-  console.log('[pipeline/test] Fetching LTO feed…')
+  console.log('[pipeline/test] Fetching JUVE feed…')
 
   let feed: Awaited<ReturnType<typeof parser.parseURL>>
   try {
