@@ -1,4 +1,5 @@
 import Parser from 'rss-parser'
+import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES } from '@/lib/rss-sources'
 
 // Do not cache
@@ -10,51 +11,144 @@ const parser = new Parser({
   },
 })
 
-interface SourceResult {
-  source: string
-  url: string
-  status: 'ok' | 'error'
-  itemCount?: number
-  latestTitle?: string
-  error?: string
+function slugify(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80)
+}
+
+interface ClaudeTextContent {
+  type: 'text'
+  text: string
+}
+
+interface ClaudeResponse {
+  content: ClaudeTextContent[]
 }
 
 export async function GET(): Promise<Response> {
-  console.log('[pipeline/test] Probing all RSS sources…')
+  const source = RSS_SOURCES.find(s => s.name === 'Finance Magazin')!
 
-  const results = await Promise.allSettled(
-    RSS_SOURCES.map(async (source): Promise<SourceResult> => {
-      try {
-        const feed = await parser.parseURL(source.url)
-        const items = feed.items ?? []
-        return {
-          source: source.name,
-          url: source.url,
-          status: 'ok',
-          itemCount: items.length,
-          latestTitle: items[0]?.title?.trim() ?? '(no title)',
-        }
-      } catch (e) {
-        return {
-          source: source.name,
-          url: source.url,
-          status: 'error',
-          error: e instanceof Error ? e.message : String(e),
-        }
-      }
+  console.log(`[pipeline/test] Fetching ${source.name} feed…`)
+
+  // 1. Fetch feed
+  let feed: Awaited<ReturnType<typeof parser.parseURL>>
+  try {
+    feed = await parser.parseURL(source.url)
+  } catch (e) {
+    return Response.json(
+      { error: `Feed fetch failed: ${e instanceof Error ? e.message : String(e)}` },
+      { status: 500 }
+    )
+  }
+
+  const item = feed.items[0]
+  if (!item) {
+    return Response.json({ error: 'No items in feed' }, { status: 500 })
+  }
+
+  const title = item.title?.trim() ?? ''
+  const link  = item.link?.trim() ?? ''
+
+  if (!title || !link) {
+    return Response.json({ error: 'First item has no title or link' }, { status: 500 })
+  }
+
+  console.log(`[pipeline/test] Item: "${title}"`)
+
+  // 2. Check for duplicate
+  const { data: existing } = await adminSupabase
+    .from('news_articles')
+    .select('id')
+    .eq('source_url', link)
+    .maybeSingle()
+
+  if (existing) {
+    return Response.json({
+      status: 'skipped',
+      reason: 'Article already exists in database',
+      title,
+      source_url: link,
     })
-  )
+  }
 
-  const output: SourceResult[] = results.map(r =>
-    r.status === 'fulfilled'
-      ? r.value
-      : { source: '?', url: '?', status: 'error', error: String(r.reason) }
-  )
+  // 3. Summarise with Claude
+  const snippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
+  console.log(`[pipeline/test] Calling Claude API…`)
 
-  const ok    = output.filter(r => r.status === 'ok').length
-  const error = output.filter(r => r.status === 'error').length
+  let summary: string
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY!,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        messages: [
+          {
+            role: 'user',
+            content: `Fasse diesen Artikel in 2-3 prägnanten deutschen Sätzen zusammen. Fokus auf das Wesentliche für Juristen und Steuerberater. Titel: ${title}. Inhalt: ${snippet.slice(0, 1000)}. Antworte nur mit der Zusammenfassung, kein Präambel.`,
+          },
+        ],
+      }),
+    })
 
-  console.log(`[pipeline/test] Done — ${ok} ok, ${error} failed`)
+    if (!res.ok) {
+      throw new Error(`Claude API error: ${res.status} ${await res.text()}`)
+    }
 
-  return Response.json({ summary: { ok, error }, sources: output })
+    const json = (await res.json()) as ClaudeResponse
+    summary = json.content[0]?.text?.trim() ?? ''
+  } catch (e) {
+    return Response.json(
+      { error: `Claude summarisation failed: ${e instanceof Error ? e.message : String(e)}` },
+      { status: 500 }
+    )
+  }
+
+  console.log(`[pipeline/test] Summary: "${summary}"`)
+
+  // 4. Insert into Supabase
+  const pubDate = item.isoDate ? new Date(item.isoDate) : item.pubDate ? new Date(item.pubDate) : null
+  const publishedAt = pubDate?.toISOString() ?? new Date().toISOString()
+  const slug = slugify(title) + '-' + Date.now()
+
+  const { error: insertError } = await adminSupabase.from('news_articles').insert({
+    title,
+    slug,
+    summary,
+    source_url: link,
+    source_name: source.name,
+    category: source.category,
+    published_at: publishedAt,
+    ai_generated: true,
+  })
+
+  if (insertError) {
+    return Response.json(
+      { error: `DB insert failed: ${insertError.message}` },
+      { status: 500 }
+    )
+  }
+
+  console.log(`[pipeline/test] Inserted successfully`)
+
+  return Response.json({
+    status: 'inserted',
+    title,
+    slug,
+    summary,
+    source_url: link,
+    source_name: source.name,
+    category: source.category,
+    published_at: publishedAt,
+  })
 }
