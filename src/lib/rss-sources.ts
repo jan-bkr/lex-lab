@@ -13,5 +13,4 @@ export const RSS_SOURCES: RssSource[] = [
   { name: 'Gründerszene',        url: 'https://www.gruenderszene.de/feed',               category: 'Venture Capital' },
   { name: 'Startbase',           url: 'https://startbase.de/feed',                      category: 'Venture Capital' },
   { name: 'Deutsche Startups',   url: 'https://www.deutsche-startups.de/feed/',         category: 'Venture Capital' },
-  { name: 'EU-Startups',         url: 'https://www.eu-startups.com/feed/',              category: 'Venture Capital' },
 ]

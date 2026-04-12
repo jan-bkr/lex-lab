@@ -21,7 +21,8 @@
       "Bash(curl -s -L --max-time 10 \"https://www.bundesfinanzhof.de/de/entscheidungen/entscheidungen-online/?tx_bfhentscheidungen_list%5Baction%5D=rss\")",
       "Bash(curl -s -L --max-time 10 \"https://www.lto.de/rss/\")",
       "Bash(curl -s -L --max-time 10 \"https://rsw.beck.de/rss/beckaktuell\")",
-      "Bash(curl -s -L --max-time 10 \"https://www.datenschutz-notizen.de/feed/\")"
+      "Bash(curl -s -L --max-time 10 \"https://www.datenschutz-notizen.de/feed/\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -L --max-time 10 \"https://www.eu-startups.com/feed/\")"
     ]
   }
 }

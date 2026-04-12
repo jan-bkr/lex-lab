@@ -1,4 +1,5 @@
 import Parser from 'rss-parser'
+import { Buffer } from 'buffer'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES, type RssSource } from '@/lib/rss-sources'
 
@@ -8,15 +9,18 @@ export const dynamic = 'force-dynamic'
 const parser = new Parser({
   timeout: 10_000,
   headers: {
-    'Accept': 'application/rss+xml, application/xml, text/xml; charset=utf-8',
-    'User-Agent': 'lex-lab.de RSS Reader/1.0',
+    'User-Agent': 'Mozilla/5.0 (compatible; lex-lab-bot/1.0)',
+    'Accept-Charset': 'utf-8',
   },
-  defaultRSS: 2.0,
+  xml2js: {
+    explicitCharkey: true,
+  },
 })
 
 const fixEncoding = (str: string): string => {
+  if (!str) return ''
   try {
-    return decodeURIComponent(escape(str))
+    return Buffer.from(str, 'latin1').toString('utf8')
   } catch {
     return str
   }
