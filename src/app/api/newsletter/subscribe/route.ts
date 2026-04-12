@@ -45,7 +45,7 @@ export async function POST(request: Request): Promise<Response> {
     try {
       const resend = new Resend(apiKey)
       const { error: resendError } = await resend.emails.send({
-        from: 'lex-lab.de <onboarding@resend.dev>',
+        from: 'lex-lab.de <newsletter@lex-lab.de>',
         to: email,
         subject: 'Willkommen bei lex-lab.de',
         html: `
