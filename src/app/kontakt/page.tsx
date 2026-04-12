@@ -54,7 +54,7 @@ export default function KontaktPage() {
         <div className="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
           <span className="text-2xl">✓</span>
         </div>
-        <h1 className="font-display font-bold text-2xl text-gray-900 mb-3">Vielen Dank!</h1>
+        <h1 className="font-display text-2xl text-gray-900 mb-3">Vielen Dank!</h1>
         <p className="text-gray-500 text-sm leading-relaxed">
           Deine Nachricht ist angekommen. Wir melden uns innerhalb von 48 Stunden.
         </p>
@@ -65,7 +65,7 @@ export default function KontaktPage() {
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-12">
       <div className="mb-8">
-        <h1 className="font-display font-bold text-3xl text-gray-900 mb-2">Kontakt</h1>
+        <h1 className="font-display text-3xl text-gray-900 mb-2">Kontakt</h1>
         <p className="text-gray-500 text-sm leading-relaxed">
           Fragen, Feedback oder Tool-Empfehlungen? Wir freuen uns über deine Nachricht.
         </p>

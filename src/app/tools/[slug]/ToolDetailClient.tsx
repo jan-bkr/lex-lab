@@ -151,7 +151,7 @@ export default function ToolDetailPage({
   if (!tool) {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
-        <h1 className="font-display text-2xl font-bold text-gray-900 mb-2">Tool nicht gefunden</h1>
+        <h1 className="font-display text-2xl text-gray-900 mb-2">Tool nicht gefunden</h1>
         <p className="text-gray-500 mb-6 text-sm">Dieses Tool existiert nicht oder wurde entfernt.</p>
         <Link href="/tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
           ← Alle Tools
@@ -184,7 +184,7 @@ export default function ToolDetailPage({
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-display text-2xl font-bold text-gray-900">{tool.name}</h1>
+                <h1 className="font-display text-2xl text-gray-900">{tool.name}</h1>
                 {tool.isNew && (
                   <span className="bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border border-blue-100">
                     NEU

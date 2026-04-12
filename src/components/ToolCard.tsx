@@ -63,7 +63,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-display font-semibold text-[14px] text-gray-900">{tool.name}</span>
+              <span className="font-sans font-semibold text-[14px] text-gray-900">{tool.name}</span>
               {tool.isNew && (
                 <span className="bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border border-blue-100">
                   Neu

@@ -102,7 +102,7 @@ export default function NewsPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-gray-900">Aktuelles</h1>
+        <h1 className="font-display text-3xl text-gray-900">Aktuelles</h1>
         <p className="text-gray-500 mt-1 text-sm">
           KI-kuratierte News aus Steuerrecht, M&amp;A, Gesellschaftsrecht und Venture Capital
         </p>
@@ -177,7 +177,7 @@ export default function NewsPage() {
                 </div>
 
                 {/* Title */}
-                <h2 className="font-display font-semibold text-[14px] leading-snug text-gray-900 mb-1.5 group-hover:text-blue-600 transition-colors">
+                <h2 className="font-sans font-semibold text-[14px] leading-snug text-gray-900 mb-1.5 group-hover:text-blue-600 transition-colors">
                   {article.title}
                 </h2>
 

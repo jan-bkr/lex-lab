@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase } from 'lucide-react'
+import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase, Grid3X3, Sparkles, Newspaper, Mail } from 'lucide-react'
 import { mockTools, mockWorkflows, mockPrompts, mockNews, mockEvents } from '@/lib/mock-data'
 import { ToolCard } from '@/components/ToolCard'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
@@ -185,7 +185,7 @@ export default async function HomePage() {
           <Zap className="w-3 h-3 text-blue-500" />
           <span className="text-xs text-blue-600 font-medium">Täglich kuratiert — KI für den deutschen Rechtsmarkt</span>
         </div>
-        <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-gray-900 leading-tight tracking-tight">
+        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-gray-900 leading-tight tracking-tight">
           KI für Juristen.<br /><span className="text-blue-600">Täglich</span> kuratiert.
         </h1>
         <p className="mt-5 text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
@@ -221,7 +221,7 @@ export default async function HomePage() {
 
       {/* KATEGORIEN */}
       <section className="mb-14 pt-8 border-t border-gray-100">
-        <h2 className="font-display font-bold text-xl text-gray-900">Tools nach Rechtsgebiet</h2>
+        <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2"><Grid3X3 className="w-5 h-5 text-gray-400" /> Tools nach Rechtsgebiet</h2>
         <p className="text-sm text-gray-500 mt-1 mb-4">Alle KI-Tools gefiltert nach deinem Fachgebiet</p>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {(Object.keys(rechtsgebietMeta) as Rechtsgebiet[]).map(rg => {
@@ -257,7 +257,7 @@ export default async function HomePage() {
               <Link key={wf.id} href={`/workflows/${wf.slug}`}
                 className={`block bg-white border border-gray-100 border-l-4 ${workflowBorder[wf.rechtsgebiet[0]]} rounded-xl p-4 hover:shadow-md hover:border-gray-200 transition-all group`}>
                 <div className="flex items-start justify-between gap-2">
-                  <p className="font-display font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">{wf.title}</p>
+                  <p className="font-sans font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">{wf.title}</p>
                   <ArrowRight className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-center gap-2 mt-2">
@@ -276,7 +276,7 @@ export default async function HomePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-14">
         <section className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold text-xl text-gray-900">Aktuelles</h2>
+            <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2"><Newspaper className="w-5 h-5 text-gray-400" /> Aktuelles</h2>
             <Link href="/news" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
               Alle News <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -326,7 +326,7 @@ export default async function HomePage() {
 
       {/* NEWSLETTER CTA */}
       <section className="bg-white border border-gray-100 rounded-2xl p-8 mb-16 text-center">
-        <h2 className="font-display font-bold text-2xl text-gray-900 mb-2">Wöchentlich die besten KI-Tools für Juristen</h2>
+        <h2 className="font-display font-bold text-2xl text-gray-900 mb-2 flex items-center justify-center gap-2"><Mail className="w-5 h-5 text-gray-400" /> Wöchentlich die besten KI-Tools für Juristen</h2>
         <p className="text-gray-500 text-sm mb-6">Kein Spam. Jederzeit abmeldbar. Kostenlos.</p>
         <NewsletterForm />
         <p className="text-xs text-gray-400 mt-3">

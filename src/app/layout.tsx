@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import { Instrument_Serif, DM_Sans } from 'next/font/google'
+import { DM_Serif_Display, DM_Sans } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
-const instrumentSerif = Instrument_Serif({
+const dmSerifDisplay = DM_Serif_Display({
   subsets: ['latin'],
   variable: '--font-display',
   weight: '400',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de" className={`${instrumentSerif.variable} ${dmSans.variable}`}>
+    <html lang="de" className={`${dmSerifDisplay.variable} ${dmSans.variable}`}>
       <body className="bg-[#F7F7F5] text-[#111827] antialiased">
         <Navbar />
         <main>{children}</main>

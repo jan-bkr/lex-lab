@@ -130,7 +130,7 @@ export default function SubmitToolPage() {
   return (
     <div className="max-w-lg mx-auto px-4 sm:px-6 py-12">
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-gray-900">Tool einreichen</h1>
+        <h1 className="font-display text-3xl text-gray-900">Tool einreichen</h1>
         <p className="text-gray-500 mt-1 text-sm">
           Schlage ein KI-Tool für die lex-lab.de Datenbank vor.
         </p>

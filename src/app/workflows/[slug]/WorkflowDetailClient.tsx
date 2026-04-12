@@ -136,7 +136,7 @@ export default function WorkflowDetailPage({
   if (!workflow) {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
-        <h1 className="font-display text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="font-display text-2xl text-gray-900 mb-2">
           Workflow nicht gefunden
         </h1>
         <p className="text-gray-500 mb-6 text-sm">
@@ -162,7 +162,7 @@ export default function WorkflowDetailPage({
             Workflows
           </Link>
 
-          <h1 className="font-display text-2xl font-bold text-gray-900 mb-4 leading-snug">
+          <h1 className="font-display text-2xl text-gray-900 mb-4 leading-snug">
             {workflow.title}
           </h1>
 

@@ -57,7 +57,7 @@ function EventCard({ event }: { event: LexEvent }) {
         </span>
         <span className="text-xs text-gray-400">{formatDate(event.date)}</span>
       </div>
-      <h3 className="font-display font-semibold text-sm text-gray-900 leading-snug mb-1">
+      <h3 className="font-sans font-semibold text-sm text-gray-900 leading-snug mb-1">
         {event.title}
       </h3>
       {event.description && (
@@ -124,7 +124,7 @@ export default function EventsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-gray-900">Events & Termine</h1>
+        <h1 className="font-display text-3xl text-gray-900">Events & Termine</h1>
         <p className="text-gray-500 mt-1 text-sm">
           BFH/BGH-Verhandlungen, Gesetzgebungsfristen und Konferenzen
         </p>

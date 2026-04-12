@@ -12,7 +12,7 @@ export default function ImpressumPage() {
         Zurück zur Startseite
       </Link>
 
-      <h1 className="font-display text-3xl font-bold text-gray-900 mb-10">Impressum</h1>
+      <h1 className="font-display text-3xl text-gray-900 mb-10">Impressum</h1>
 
       <div className="space-y-8 text-sm leading-relaxed text-gray-600">
 

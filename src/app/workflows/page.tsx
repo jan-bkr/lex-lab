@@ -76,7 +76,7 @@ export default function WorkflowsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-gray-900">Workflows</h1>
+        <h1 className="font-display text-3xl text-gray-900">Workflows</h1>
         <p className="text-gray-500 mt-1 text-sm">
           Schritt-für-Schritt KI-Workflows für juristische Aufgaben
         </p>

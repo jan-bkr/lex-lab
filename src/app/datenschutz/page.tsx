@@ -12,7 +12,7 @@ export default function DatenschutzPage() {
         Zurück zur Startseite
       </Link>
 
-      <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">Datenschutzerklärung</h1>
+      <h1 className="font-display text-3xl text-gray-900 mb-2">Datenschutzerklärung</h1>
       <p className="text-sm text-gray-400 mb-10">Stand: April 2025</p>
 
       <div className="space-y-8 text-sm leading-relaxed text-gray-600">

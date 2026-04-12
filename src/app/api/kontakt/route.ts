@@ -37,9 +37,9 @@ export async function POST(request: Request): Promise<Response> {
 
   // Notify us
   try {
-    const { error } = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: 'lex-lab.de <kontakt@lex-lab.de>',
-      to: 'janniklas.becker612@gmail.com',
+      to: 'janiklas.dropbox@web.de',
       replyTo: email,
       subject: `[lex-lab.de Kontakt] ${subject} — ${name}`,
       html: `
@@ -58,6 +58,7 @@ export async function POST(request: Request): Promise<Response> {
         </div>
       `,
     })
+    console.log('[kontakt] resend response:', JSON.stringify({ data, error }, null, 2))
     if (error) {
       console.error('[kontakt] resend (notify) error:', error)
       return Response.json({ error: 'Nachricht konnte nicht gesendet werden: ' + error.message }, { status: 500 })

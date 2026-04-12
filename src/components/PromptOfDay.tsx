@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import { Prompt } from '@/types'
 import { RechtsgebietTag } from './RechtsgebietTag'
 import { PromptModal } from './PromptModal'
@@ -13,7 +13,7 @@ export function PromptOfDay({ prompt }: { prompt: Prompt }) {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display font-bold text-xl text-gray-900">Prompt des Tages</h2>
+        <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2"><Sparkles className="w-5 h-5 text-gray-400" /> Prompt des Tages</h2>
         <Link href="/prompts" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
           Alle <ArrowRight className="w-3.5 h-3.5" />
         </Link>

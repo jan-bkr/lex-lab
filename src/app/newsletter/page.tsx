@@ -14,7 +14,7 @@ export default function NewsletterPage() {
         <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50 border border-blue-100 rounded-2xl mb-6">
           <Mail className="w-7 h-7 text-blue-600" />
         </div>
-        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-gray-900 mb-4 leading-tight">
+        <h1 className="font-display text-3xl sm:text-4xl text-gray-900 mb-4 leading-tight">
           KI-News für Juristen.<br />Wöchentlich kuratiert.
         </h1>
         <p className="text-gray-500 text-base leading-relaxed max-w-md mx-auto">

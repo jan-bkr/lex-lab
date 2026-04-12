@@ -9,12 +9,12 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between gap-8 pb-10 border-b border-gray-100">
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5 mb-3">
-              <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
+              <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
                 <rect width="28" height="28" rx="7" fill="#111827"/>
                 <text x="5" y="13" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="white" letterSpacing="-0.5">lex</text>
                 <text x="5" y="23" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#2563EB" letterSpacing="-0.5">lab</text>
               </svg>
-              <span className="font-display font-bold text-xl text-gray-900">
+              <span className="font-display font-bold text-[18px] text-gray-900">
                 lex-lab<span className="font-normal text-gray-400">.de</span>
               </span>
             </div>
@@ -68,7 +68,7 @@ export default function Footer() {
         <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
             <p className="text-xs text-gray-400">
-              <span className="font-medium text-gray-500">Inhaltliche Verantwortung:</span> Jan Becker
+              <span className="font-medium text-gray-500">Inhaltliche Verantwortung:</span> Jan Becker, Rechtsanwalt
             </p>
             <p className="text-xs text-gray-400">
               Kontakt: <a href="mailto:kontakt@lex-lab.de" className="hover:text-gray-600 transition-colors">kontakt@lex-lab.de</a>
@@ -76,7 +76,7 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="https://www.linkedin.com/company/lex-lab-de"
+              href="https://www.linkedin.com/in/jan-niklas-becker"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-600 transition-colors"

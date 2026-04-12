@@ -115,7 +115,7 @@ export default function PromptsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-gray-900">Prompt-Bibliothek</h1>
+        <h1 className="font-display text-3xl text-gray-900">Prompt-Bibliothek</h1>
         <p className="text-gray-500 mt-1 text-sm">
           Kopierfertige KI-Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital
         </p>
