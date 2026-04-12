@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ExternalLink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { mockEvents } from '@/lib/mock-data'
 import { Event as LexEvent } from '@/types'
@@ -43,40 +42,43 @@ function formatDate(dateStr: string): string {
 }
 
 function EventCard({ event }: { event: LexEvent }) {
+  const isClickable = !!event.url && event.url !== '#'
+  const cardClass =
+    'bg-white border border-gray-100 rounded-xl p-4 flex-1 mb-4 transition-all' +
+    (isClickable ? ' hover:shadow-md hover:border-gray-200 cursor-pointer' : '')
+
+  const cardContent = (
+    <>
+      <div className="flex items-center gap-2 flex-wrap mb-2">
+        <span
+          className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border ${TYPE_STYLES[event.type] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}
+        >
+          {event.type}
+        </span>
+        <span className="text-xs text-gray-400">{formatDate(event.date)}</span>
+      </div>
+      <h3 className="font-display font-semibold text-sm text-gray-900 leading-snug mb-1">
+        {event.title}
+      </h3>
+      {event.description && (
+        <p className="text-xs text-gray-400">{event.description}</p>
+      )}
+    </>
+  )
+
   return (
     <div className="flex gap-4 pb-1">
       <div className="flex flex-col items-center flex-shrink-0">
         <div className="w-3 h-3 rounded-full bg-blue-400 border-2 border-white ring-2 ring-blue-100 mt-1" />
         <div className="w-px flex-1 bg-gray-100 mt-1" />
       </div>
-      <div className="bg-white border border-gray-100 rounded-xl p-4 flex-1 mb-4 hover:shadow-sm hover:border-gray-200 transition-all">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span
-              className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border ${TYPE_STYLES[event.type] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}
-            >
-              {event.type}
-            </span>
-            <span className="text-xs text-gray-400">{formatDate(event.date)}</span>
-          </div>
-          {event.url !== '#' && (
-            <a
-              href={event.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-shrink-0 text-gray-300 hover:text-blue-600 transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
-        </div>
-        <h3 className="font-display font-semibold text-sm text-gray-900 leading-snug mb-1">
-          {event.title}
-        </h3>
-        {event.description && (
-          <p className="text-xs text-gray-400">{event.description}</p>
-        )}
-      </div>
+      {isClickable ? (
+        <a href={event.url} target="_blank" rel="noopener noreferrer" className={cardClass}>
+          {cardContent}
+        </a>
+      ) : (
+        <div className={cardClass}>{cardContent}</div>
+      )}
     </div>
   )
 }
