@@ -13,11 +13,11 @@ export default function DatenschutzPage() {
       </Link>
 
       <h1 className="font-display text-3xl text-gray-900 mb-2">Datenschutzerklärung</h1>
-      <p className="text-sm text-gray-400 mb-10">Stand: April 2025</p>
+      <p className="text-sm text-gray-400 mb-10">Stand: April 2026</p>
 
       <div className="space-y-8 text-sm leading-relaxed text-gray-600">
 
-        {/* Verantwortlicher */}
+        {/* 1. Verantwortlicher */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
             1. Verantwortlicher
@@ -27,13 +27,14 @@ export default function DatenschutzPage() {
           </p>
           <p className="text-gray-500 italic">
             Jan Becker<br />
+            c/o BZG &amp; Partner<br />
             Lippstädter Str. 54<br />
             48155 Münster<br />
-            E-Mail: janniklas.becker612@gmail.com
+            E-Mail: <a href="mailto:kontakt@lex-lab.de" className="text-blue-600 hover:text-blue-700 not-italic">kontakt@lex-lab.de</a>
           </p>
         </section>
 
-        {/* Erhobene Daten */}
+        {/* 2. Erhobene Daten */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
             2. Welche Daten wir erheben
@@ -49,10 +50,33 @@ export default function DatenschutzPage() {
           </p>
 
           <h3 className="font-semibold text-gray-800 mb-2">Newsletter-Anmeldung</h3>
-          <p className="mb-4">
+          <p className="mb-1">
             Wenn Sie unseren Newsletter abonnieren, speichern wir Ihre E-Mail-Adresse. Diese wird
             ausschließlich für den Versand des Newsletters verwendet und nicht an Dritte weitergegeben.
-            Die Einwilligung kann jederzeit widerrufen werden.
+          </p>
+          <p className="mb-1">
+            <strong className="text-gray-700">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
+          </p>
+          <p className="mb-4">
+            <strong className="text-gray-700">Widerruf:</strong> jederzeit möglich durch Klick auf den Abmeldelink im Newsletter
+            oder per E-Mail an <a href="mailto:kontakt@lex-lab.de" className="text-blue-600 hover:text-blue-700">kontakt@lex-lab.de</a>
+          </p>
+
+          <h3 className="font-semibold text-gray-800 mb-2">Kontaktformular</h3>
+          <p className="mb-1">
+            Wenn Sie uns über das Kontaktformular eine Nachricht senden, speichern wir Ihre
+            E-Mail-Adresse und die übermittelten Inhalte zur Bearbeitung Ihrer Anfrage.
+          </p>
+          <p className="mb-1">
+            <strong className="text-gray-700">Zweck:</strong> Bearbeitung Ihrer Anfrage (nicht Direktmarketing)
+          </p>
+          <p className="mb-1">
+            <strong className="text-gray-700">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Vertragsanbahnung)
+            und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse)
+          </p>
+          <p className="mb-4">
+            <strong className="text-gray-700">Speicherdauer:</strong> bis zur abschließenden Bearbeitung Ihrer Anfrage,
+            danach nach gesetzlichen Aufbewahrungsfristen
           </p>
 
           <h3 className="font-semibold text-gray-800 mb-2">Tool-Einreichungen</h3>
@@ -63,7 +87,7 @@ export default function DatenschutzPage() {
           </p>
         </section>
 
-        {/* Rechtsgrundlage */}
+        {/* 3. Rechtsgrundlage */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
             3. Rechtsgrundlage der Verarbeitung
@@ -79,12 +103,12 @@ export default function DatenschutzPage() {
             </li>
             <li className="flex gap-2">
               <span className="text-blue-500 font-mono flex-shrink-0">Art. 6 Abs. 1 lit. b DSGVO</span>
-              <span>— Vertragserfüllung oder vorvertragliche Maßnahmen: Bearbeitung von Tool-Einreichungen.</span>
+              <span>— Vertragserfüllung oder vorvertragliche Maßnahmen: Bearbeitung von Kontaktanfragen und Tool-Einreichungen.</span>
             </li>
           </ul>
         </section>
 
-        {/* Speicherdauer */}
+        {/* 4. Speicherdauer */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
             4. Speicherdauer
@@ -94,75 +118,130 @@ export default function DatenschutzPage() {
             erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen:
           </p>
           <ul className="space-y-1.5 list-disc list-inside text-gray-600">
-            <li>Server-Logs: maximal 30 Tage, danach automatische Löschung</li>
+            <li>Server-Logs: maximal 7 Tage, danach automatische Löschung</li>
             <li>Newsletter-E-Mail-Adressen: bis zum Widerruf der Einwilligung</li>
+            <li>Kontaktanfragen: bis zur abschließenden Bearbeitung, danach nach gesetzlichen Aufbewahrungsfristen</li>
             <li>Tool-Einreichungen: bis zur Bearbeitung, danach Anonymisierung oder Löschung</li>
           </ul>
         </section>
 
-        {/* Drittanbieter */}
+        {/* 5. SSL/TLS */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
-            5. Drittanbieter und Auftragsverarbeiter
+            5. SSL/TLS-Verschlüsselung
+          </h2>
+          <p>
+            Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher
+            Inhalte eine SSL- bzw. TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie
+            daran, dass die Adresszeile des Browsers von „http://" auf „https://" wechselt und an dem
+            Schloss-Symbol in Ihrer Browserzeile.
+          </p>
+        </section>
+
+        {/* 6. Server-Log-Dateien */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            6. Server-Log-Dateien
+          </h2>
+          <p className="mb-3">
+            Der Provider dieser Website erhebt und speichert automatisch Informationen in
+            Server-Log-Dateien, die Ihr Browser automatisch übermittelt:
+          </p>
+          <ul className="space-y-1.5 list-disc list-inside text-gray-600 mb-3">
+            <li>Browsertyp und Browserversion</li>
+            <li>Verwendetes Betriebssystem</li>
+            <li>Referrer URL</li>
+            <li>Hostname des zugreifenden Rechners</li>
+            <li>Datum und Uhrzeit der Serveranfrage</li>
+            <li>IP-Adresse</li>
+          </ul>
+          <p>
+            <strong className="text-gray-700">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
+            sicherem Serverbetrieb). <strong className="text-gray-700">Speicherdauer:</strong> maximal 7 Tage.
+          </p>
+        </section>
+
+        {/* 7. Drittanbieter */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            7. Drittanbieter und Auftragsverarbeiter
           </h2>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             <div className="bg-gray-50 rounded-xl p-4">
               <h3 className="font-semibold text-gray-800 mb-1.5">Vercel Inc. (Hosting)</h3>
-              <p className="text-gray-500 text-xs mb-2">340 Pine Street, Suite 701, San Francisco, CA 94104, USA</p>
-              <p>
+              <p className="text-gray-500 text-xs mb-2">340 Pine Street Suite 701, San Francisco, CA 94104, USA</p>
+              <p className="mb-1.5">
                 Diese Website wird auf der Infrastruktur von Vercel gehostet. Beim Aufruf der Website
                 werden Zugriffsdaten an Vercel übertragen. Vercel ist gemäß EU-US Data Privacy Framework
                 zertifiziert und verarbeitet Daten auf Basis von Standardvertragsklauseln (SCCs) gemäß
-                Art. 46 Abs. 2 lit. c DSGVO.
+                Art. 46 DSGVO.
               </p>
-              <a
-                href="https://vercel.com/legal/privacy-policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 text-xs mt-1.5 inline-block"
-              >
+              <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 text-xs inline-block">
                 Datenschutzerklärung Vercel →
               </a>
             </div>
 
             <div className="bg-gray-50 rounded-xl p-4">
               <h3 className="font-semibold text-gray-800 mb-1.5">Supabase Inc. (Datenbank)</h3>
-              <p className="text-gray-500 text-xs mb-2">970 Toa Payoh North, Singapur (EU-Server)</p>
-              <p>
+              <p className="text-gray-500 text-xs mb-2">Server in der EU (Ireland)</p>
+              <p className="mb-1.5">
                 Zur Speicherung von Tool-Einreichungen und weiteren Anwendungsdaten verwenden wir
                 Supabase. Die Daten werden auf Servern innerhalb der Europäischen Union gespeichert.
                 Supabase verarbeitet Daten im Auftrag und auf Weisung des Verantwortlichen.
               </p>
-              <a
-                href="https://supabase.com/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 text-xs mt-1.5 inline-block"
-              >
+              <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 text-xs inline-block">
                 Datenschutzerklärung Supabase →
+              </a>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-800 mb-1.5">Resend Inc. (E-Mail-Versand)</h3>
+              <p className="mb-1.5">
+                Für den Versand von Newsletter- und Transaktions-E-Mails nutzen wir Resend.
+                Resend verarbeitet Daten auf Basis von Standardvertragsklauseln gemäß Art. 46 DSGVO.
+              </p>
+              <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 text-xs inline-block">
+                Datenschutzerklärung Resend →
+              </a>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-800 mb-1.5">Anthropic PBC (KI-Verarbeitung)</h3>
+              <p className="mb-1.5">
+                Für den Prompt Builder und die automatisierte News-Pipeline wird die Claude-API von
+                Anthropic genutzt. Dabei werden vom Nutzer eingegebene Texte (Prompt Builder) bzw.
+                Nachrichteninhalte (News-Zusammenfassungen) an Anthropic übermittelt. Anthropic
+                verarbeitet Daten auf Basis von Standardvertragsklauseln gemäß Art. 46 DSGVO.
+              </p>
+              <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 text-xs inline-block">
+                Datenschutzerklärung Anthropic →
               </a>
             </div>
           </div>
         </section>
 
-        {/* Weitergabe */}
+        {/* 8. Weitergabe */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
-            6. Weitergabe an Dritte
+            8. Weitergabe an Dritte
           </h2>
           <p>
             Eine Weitergabe Ihrer personenbezogenen Daten an Dritte findet nicht statt, soweit dies
             nicht zur Vertragserfüllung erforderlich ist, Sie ausdrücklich eingewilligt haben oder
             eine gesetzliche Verpflichtung besteht. Die oben genannten Auftragsverarbeiter (Vercel,
-            Supabase) erhalten nur die zur Erbringung ihres Dienstes notwendigen Daten.
+            Supabase, Resend, Anthropic) erhalten nur die zur Erbringung ihres Dienstes notwendigen Daten.
           </p>
         </section>
 
-        {/* Cookies */}
+        {/* 9. Cookies */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
-            7. Cookies und Tracking
+            9. Cookies und Tracking
           </h2>
           <p className="mb-3">
             Diese Website verwendet <strong className="text-gray-800">keine</strong> Analyse-Tools,
@@ -175,10 +254,10 @@ export default function DatenschutzPage() {
           </p>
         </section>
 
-        {/* Google AdSense */}
+        {/* 10. AdSense */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
-            8. Geplante Werbung (Google AdSense)
+            10. Geplante Werbung (Google AdSense)
           </h2>
           <p>
             Der Einsatz von Google AdSense ist für einen späteren Zeitpunkt geplant. Sobald dieser
@@ -188,10 +267,10 @@ export default function DatenschutzPage() {
           </p>
         </section>
 
-        {/* Betroffenenrechte */}
+        {/* 11. Betroffenenrechte */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
-            9. Ihre Rechte als betroffene Person (Art. 15–21 DSGVO)
+            11. Ihre Rechte als betroffene Person (Art. 15–21 DSGVO)
           </h2>
           <p className="mb-3">Sie haben gegenüber uns folgende Rechte:</p>
           <ul className="space-y-2">
@@ -211,13 +290,40 @@ export default function DatenschutzPage() {
           </ul>
           <p className="mt-4">
             Zur Geltendmachung Ihrer Rechte oder bei Fragen zum Datenschutz wenden Sie sich an:{' '}
-            <span className="text-gray-500 italic">janniklas.becker612@gmail.com</span>
+            <a href="mailto:kontakt@lex-lab.de" className="text-blue-600 hover:text-blue-700">kontakt@lex-lab.de</a>
           </p>
-          <p className="mt-3">
-            Außerdem haben Sie das Recht, sich bei der zuständigen Datenschutzaufsichtsbehörde zu
-            beschweren. Die zuständige Behörde richtet sich nach Ihrem Wohnsitz oder dem Ort der
-            mutmaßlichen Verletzung.
+        </section>
+
+        {/* 12. Datenübertragbarkeit */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            12. Recht auf Datenübertragbarkeit
+          </h2>
+          <p>
+            Sie haben das Recht, Daten die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines
+            Vertrags automatisiert verarbeiten, an sich oder an einen Dritten in einem gängigen
+            maschinenlesbaren Format aushändigen zu lassen (Art. 20 DSGVO).
           </p>
+        </section>
+
+        {/* 13. Beschwerderecht */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            13. Beschwerderecht bei der Aufsichtsbehörde
+          </h2>
+          <p className="mb-3">
+            Im Falle datenschutzrechtlicher Verstöße steht Ihnen ein Beschwerderecht bei der
+            zuständigen Aufsichtsbehörde zu. Zuständige Aufsichtsbehörde in NRW ist der
+            Landesbeauftragte für Datenschutz und Informationsfreiheit NRW:
+          </p>
+          <a
+            href="https://www.ldi.nrw.de"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-700"
+          >
+            www.ldi.nrw.de →
+          </a>
         </section>
 
         {/* Hinweis */}
