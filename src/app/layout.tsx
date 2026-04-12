@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://www.lex-lab.de',
   },
+  verification: {
+    google: 'BZAgD_Ti6XbDu2S8ZW_H3nWMJUWGBK2xS3yDOES3PmU',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
