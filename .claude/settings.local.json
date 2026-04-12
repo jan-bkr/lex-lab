@@ -15,7 +15,13 @@
       "Bash(git remote:*)",
       "Bash(git fetch:*)",
       "Bash(ssh -T git@github.com)",
-      "Bash(ls ~/.ssh/*.pub)"
+      "Bash(ls ~/.ssh/*.pub)",
+      "Bash(curl -s -o /dev/null -w '%{http_code} %{url_effective}\\\\n' https://www.bundesfinanzhof.de/rss/entscheidungen/ https://www.bundesfinanzhof.de/rss/ https://www.bundesgerichtshof.de/SiteGlobals/Functions/RSS/bgh_rss.xml)",
+      "Bash(curl -s -o /dev/null -w '%{http_code} %{url_effective}\\\\n' https://www.bundesfinanzministerium.de/SiteGlobals/Functions/RSS/DE/Feed/RSSNewsletter/RSSNewsletter_Steuern.xml https://www.heise.de/rechtspolitik/rss/rechtspolitik-atom.xml 'https://rss.golem.de/rss.php?feed=ATOM1.0' https://www.vc-magazin.de/feed/ https://www.finance-magazin.de/feed/ https://www.haufe.de/steuern/rss/steuern.rss https://www.nwb.de/blog/feed/)",
+      "Bash(curl -s -L --max-time 10 \"https://www.bundesfinanzhof.de/de/entscheidungen/entscheidungen-online/?tx_bfhentscheidungen_list%5Baction%5D=rss\")",
+      "Bash(curl -s -L --max-time 10 \"https://www.lto.de/rss/\")",
+      "Bash(curl -s -L --max-time 10 \"https://rsw.beck.de/rss/beckaktuell\")",
+      "Bash(curl -s -L --max-time 10 \"https://www.datenschutz-notizen.de/feed/\")"
     ]
   }
 }
