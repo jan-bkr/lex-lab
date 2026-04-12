@@ -1,11 +1,56 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Tool } from '@/types'
 import { RechtsgebietTag } from './RechtsgebietTag'
 import { ExternalLink, ChevronUp } from 'lucide-react'
-import Link from 'next/link'
 
 export function ToolCard({ tool }: { tool: Tool }) {
+  const storageKey = `voted_${tool.id}`
+  const [votes, setVotes] = useState(tool.votes)
+  const [voted, setVoted] = useState(false)
+  const [voting, setVoting] = useState(false)
+
+  // Read localStorage after mount (SSR-safe)
+  useEffect(() => {
+    setVoted(localStorage.getItem(storageKey) === '1')
+  }, [storageKey])
+
+  async function handleVote(e: React.MouseEvent) {
+    e.stopPropagation()
+    if (voted || voting) return
+
+    // Optimistic update
+    setVotes(v => v + 1)
+    setVoted(true)
+    setVoting(true)
+    localStorage.setItem(storageKey, '1')
+
+    try {
+      const res = await fetch('/api/tools/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toolId: tool.id }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setVotes(data.votes)
+      } else {
+        // Revert on failure
+        setVotes(v => v - 1)
+        setVoted(false)
+        localStorage.removeItem(storageKey)
+      }
+    } catch {
+      // Revert on network error
+      setVotes(v => v - 1)
+      setVoted(false)
+      localStorage.removeItem(storageKey)
+    }
+
+    setVoting(false)
+  }
+
   return (
     <div className="group bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-200 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
@@ -48,9 +93,18 @@ export function ToolCard({ tool }: { tool: Tool }) {
         >
           Ansehen <ExternalLink className="w-3 h-3" />
         </a>
-        <button onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 border border-gray-100 hover:border-gray-200 rounded-lg px-2 py-1 transition-all">
+        <button
+          onClick={handleVote}
+          disabled={voted || voting}
+          title={voted ? 'Bereits abgestimmt' : 'Upvoten'}
+          className={`inline-flex items-center gap-1 text-xs border rounded-lg px-2 py-1 transition-all ${
+            voted
+              ? 'text-blue-600 border-blue-200 bg-blue-50 cursor-default'
+              : 'text-gray-400 hover:text-gray-600 border-gray-100 hover:border-gray-200 cursor-pointer'
+          }`}
+        >
           <ChevronUp className="w-3 h-3" />
-          <span>{tool.votes}</span>
+          <span>{votes}</span>
         </button>
       </div>
     </div>

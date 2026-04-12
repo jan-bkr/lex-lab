@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Search, ChevronDown } from 'lucide-react'
 import { ToolCard } from '@/components/ToolCard'
@@ -68,12 +68,19 @@ function SkeletonCard() {
   )
 }
 
-export default function ToolsPage() {
+function ToolsPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Initialize filter from URL ?rechtsgebiet=Steuerrecht
+  const paramFilter = searchParams.get('rechtsgebiet') as Rechtsgebiet | null
+  const initialFilter: Rechtsgebiet | 'Alle' =
+    paramFilter && RECHTSGEBIETE.includes(paramFilter) ? paramFilter : 'Alle'
+
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [activeFilter, setActiveFilter] = useState<Rechtsgebiet | 'Alle'>('Alle')
+  const [activeFilter, setActiveFilter] = useState<Rechtsgebiet | 'Alle'>(initialFilter)
   const [sort, setSort] = useState<SortOption>('votes')
 
   useEffect(() => {
@@ -221,5 +228,21 @@ export default function ToolsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ToolsPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-24">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-100 rounded-xl p-5 animate-pulse h-40" />
+          ))}
+        </div>
+      </div>
+    }>
+      <ToolsPageInner />
+    </Suspense>
   )
 }
