@@ -1,0 +1,239 @@
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+
+export default function DatenschutzPage() {
+  return (
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 mb-8 transition-colors"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Zurück zur Startseite
+      </Link>
+
+      <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">Datenschutzerklärung</h1>
+      <p className="text-sm text-gray-400 mb-10">Stand: April 2025</p>
+
+      <div className="space-y-8 text-sm leading-relaxed text-gray-600">
+
+        {/* Verantwortlicher */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            1. Verantwortlicher
+          </h2>
+          <p className="mb-3">
+            Verantwortlich für die Verarbeitung personenbezogener Daten auf dieser Website ist:
+          </p>
+          <p className="text-gray-500 italic">
+            Jan Becker<br />
+            Lippstädter Str. 54<br />
+            48155 Münster<br />
+            E-Mail: janniklas.becker612@gmail.com
+          </p>
+        </section>
+
+        {/* Erhobene Daten */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            2. Welche Daten wir erheben
+          </h2>
+
+          <h3 className="font-semibold text-gray-800 mb-2">Server-Logs</h3>
+          <p className="mb-4">
+            Beim Besuch dieser Website werden automatisch technische Zugriffsdaten in Server-Logfiles
+            gespeichert. Dazu gehören: IP-Adresse (anonymisiert), aufgerufene URL, Datum und Uhrzeit
+            des Zugriffs, übertragene Datenmenge, Browser und Betriebssystem. Diese Daten sind nicht
+            einer bestimmten Person zuordenbar und werden ausschließlich zur Sicherstellung des
+            technischen Betriebs verwendet.
+          </p>
+
+          <h3 className="font-semibold text-gray-800 mb-2">Newsletter-Anmeldung</h3>
+          <p className="mb-4">
+            Wenn Sie unseren Newsletter abonnieren, speichern wir Ihre E-Mail-Adresse. Diese wird
+            ausschließlich für den Versand des Newsletters verwendet und nicht an Dritte weitergegeben.
+            Die Einwilligung kann jederzeit widerrufen werden.
+          </p>
+
+          <h3 className="font-semibold text-gray-800 mb-2">Tool-Einreichungen</h3>
+          <p>
+            Bei der Einreichung eines Tools über das Formular können Sie freiwillig eine E-Mail-Adresse
+            für Rückfragen angeben. Die Angabe ist optional und wird ausschließlich zur Kontaktaufnahme
+            im Rahmen der Prüfung Ihrer Einreichung verwendet.
+          </p>
+        </section>
+
+        {/* Rechtsgrundlage */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            3. Rechtsgrundlage der Verarbeitung
+          </h2>
+          <ul className="space-y-2">
+            <li className="flex gap-2">
+              <span className="text-blue-500 font-mono flex-shrink-0">Art. 6 Abs. 1 lit. f DSGVO</span>
+              <span>— Berechtigtes Interesse: Betrieb und Sicherheit der Website, Server-Logs.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-blue-500 font-mono flex-shrink-0">Art. 6 Abs. 1 lit. a DSGVO</span>
+              <span>— Einwilligung: Newsletter-Versand (widerruflich).</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-blue-500 font-mono flex-shrink-0">Art. 6 Abs. 1 lit. b DSGVO</span>
+              <span>— Vertragserfüllung oder vorvertragliche Maßnahmen: Bearbeitung von Tool-Einreichungen.</span>
+            </li>
+          </ul>
+        </section>
+
+        {/* Speicherdauer */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            4. Speicherdauer
+          </h2>
+          <p className="mb-3">
+            Personenbezogene Daten werden nur so lange gespeichert, wie es für den jeweiligen Zweck
+            erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen:
+          </p>
+          <ul className="space-y-1.5 list-disc list-inside text-gray-600">
+            <li>Server-Logs: maximal 30 Tage, danach automatische Löschung</li>
+            <li>Newsletter-E-Mail-Adressen: bis zum Widerruf der Einwilligung</li>
+            <li>Tool-Einreichungen: bis zur Bearbeitung, danach Anonymisierung oder Löschung</li>
+          </ul>
+        </section>
+
+        {/* Drittanbieter */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            5. Drittanbieter und Auftragsverarbeiter
+          </h2>
+
+          <div className="space-y-5">
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-800 mb-1.5">Vercel Inc. (Hosting)</h3>
+              <p className="text-gray-500 text-xs mb-2">340 Pine Street, Suite 701, San Francisco, CA 94104, USA</p>
+              <p>
+                Diese Website wird auf der Infrastruktur von Vercel gehostet. Beim Aufruf der Website
+                werden Zugriffsdaten an Vercel übertragen. Vercel ist gemäß EU-US Data Privacy Framework
+                zertifiziert und verarbeitet Daten auf Basis von Standardvertragsklauseln (SCCs) gemäß
+                Art. 46 Abs. 2 lit. c DSGVO.
+              </p>
+              <a
+                href="https://vercel.com/legal/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 text-xs mt-1.5 inline-block"
+              >
+                Datenschutzerklärung Vercel →
+              </a>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-800 mb-1.5">Supabase Inc. (Datenbank)</h3>
+              <p className="text-gray-500 text-xs mb-2">970 Toa Payoh North, Singapur (EU-Server)</p>
+              <p>
+                Zur Speicherung von Tool-Einreichungen und weiteren Anwendungsdaten verwenden wir
+                Supabase. Die Daten werden auf Servern innerhalb der Europäischen Union gespeichert.
+                Supabase verarbeitet Daten im Auftrag und auf Weisung des Verantwortlichen.
+              </p>
+              <a
+                href="https://supabase.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 text-xs mt-1.5 inline-block"
+              >
+                Datenschutzerklärung Supabase →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Weitergabe */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            6. Weitergabe an Dritte
+          </h2>
+          <p>
+            Eine Weitergabe Ihrer personenbezogenen Daten an Dritte findet nicht statt, soweit dies
+            nicht zur Vertragserfüllung erforderlich ist, Sie ausdrücklich eingewilligt haben oder
+            eine gesetzliche Verpflichtung besteht. Die oben genannten Auftragsverarbeiter (Vercel,
+            Supabase) erhalten nur die zur Erbringung ihres Dienstes notwendigen Daten.
+          </p>
+        </section>
+
+        {/* Cookies */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            7. Cookies und Tracking
+          </h2>
+          <p className="mb-3">
+            Diese Website verwendet <strong className="text-gray-800">keine</strong> Analyse-Tools,
+            kein Tracking und keine Werbe-Cookies. Es werden ausschließlich technisch notwendige
+            Cookies gesetzt, die für den Betrieb der Website erforderlich sind (z.B. Sitzungsdaten).
+          </p>
+          <p>
+            Auf den Einsatz von Google Analytics, Meta Pixel oder vergleichbaren Tracking-Diensten
+            wird vollständig verzichtet.
+          </p>
+        </section>
+
+        {/* Google AdSense */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            8. Geplante Werbung (Google AdSense)
+          </h2>
+          <p>
+            Der Einsatz von Google AdSense ist für einen späteren Zeitpunkt geplant. Sobald dieser
+            Dienst aktiviert wird, werden wir die Datenschutzerklärung entsprechend aktualisieren und
+            Sie gesondert informieren. Bis dahin werden keine Anzeigen eingeblendet und keine
+            werbebezogenen Daten erhoben.
+          </p>
+        </section>
+
+        {/* Betroffenenrechte */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            9. Ihre Rechte als betroffene Person (Art. 15–21 DSGVO)
+          </h2>
+          <p className="mb-3">Sie haben gegenüber uns folgende Rechte:</p>
+          <ul className="space-y-2">
+            {[
+              ['Art. 15 DSGVO', 'Auskunft über die zu Ihrer Person gespeicherten Daten'],
+              ['Art. 16 DSGVO', 'Berichtigung unrichtiger personenbezogener Daten'],
+              ['Art. 17 DSGVO', 'Löschung Ihrer personenbezogenen Daten'],
+              ['Art. 18 DSGVO', 'Einschränkung der Verarbeitung'],
+              ['Art. 20 DSGVO', 'Datenübertragbarkeit'],
+              ['Art. 21 DSGVO', 'Widerspruch gegen die Verarbeitung'],
+            ].map(([norm, beschreibung]) => (
+              <li key={norm} className="flex gap-2">
+                <span className="text-blue-500 font-mono flex-shrink-0">{norm}</span>
+                <span>{beschreibung}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4">
+            Zur Geltendmachung Ihrer Rechte oder bei Fragen zum Datenschutz wenden Sie sich an:{' '}
+            <span className="text-gray-500 italic">janniklas.becker612@gmail.com</span>
+          </p>
+          <p className="mt-3">
+            Außerdem haben Sie das Recht, sich bei der zuständigen Datenschutzaufsichtsbehörde zu
+            beschweren. Die zuständige Behörde richtet sich nach Ihrem Wohnsitz oder dem Ort der
+            mutmaßlichen Verletzung.
+          </p>
+        </section>
+
+        {/* Hinweis */}
+        <section className="bg-amber-50 border border-amber-100 rounded-xl p-5">
+          <h2 className="font-display font-semibold text-base text-amber-900 mb-3">
+            Hinweis
+          </h2>
+          <p className="text-amber-800 leading-relaxed">
+            Die Inhalte dieser Website dienen ausschließlich der allgemeinen Information. Sie stellen
+            keine Rechts- oder Steuerberatung dar und begründen kein Mandatsverhältnis. Für eine
+            rechtliche oder steuerliche Beratung wenden Sie sich bitte an einen zugelassenen
+            Rechtsanwalt oder Steuerberater.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  )
+}
