@@ -7,6 +7,7 @@ import {
   Wrench,
   Newspaper,
   BookOpen,
+  MessageSquare,
   LogOut,
   ArrowLeft,
   FlaskConical,
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { href: '/admin/tools', label: 'Tools', icon: Wrench, exact: false },
   { href: '/admin/news', label: 'News', icon: Newspaper, exact: false },
   { href: '/admin/prompts', label: 'Prompts', icon: BookOpen, exact: false },
+  { href: '/admin/comments', label: 'Kommentare', icon: MessageSquare, exact: false },
 ]
 
 export default function AdminNav({ email }: { email: string }) {

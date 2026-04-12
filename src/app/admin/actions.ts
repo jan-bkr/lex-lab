@@ -133,6 +133,48 @@ export async function addNewsArticle(data: NewsInsert): Promise<void> {
   revalidatePath('/news')
 }
 
+// ─── Comments ─────────────────────────────────────────────────────────────────
+
+export interface AdminComment {
+  id: string
+  tool_id: string
+  name: string
+  role: string
+  rechtsgebiet: string[]
+  comment: string
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+  tools?: { name: string; slug: string }
+}
+
+export async function fetchComments(status: 'pending' | 'approved'): Promise<AdminComment[]> {
+  const { data, error } = await adminSupabase
+    .from('tool_comments')
+    .select('*, tools(name, slug)')
+    .eq('status', status)
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as AdminComment[]
+}
+
+export async function approveComment(id: string): Promise<void> {
+  const { error } = await adminSupabase
+    .from('tool_comments')
+    .update({ status: 'approved' })
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/comments')
+}
+
+export async function rejectComment(id: string): Promise<void> {
+  const { error } = await adminSupabase
+    .from('tool_comments')
+    .delete()
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/comments')
+}
+
 // ─── Prompts ──────────────────────────────────────────────────────────────────
 
 export async function fetchAllPrompts(): Promise<AdminPrompt[]> {

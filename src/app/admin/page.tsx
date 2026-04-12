@@ -1,6 +1,6 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 import Link from 'next/link'
-import { ClipboardList, CheckCircle, Newspaper, BookOpen } from 'lucide-react'
+import { ClipboardList, CheckCircle, Newspaper, BookOpen, MessageSquare } from 'lucide-react'
 
 export default async function AdminDashboardPage() {
   const [
@@ -8,11 +8,13 @@ export default async function AdminDashboardPage() {
     { count: approvedCount },
     { count: newsCount },
     { count: promptsCount },
+    { count: pendingCommentsCount },
   ] = await Promise.all([
     adminSupabase.from('tools').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     adminSupabase.from('tools').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
     adminSupabase.from('news_articles').select('*', { count: 'exact', head: true }),
     adminSupabase.from('prompts').select('*', { count: 'exact', head: true }),
+    adminSupabase.from('tool_comments').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
   ])
 
   const stats = [
@@ -43,6 +45,13 @@ export default async function AdminDashboardPage() {
       icon: BookOpen,
       color: 'text-purple-600',
       bg: 'bg-purple-50',
+    },
+    {
+      label: 'Ausstehende Kommentare',
+      value: pendingCommentsCount ?? 0,
+      icon: MessageSquare,
+      color: 'text-orange-600',
+      bg: 'bg-orange-50',
     },
   ]
 
@@ -87,6 +96,13 @@ export default async function AdminDashboardPage() {
           >
             <BookOpen className="w-4 h-4" />
             Prompts verwalten
+          </Link>
+          <Link
+            href="/admin/comments"
+            className="inline-flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-orange-200"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Kommentare prüfen{(pendingCommentsCount ?? 0) > 0 ? ` (${pendingCommentsCount})` : ''}
           </Link>
         </div>
       </div>

@@ -12,6 +12,10 @@ export interface Tool {
   votes: number
   isNew: boolean
   createdAt: string
+  // Extended fields (populated on detail page)
+  pricingType?: 'free' | 'freemium' | 'paid' | 'enterprise' | null
+  pricingUrl?: string | null
+  screenshotUrl?: string | null
 }
 
 export interface Workflow {
