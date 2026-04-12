@@ -13,7 +13,7 @@ export default function BeitraegePage() {
       <div className="mb-10">
         <h1 className="font-display text-4xl text-gray-900 mb-3">Beiträge</h1>
         <p className="text-gray-500 text-sm leading-relaxed">
-          Gedanken, Erfahrungen und Einblicke aus der Praxis — von Jan Becker, Rechtsanwalt.
+          Gedanken, Erfahrungen und Einblicke aus der Praxis.
         </p>
       </div>
 

@@ -7,20 +7,20 @@ export default function Footer() {
 
         {/* Top row: Logo + Description + Links */}
         <div className="flex flex-col md:flex-row justify-between gap-8 pb-10 border-b border-gray-100">
-          <div className="max-w-xs">
-            <div className="flex items-center gap-2.5 mb-3">
-              <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
-                <rect width="28" height="28" rx="7" fill="#111827"/>
-                <text x="5" y="13" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="white" letterSpacing="-0.5">lex</text>
-                <text x="5" y="23" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#2563EB" letterSpacing="-0.5">lab</text>
-              </svg>
-              <span className="font-display font-bold text-[18px] text-gray-900">
+          <div className="flex items-start gap-4 max-w-md">
+            <svg width="44" height="44" viewBox="0 0 28 28" fill="none" className="flex-shrink-0">
+              <rect width="28" height="28" rx="7" fill="#111827"/>
+              <text x="5" y="13" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="white" letterSpacing="-0.5">lex</text>
+              <text x="5" y="23" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#2563EB" letterSpacing="-0.5">lab</text>
+            </svg>
+            <div>
+              <span className="font-display font-bold text-xl text-gray-900">
                 lex-lab<span className="font-normal text-gray-400">.de</span>
               </span>
+              <p className="text-sm text-gray-500 leading-relaxed mt-1">
+                Die kuratierte Plattform für KI-Tools, Workflows und Prompts im deutschen Rechts- und Steuermarkt.
+              </p>
             </div>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Die kuratierte Plattform für KI-Tools, Workflows und Prompts im deutschen Rechts- und Steuermarkt.
-            </p>
           </div>
 
           <div>
