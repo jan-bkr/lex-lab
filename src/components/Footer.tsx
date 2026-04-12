@@ -1,7 +1,13 @@
+'use client'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { FlaskConical } from 'lucide-react'
 
 export default function Footer() {
+  const pathname = usePathname()
+
+  if (pathname?.startsWith('/admin')) return null
+
   return (
     <footer className="border-t border-gray-100 bg-white mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
