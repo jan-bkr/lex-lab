@@ -34,7 +34,7 @@ export default function ImpressumPage() {
             Kontakt
           </h2>
           <p>
-            E-Mail: <span className="text-gray-500 italic">janniklas.becker612@gmail.com</span>
+            E-Mail: <a href="mailto:kontakt@lex-lab.de" className="text-blue-600 hover:text-blue-700">kontakt@lex-lab.de</a>
           </p>
         </section>
 

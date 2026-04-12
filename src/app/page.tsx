@@ -205,7 +205,7 @@ export default async function HomePage() {
       </section>
 
       {/* TOOLS OF THE WEEK */}
-      <section className="mb-14">
+      <section className="mb-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
             <Flame className="w-5 h-5 text-orange-500" /> Tools der Woche
@@ -220,8 +220,9 @@ export default async function HomePage() {
       </section>
 
       {/* KATEGORIEN */}
-      <section className="mb-14">
-        <h2 className="font-display font-bold text-xl text-gray-900 mb-5">Nach Rechtsgebiet</h2>
+      <section className="mb-14 pt-8 border-t border-gray-100">
+        <h2 className="font-display font-bold text-xl text-gray-900">Tools nach Rechtsgebiet</h2>
+        <p className="text-sm text-gray-500 mt-1 mb-4">Alle KI-Tools gefiltert nach deinem Fachgebiet</p>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {(Object.keys(rechtsgebietMeta) as Rechtsgebiet[]).map(rg => {
             const meta = rechtsgebietMeta[rg]
@@ -232,7 +233,7 @@ export default async function HomePage() {
                 <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">{meta.icon}</div>
                 <div>
                   <p className={`font-display font-semibold text-sm ${meta.color}`}>{rg}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{count} Tools</p>
+                  <p className={`text-xs mt-0.5 ${meta.color} opacity-70`}>{count} Tools ansehen →</p>
                 </div>
               </Link>
             )

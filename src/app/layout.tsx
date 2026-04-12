@@ -1,13 +1,27 @@
 import type { Metadata } from 'next'
+import { Instrument_Serif, DM_Sans } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: '400',
+  style: ['normal', 'italic'],
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  weight: ['300', '400', '500', '600'],
+})
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.lex-lab.de'),
   title: {
-    default: 'lex·lab.de — KI-Tools für Juristen',
-    template: '%s | lex·lab.de',
+    default: 'lex-lab.de — KI-Tools für Juristen',
+    template: '%s | lex-lab.de',
   },
   description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
   keywords: ['KI Tools Juristen', 'Legal Tech Deutschland', 'Steuerrecht KI', 'M&A Tools', 'Rechtsanwalt KI', 'Legal AI', 'Prompt Bibliothek Recht'],
@@ -39,12 +53,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="de" className={`${instrumentSerif.variable} ${dmSans.variable}`}>
       <body className="bg-[#F7F7F5] text-[#111827] antialiased">
         <Navbar />
         <main>{children}</main>
