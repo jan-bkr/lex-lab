@@ -5,12 +5,13 @@ export interface RssSource {
 }
 
 export const RSS_SOURCES: RssSource[] = [
-  { name: 'Golem KI',            url: 'https://rss.golem.de/rss.php?feed=ATOM1.0',                      category: 'Legal Tech'         },
-  { name: 'Finance Magazin',     url: 'https://www.finance-magazin.de/feed/',                            category: 'M&A'                },
-  { name: 'JUVE',                url: 'https://www.juve.de/feed/',                                       category: 'M&A'                },
-  { name: 'Heise',               url: 'https://www.heise.de/rss/heise-atom.xml',                         category: 'Legal Tech'         },
-  { name: 'Datenschutz-Notizen', url: 'https://www.datenschutz-notizen.de/feed/',                        category: 'Regulierung'        },
-  { name: 'Gründerszene',        url: 'https://www.gruenderszene.de/feed',                               category: 'Venture Capital'    },
-  { name: 'Handelsblatt Tech',   url: 'https://www.handelsblatt.com/contentexport/feed/technologie',     category: 'Legal Tech'         },
-  { name: 'Capital',             url: 'https://www.capital.de/feed/',                                    category: 'M&A'                },
+  { name: 'Finance Magazin',     url: 'https://www.finance-magazin.de/feed/',           category: 'M&A'             },
+  { name: 'JUVE',                url: 'https://www.juve.de/feed/',                       category: 'M&A'             },
+  { name: 'M&A Magazin',         url: 'https://www.m-und-a.de/feed/',                   category: 'M&A'             },
+  { name: 'Datenschutz-Notizen', url: 'https://www.datenschutz-notizen.de/feed/',        category: 'Regulierung'     },
+  { name: 'TaxTech Blog',        url: 'https://www.taxtech.blog/feed',                  category: 'Legal Tech'      },
+  { name: 'Gründerszene',        url: 'https://www.gruenderszene.de/feed',               category: 'Venture Capital' },
+  { name: 'Startbase',           url: 'https://startbase.de/feed',                      category: 'Venture Capital' },
+  { name: 'Deutsche Startups',   url: 'https://www.deutsche-startups.de/feed/',         category: 'Venture Capital' },
+  { name: 'EU-Startups',         url: 'https://www.eu-startups.com/feed/',              category: 'Venture Capital' },
 ]

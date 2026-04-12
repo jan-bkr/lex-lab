@@ -4,7 +4,22 @@ import { RSS_SOURCES } from '@/lib/rss-sources'
 // Do not cache
 export const dynamic = 'force-dynamic'
 
-const parser = new Parser({ timeout: 10_000 })
+const parser = new Parser({
+  timeout: 10_000,
+  headers: {
+    'Accept': 'application/rss+xml, application/xml, text/xml; charset=utf-8',
+    'User-Agent': 'lex-lab.de RSS Reader/1.0',
+  },
+  defaultRSS: 2.0,
+})
+
+const fixEncoding = (str: string): string => {
+  try {
+    return decodeURIComponent(escape(str))
+  } catch {
+    return str
+  }
+}
 
 interface SourceResult {
   source: string
@@ -23,12 +38,13 @@ export async function GET(): Promise<Response> {
       try {
         const feed = await parser.parseURL(source.url)
         const items = feed.items ?? []
+        const rawTitle = items[0]?.title?.trim() ?? '(no title)'
         return {
           source: source.name,
           url: source.url,
           status: 'ok',
           itemCount: items.length,
-          latestTitle: items[0]?.title?.trim() ?? '(no title)',
+          latestTitle: fixEncoding(rawTitle),
         }
       } catch (e) {
         return {
@@ -42,7 +58,9 @@ export async function GET(): Promise<Response> {
   )
 
   const output: SourceResult[] = results.map(r =>
-    r.status === 'fulfilled' ? r.value : { source: '?', url: '?', status: 'error', error: String(r.reason) }
+    r.status === 'fulfilled'
+      ? r.value
+      : { source: '?', url: '?', status: 'error', error: String(r.reason) }
   )
 
   const ok    = output.filter(r => r.status === 'ok').length

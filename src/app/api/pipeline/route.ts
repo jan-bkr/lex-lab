@@ -5,7 +5,22 @@ import { RSS_SOURCES, type RssSource } from '@/lib/rss-sources'
 // Do not cache — always run fresh
 export const dynamic = 'force-dynamic'
 
-const parser = new Parser({ timeout: 10_000 })
+const parser = new Parser({
+  timeout: 10_000,
+  headers: {
+    'Accept': 'application/rss+xml, application/xml, text/xml; charset=utf-8',
+    'User-Agent': 'lex-lab.de RSS Reader/1.0',
+  },
+  defaultRSS: 2.0,
+})
+
+const fixEncoding = (str: string): string => {
+  try {
+    return decodeURIComponent(escape(str))
+  } catch {
+    return str
+  }
+}
 
 function slugify(title: string): string {
   return title
@@ -83,7 +98,7 @@ async function processSource(
 
   for (const item of items) {
     result.processed++
-    const title = item.title?.trim()
+    const title = fixEncoding(item.title?.trim() ?? '')
     const link  = item.link?.trim()
 
     if (!title || !link) {
@@ -116,7 +131,8 @@ async function processSource(
     }
 
     // Summarise with Claude
-    const snippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
+    const rawSnippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
+    const snippet = fixEncoding(rawSnippet)
     let summary: string
     try {
       summary = await summariseWithClaude(title, snippet.slice(0, 1000))
