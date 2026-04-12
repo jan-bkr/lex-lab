@@ -79,6 +79,7 @@ export async function GET(): Promise<Response> {
 
   // 3. Summarise with Claude
   const snippet = cleanText(item.contentSnippet ?? item.summary ?? item.content ?? '')
+  console.log(`[pipeline/test] Title before Claude: "${title}"`)
   console.log(`[pipeline/test] Calling Claude API…`)
 
   let summary: string
@@ -107,7 +108,7 @@ export async function GET(): Promise<Response> {
     }
 
     const json = (await res.json()) as ClaudeResponse
-    summary = json.content[0]?.text?.trim() ?? ''
+    summary = cleanText(json.content[0]?.text?.trim() ?? '')
   } catch (e) {
     return Response.json(
       { error: `Claude summarisation failed: ${e instanceof Error ? e.message : String(e)}` },

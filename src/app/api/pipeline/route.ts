@@ -122,9 +122,10 @@ async function processSource(
 
     // Summarise with Claude
     const snippet = cleanText(item.contentSnippet ?? item.summary ?? item.content ?? '')
+    console.log(`[pipeline] ${source.name} — title before Claude: "${title}"`)
     let summary: string
     try {
-      summary = await summariseWithClaude(title, snippet.slice(0, 1000))
+      summary = cleanText(await summariseWithClaude(title, snippet.slice(0, 1000)))
     } catch (e) {
       console.error(`[pipeline] ${source.name} — Claude failed for "${title}":`, e)
       result.skipped++
