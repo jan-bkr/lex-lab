@@ -1,6 +1,7 @@
 import Parser from 'rss-parser'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES, type RssSource } from '@/lib/rss-sources'
+import { cleanText } from '@/lib/clean-text'
 
 // Do not cache — always run fresh
 export const dynamic = 'force-dynamic'
@@ -87,7 +88,7 @@ async function processSource(
 
   for (const item of items) {
     result.processed++
-    const title = item.title?.trim() ?? ''
+    const title = cleanText(item.title?.trim() ?? '')
     const link  = item.link?.trim()
 
     if (!title || !link) {
@@ -120,7 +121,7 @@ async function processSource(
     }
 
     // Summarise with Claude
-    const snippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
+    const snippet = cleanText(item.contentSnippet ?? item.summary ?? item.content ?? '')
     let summary: string
     try {
       summary = await summariseWithClaude(title, snippet.slice(0, 1000))

@@ -1,6 +1,7 @@
 import Parser from 'rss-parser'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES } from '@/lib/rss-sources'
+import { cleanText } from '@/lib/clean-text'
 
 // Do not cache
 export const dynamic = 'force-dynamic'
@@ -51,7 +52,7 @@ export async function GET(): Promise<Response> {
     return Response.json({ error: 'No items in feed' }, { status: 500 })
   }
 
-  const title = item.title?.trim() ?? ''
+  const title = cleanText(item.title?.trim() ?? '')
   const link  = item.link?.trim() ?? ''
 
   if (!title || !link) {
@@ -77,7 +78,7 @@ export async function GET(): Promise<Response> {
   }
 
   // 3. Summarise with Claude
-  const snippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
+  const snippet = cleanText(item.contentSnippet ?? item.summary ?? item.content ?? '')
   console.log(`[pipeline/test] Calling Claude API…`)
 
   let summary: string
