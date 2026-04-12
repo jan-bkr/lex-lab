@@ -8,6 +8,7 @@ const navLinks = [
   { href: '/tools', label: 'Tools' },
   { href: '/workflows', label: 'Workflows' },
   { href: '/prompts', label: 'Prompts' },
+  { href: '/prompts/builder', label: '✦ Builder', highlight: true },
   { href: '/beitraege', label: 'Beiträge' },
   { href: '/news', label: 'News' },
   { href: '/events', label: 'Events' },
@@ -41,7 +42,11 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-150 font-medium"
+                className={`px-3 py-1.5 text-sm rounded-lg transition-all duration-150 font-medium ${
+                  link.highlight
+                    ? 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                }`}
               >
                 {link.label}
               </Link>
