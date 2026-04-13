@@ -20,13 +20,19 @@ export function ToolCard({ tool }: { tool: Tool }) {
 
   async function handleVote(e: React.MouseEvent) {
     e.stopPropagation()
-    if (voted || voting) return
+    if (voting) return
+
+    const isVoting = !voted // true = adding, false = removing
 
     // Optimistic update
-    setVotes(v => v + 1)
-    setVoted(true)
+    setVotes(v => isVoting ? v + 1 : Math.max(0, v - 1))
+    setVoted(isVoting)
     setVoting(true)
-    localStorage.setItem(storageKey, '1')
+    if (isVoting) {
+      localStorage.setItem(storageKey, '1')
+    } else {
+      localStorage.removeItem(storageKey)
+    }
 
     try {
       const res = await fetch('/api/tools/vote', {
@@ -37,18 +43,27 @@ export function ToolCard({ tool }: { tool: Tool }) {
       if (res.ok) {
         const data = await res.json()
         setVotes(data.votes)
-        trackEvent(AnalyticsEvents.TOOL_VOTE, { tool_slug: tool.slug, rechtsgebiet: tool.rechtsgebiet?.[0] })
+        setVoted(data.voted)
+        if (data.voted) {
+          localStorage.setItem(storageKey, '1')
+          trackEvent(AnalyticsEvents.TOOL_VOTE, { tool_slug: tool.slug, rechtsgebiet: tool.rechtsgebiet?.[0] })
+        } else {
+          localStorage.removeItem(storageKey)
+          trackEvent(AnalyticsEvents.TOOL_UNVOTE, { tool_slug: tool.slug, rechtsgebiet: tool.rechtsgebiet?.[0] })
+        }
       } else {
-        // Revert on failure
-        setVotes(v => v - 1)
-        setVoted(false)
-        localStorage.removeItem(storageKey)
+        // Revert on server error
+        setVotes(v => isVoting ? v - 1 : v + 1)
+        setVoted(!isVoting)
+        if (isVoting) localStorage.removeItem(storageKey)
+        else localStorage.setItem(storageKey, '1')
       }
     } catch {
       // Revert on network error
-      setVotes(v => v - 1)
-      setVoted(false)
-      localStorage.removeItem(storageKey)
+      setVotes(v => isVoting ? v - 1 : v + 1)
+      setVoted(!isVoting)
+      if (isVoting) localStorage.removeItem(storageKey)
+      else localStorage.setItem(storageKey, '1')
     }
 
     setVoting(false)
@@ -98,13 +113,13 @@ export function ToolCard({ tool }: { tool: Tool }) {
         </a>
         <button
           onClick={handleVote}
-          disabled={voted || voting}
-          title={voted ? 'Bereits abgestimmt' : 'Upvoten'}
+          disabled={voting}
+          title={voted ? 'Vote zurücknehmen' : 'Upvoten'}
           className={`inline-flex items-center gap-1 text-xs border rounded-lg px-2 py-1 transition-all ${
             voted
-              ? 'text-blue-600 border-blue-200 bg-blue-50 cursor-default'
+              ? 'text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300'
               : 'text-gray-400 hover:text-gray-600 border-gray-100 hover:border-gray-200 cursor-pointer'
-          }`}
+          } disabled:opacity-50`}
         >
           <ChevronUp className="w-3 h-3" />
           <span>{votes}</span>

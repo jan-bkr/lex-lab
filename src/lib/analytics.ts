@@ -11,6 +11,7 @@ export const AnalyticsEvents = {
 
   // Tools
   TOOL_VOTE:           'tool_vote',
+  TOOL_UNVOTE:         'tool_unvote',
   TOOL_SUBMIT_START:   'tool_submit_start',
   TOOL_SUBMIT_SUCCESS: 'tool_submit_success',
 } as const
@@ -25,6 +26,7 @@ export type AnalyticsEventProperties = {
   [AnalyticsEvents.PROMPT_BUILDER_COPY]:       Record<string, never>
   [AnalyticsEvents.PROMPT_BUILDER_LIMIT_HIT]:  Record<string, never>
   [AnalyticsEvents.TOOL_VOTE]:                 { tool_slug: string; rechtsgebiet?: string }
+  [AnalyticsEvents.TOOL_UNVOTE]:               { tool_slug: string; rechtsgebiet?: string }
   [AnalyticsEvents.TOOL_SUBMIT_START]:         Record<string, never>
   [AnalyticsEvents.TOOL_SUBMIT_SUCCESS]:       { tool_name: string }
 }

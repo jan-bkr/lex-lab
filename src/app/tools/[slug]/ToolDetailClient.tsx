@@ -356,9 +356,21 @@ export default function ToolDetailPage({
   useEffect(() => {
     if (tool) {
       setVotes(tool.votes)
+      // localStorage as fast initial state; server check below is the source of truth
       setVoted(localStorage.getItem(`voted_${tool.id}`) === '1')
+      // Fetch server-side vote status (IP-based)
+      fetch(`/api/tools/vote-status?toolId=${encodeURIComponent(tool.id)}`)
+        .then(r => r.json())
+        .then(d => {
+          if (typeof d.voted === 'boolean') {
+            setVoted(d.voted)
+            if (d.voted) localStorage.setItem(`voted_${tool.id}`, '1')
+            else localStorage.removeItem(`voted_${tool.id}`)
+          }
+        })
+        .catch(() => {})
     }
-  }, [tool])
+  }, [tool?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch approved comments when tool is found
   useEffect(() => {
@@ -382,19 +394,40 @@ export default function ToolDetailPage({
   }
 
   async function handleVote() {
-    if (voted || !tool) return
-    setVotes(v => v + 1)
-    setVoted(true)
-    localStorage.setItem(`voted_${tool.id}`, '1')
+    if (!tool) return
+    const isVoting = !voted // true = adding, false = removing
+
+    // Optimistic update
+    setVotes(v => isVoting ? v + 1 : Math.max(0, v - 1))
+    setVoted(isVoting)
+    if (isVoting) localStorage.setItem(`voted_${tool.id}`, '1')
+    else localStorage.removeItem(`voted_${tool.id}`)
+
     try {
-      await fetch('/api/tools/vote', {
+      const res = await fetch('/api/tools/vote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ toolId: tool.id }),
       })
+      if (res.ok) {
+        const data = await res.json()
+        setVotes(data.votes)
+        setVoted(data.voted)
+        if (data.voted) localStorage.setItem(`voted_${tool.id}`, '1')
+        else localStorage.removeItem(`voted_${tool.id}`)
+      } else {
+        // Revert
+        setVotes(v => isVoting ? v - 1 : v + 1)
+        setVoted(!isVoting)
+        if (isVoting) localStorage.removeItem(`voted_${tool.id}`)
+        else localStorage.setItem(`voted_${tool.id}`, '1')
+      }
     } catch {
-      setVotes(v => v - 1)
-      setVoted(false)
+      // Revert
+      setVotes(v => isVoting ? v - 1 : v + 1)
+      setVoted(!isVoting)
+      if (isVoting) localStorage.removeItem(`voted_${tool.id}`)
+      else localStorage.setItem(`voted_${tool.id}`, '1')
     }
   }
 
@@ -533,12 +566,13 @@ export default function ToolDetailPage({
             </div>
           )}
 
-          {/* Upvote */}
+          {/* Upvote / Unvote toggle */}
           <button
             onClick={handleVote}
+            title={voted ? 'Vote zurücknehmen' : 'Upvoten'}
             className={`flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
               voted
-                ? 'bg-blue-50 border-blue-200 text-blue-600 cursor-default'
+                ? 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100 hover:border-blue-300'
                 : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
             }`}
           >

@@ -187,26 +187,26 @@ export default async function HomePage() {
         </div>
         <h1>
           <span className="block font-display text-5xl sm:text-6xl lg:text-7xl text-gray-900 leading-tight tracking-tight">
-            KI für Juristen.
+            KI-Tools für den deutschen Rechtsmarkt.
           </span>
           <span className="block font-display text-3xl sm:text-4xl lg:text-5xl leading-tight tracking-tight mt-2">
-            <span className="text-blue-600">Täglich</span>
-            <span className="text-gray-900"> kuratiert.</span>
+            <span className="text-blue-600">Kuratiert.</span>
+            <span className="text-gray-900"> Praxisnah.</span>
           </span>
         </h1>
         <p className="mt-5 text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-          Die besten Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.
+          Erprobte Tools, Workflows und Prompts für Kanzleien, Steuerberater und Inhouse-Teams — strukturiert nach Rechtsgebiet.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link href="/tools" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl transition-colors text-sm">
             Tools entdecken <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link href="/newsletter" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium px-5 py-2.5 rounded-xl border border-gray-200 transition-colors text-sm">
-            Newsletter abonnieren
+          <Link href="/prompts/builder" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium px-5 py-2.5 rounded-xl border border-gray-200 transition-colors text-sm">
+            Prompt Builder testen
           </Link>
         </div>
-        <div className="mt-6 flex items-center justify-center gap-6 text-xs text-gray-400">
-          <span>✦ Kostenlos</span><span>✦ Kein Spam</span><span>✦ Community-kuratiert</span>
+        <div className="mt-6 text-xs text-gray-400">
+          Für Kanzleien · Steuerberater · Inhouse Legal · M&A-Teams
         </div>
       </section>
 
