@@ -158,10 +158,12 @@ async function processSource(
 }
 
 export async function POST(request: Request): Promise<Response> {
-  // Auth check
-  const auth = request.headers.get('Authorization')
-  const expected = `Bearer ${process.env.CRON_SECRET}`
-  if (!auth || auth !== expected) {
+  // Allow Vercel cron (no auth header) OR manual trigger with secret
+  const authHeader = request.headers.get('Authorization')
+  const isVercelCron = request.headers.get('x-vercel-cron') === '1'
+  const isManualTrigger = authHeader === `Bearer ${process.env.CRON_SECRET}`
+
+  if (!isVercelCron && !isManualTrigger) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
