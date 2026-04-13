@@ -12,7 +12,7 @@ export const RSS_SOURCES: RssSource[] = [
   { name: 'TaxTech Blog',        url: 'https://www.taxtech.blog/feed',                  category: 'Legal Tech'      },
   { name: 'Steuerberater Web',    url: 'https://steuerberater-web.de/feed/',             category: 'Steuerrecht'     },
   { name: 'The Decoder',         url: 'https://the-decoder.de/feed/',                   category: 'Legal Tech'      },
-  { name: 'AI News',             url: 'https://ainews.de/feed',                         category: 'Legal Tech'      },
+  { name: 'Mixed',               url: 'https://mixed.de/feed/',                         category: 'Legal Tech'      },
   { name: 'Gründerszene',        url: 'https://www.gruenderszene.de/feed',               category: 'Venture Capital' },
   { name: 'Startbase',           url: 'https://startbase.de/feed',                      category: 'Venture Capital' },
   { name: 'Deutsche Startups',   url: 'https://www.deutsche-startups.de/feed/',         category: 'Venture Capital' },
