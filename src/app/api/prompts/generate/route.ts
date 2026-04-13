@@ -5,42 +5,118 @@ const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
-// ─── In-memory rate limiter (resets on server restart) ────────────────────────
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 const DAILY_LIMIT = 10
 
-export async function POST(req: NextRequest) {
+const ALLOWED_RECHTSGEBIETE = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'] as const
+const ALLOWED_AUFGABEN = [
+  'Gutachten / Memo',
+  'Vertragsanalyse',
+  'Due Diligence',
+  'Mandantenberatung',
+  'Schriftsatz / Brief',
+  'Recherche',
+] as const
+const ALLOWED_DETAILTIEFE = [
+  'Kurze Übersicht (für Mandanten)',
+  'Strukturierte Analyse (Kanzlei-intern)',
+  'Vollständiges Gutachten (Partnerniveau)',
+] as const
+const ALLOWED_SPRACHE = ['Deutsch (Standard)', 'Englisch'] as const
+
+const SACHVERHALT_MAX = 800
+
+// ─── In-memory rate limiter (resets on server restart) ────────────────────────
+
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+
+function isSameOrigin(req: NextRequest): boolean {
+  const origin = req.headers.get('origin')
+  if (!origin) return true // server-to-server or same-origin (no Origin header)
+  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
+  if (!host) return false
   try {
-    // ── Rate limiting ──
-    const forwarded = req.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown'
+    return new URL(origin).host === host
+  } catch {
+    return false
+  }
+}
 
-    const now = Date.now()
-    const midnight = new Date()
-    midnight.setHours(24, 0, 0, 0)
-    const resetAt = midnight.getTime()
+function getClientIp(req: NextRequest): string {
+  const forwarded = req.headers.get('x-forwarded-for')
+  return forwarded ? forwarded.split(',')[0].trim() : 'unknown'
+}
 
-    const current = rateLimitMap.get(ip)
-    if (current && now < current.resetAt) {
-      if (current.count >= DAILY_LIMIT) {
-        return NextResponse.json(
-          { error: 'RATE_LIMIT_EXCEEDED', limit: DAILY_LIMIT },
-          { status: 429 }
-        )
-      }
-      rateLimitMap.set(ip, { count: current.count + 1, resetAt: current.resetAt })
-    } else {
-      rateLimitMap.set(ip, { count: 1, resetAt })
+// ─── Handler ──────────────────────────────────────────────────────────────────
+
+export async function POST(req: NextRequest) {
+  // ── Origin check ──
+  if (!isSameOrigin(req)) {
+    return NextResponse.json({ error: 'Ungültige Herkunft.' }, { status: 403 })
+  }
+
+  // ── Rate limiting ──
+  const ip = getClientIp(req)
+  const now = Date.now()
+  const midnight = new Date()
+  midnight.setHours(24, 0, 0, 0)
+  const resetAt = midnight.getTime()
+
+  const current = rateLimitMap.get(ip)
+  if (current && now < current.resetAt) {
+    if (current.count >= DAILY_LIMIT) {
+      return NextResponse.json(
+        { error: 'RATE_LIMIT_EXCEEDED', limit: DAILY_LIMIT },
+        { status: 429 }
+      )
     }
+    rateLimitMap.set(ip, { count: current.count + 1, resetAt: current.resetAt })
+  } else {
+    rateLimitMap.set(ip, { count: 1, resetAt })
+  }
 
-    // ── Validate input ──
-    const { rechtsgebiet, aufgabe, sachverhalt, detailtiefe, sprache } = await req.json()
+  // ── Parse + validate input ──
+  let rechtsgebiet: string[], aufgabe: string, sachverhalt: string, detailtiefe: string, sprache: string
+  try {
+    const body = await req.json()
+    rechtsgebiet = Array.isArray(body.rechtsgebiet) ? body.rechtsgebiet : []
+    aufgabe      = typeof body.aufgabe      === 'string' ? body.aufgabe.trim()      : ''
+    sachverhalt  = typeof body.sachverhalt  === 'string' ? body.sachverhalt.trim()  : ''
+    detailtiefe  = typeof body.detailtiefe  === 'string' ? body.detailtiefe.trim()  : ''
+    sprache      = typeof body.sprache      === 'string' ? body.sprache.trim()      : ''
+  } catch {
+    return NextResponse.json({ error: 'Ungültige Anfrage.' }, { status: 400 })
+  }
 
-    if (!rechtsgebiet?.length || !aufgabe || !sachverhalt) {
-      return NextResponse.json({ error: 'Fehlende Pflichtfelder.' }, { status: 400 })
-    }
+  // Allowlist validation — only accept values that the UI can send
+  const safeRechtsgebiet = rechtsgebiet.filter(
+    (r): r is typeof ALLOWED_RECHTSGEBIETE[number] =>
+      typeof r === 'string' && (ALLOWED_RECHTSGEBIETE as readonly string[]).includes(r)
+  )
 
-    // ── Call Anthropic ──
+  if (safeRechtsgebiet.length === 0) {
+    return NextResponse.json({ error: 'Fehlende Pflichtfelder.' }, { status: 400 })
+  }
+  if (!(ALLOWED_AUFGABEN as readonly string[]).includes(aufgabe)) {
+    return NextResponse.json({ error: 'Ungültiger Aufgabentyp.' }, { status: 400 })
+  }
+  if (!sachverhalt || sachverhalt.length < 10) {
+    return NextResponse.json({ error: 'Sachverhalt zu kurz.' }, { status: 400 })
+  }
+  if (sachverhalt.length > SACHVERHALT_MAX) {
+    return NextResponse.json({ error: 'Sachverhalt zu lang.' }, { status: 400 })
+  }
+  // Detailtiefe + Sprache: fall back to defaults if invalid (non-breaking)
+  const safeDetailtiefe = (ALLOWED_DETAILTIEFE as readonly string[]).includes(detailtiefe)
+    ? detailtiefe
+    : ALLOWED_DETAILTIEFE[1]
+  const safeSprache = (ALLOWED_SPRACHE as readonly string[]).includes(sprache)
+    ? sprache
+    : ALLOWED_SPRACHE[0]
+
+  // ── Call Anthropic ──
+  try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5',
       max_tokens: 1500,
@@ -48,11 +124,11 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: 'user',
-          content: `Rechtsgebiet(e): ${rechtsgebiet.join(', ')}
+          content: `Rechtsgebiet(e): ${safeRechtsgebiet.join(', ')}
 Aufgabentyp: ${aufgabe}
 Kontext/Sachverhalt: ${sachverhalt}
-Detailtiefe: ${detailtiefe}
-Sprache: ${sprache}
+Detailtiefe: ${safeDetailtiefe}
+Sprache: ${safeSprache}
 
 Erstelle den optimalen Prompt für diese juristische Aufgabe.`,
         },
