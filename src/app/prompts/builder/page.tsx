@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Briefcase, Building2, TrendingUp, ArrowLeft, Loader2, Copy, Check, Zap, Lock } from 'lucide-react'
 import Link from 'next/link'
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -146,6 +147,11 @@ export default function BuilderPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const { trackEvent, AnalyticsEvents } = useAnalytics()
+
+  // Track page start on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { trackEvent(AnalyticsEvents.PROMPT_BUILDER_START) }, [])
 
   // ── Handlers ──
 
@@ -162,6 +168,11 @@ export default function BuilderPage() {
     setLoading(true)
     setError('')
     setStep(3)
+    trackEvent(AnalyticsEvents.PROMPT_BUILDER_GENERATE, {
+      rechtsgebiet: form.rechtsgebiet.join(', '),
+      aufgabe: form.aufgabe,
+      detailtiefe: form.detailtiefe,
+    })
     try {
       const res = await fetch('/api/prompts/generate', {
         method: 'POST',
@@ -171,6 +182,7 @@ export default function BuilderPage() {
       const data = await res.json()
 
       if (res.status === 429) {
+        trackEvent(AnalyticsEvents.PROMPT_BUILDER_LIMIT_HIT)
         setStep(4)
         setLoading(false)
         return
@@ -189,6 +201,7 @@ export default function BuilderPage() {
 
   async function handleCopy() {
     await navigator.clipboard.writeText(generatedPrompt)
+    trackEvent(AnalyticsEvents.PROMPT_BUILDER_COPY)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

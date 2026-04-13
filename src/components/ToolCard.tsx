@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react'
 import { Tool } from '@/types'
 import { RechtsgebietTag } from './RechtsgebietTag'
 import { ChevronUp } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 export function ToolCard({ tool }: { tool: Tool }) {
   const storageKey = `voted_${tool.id}`
   const [votes, setVotes] = useState(tool.votes)
   const [voted, setVoted] = useState(false)
   const [voting, setVoting] = useState(false)
+  const { trackEvent, AnalyticsEvents } = useAnalytics()
 
   // Read localStorage after mount (SSR-safe)
   useEffect(() => {
@@ -35,6 +37,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
       if (res.ok) {
         const data = await res.json()
         setVotes(data.votes)
+        trackEvent(AnalyticsEvents.TOOL_VOTE, { tool_slug: tool.slug, rechtsgebiet: tool.rechtsgebiet?.[0] })
       } else {
         // Revert on failure
         setVotes(v => v - 1)

@@ -1,23 +1,28 @@
 'use client'
 
 import { useState } from 'react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 export function NewsletterForm({
   variant = 'inline',
   successMessage,
+  source,
 }: {
   variant?: 'inline' | 'page'
   successMessage?: string
+  source?: string
 }) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const { trackEvent, AnalyticsEvents } = useAnalytics()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email) return
     setStatus('loading')
     setErrorMsg('')
+    trackEvent(AnalyticsEvents.NEWSLETTER_ATTEMPT, { source })
 
     try {
       const res = await fetch('/api/newsletter/subscribe', {
@@ -30,6 +35,7 @@ export function NewsletterForm({
         setErrorMsg(data.error ?? 'Ein Fehler ist aufgetreten.')
         setStatus('error')
       } else {
+        trackEvent(AnalyticsEvents.NEWSLETTER_SUCCESS, { source })
         setStatus('success')
         setEmail('')
       }

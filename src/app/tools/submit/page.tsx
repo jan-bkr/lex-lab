@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CheckCircle, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Rechtsgebiet } from '@/types'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
 
@@ -45,6 +46,7 @@ export default function SubmitToolPage() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const { trackEvent, AnalyticsEvents } = useAnalytics()
 
   function validate(): boolean {
     const e: FormErrors = {}
@@ -71,6 +73,7 @@ export default function SubmitToolPage() {
     if (!validate()) return
 
     setStatus('loading')
+    trackEvent(AnalyticsEvents.TOOL_SUBMIT_START)
     const supabase = createClient()
     const { error } = await supabase.from('tools').insert({
       name: form.name.trim(),
@@ -87,6 +90,7 @@ export default function SubmitToolPage() {
       setErrorMsg('Es ist ein Fehler aufgetreten. Bitte versuche es erneut.')
       setStatus('error')
     } else {
+      trackEvent(AnalyticsEvents.TOOL_SUBMIT_SUCCESS, { tool_name: form.name.trim() })
       setStatus('success')
     }
   }
