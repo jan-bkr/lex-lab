@@ -69,8 +69,14 @@ export function ToolCard({ tool }: { tool: Tool }) {
     setVoting(false)
   }
 
+  const score = tool.lexlabScore
+  const scoreCls = score == null ? null
+    : score >= 80 ? 'bg-green-50 text-green-700 border-green-200'
+    : score >= 60 ? 'bg-amber-50 text-amber-700 border-amber-200'
+    : 'bg-red-50 text-red-600 border-red-200'
+
   return (
-    <div className="group bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-200 flex flex-col gap-3">
+    <div className="group bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-200 flex flex-col gap-3 h-full">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5">
           {/* Icon placeholder */}
@@ -80,7 +86,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
             </span>
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-sans font-semibold text-[14px] text-gray-900">{tool.name}</span>
               {tool.isNew && (
                 <span className="bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border border-blue-100">
@@ -91,9 +97,15 @@ export function ToolCard({ tool }: { tool: Tool }) {
             <p className="text-xs text-gray-500 mt-0.5 leading-snug">{tool.tagline}</p>
           </div>
         </div>
+        {score != null && (
+          <div className={`flex-shrink-0 flex flex-col items-center justify-center w-10 h-10 rounded-lg border text-xs font-bold leading-none ${scoreCls}`}>
+            <span className="text-[15px] font-display">{score}</span>
+            <span className="text-[8px] font-semibold uppercase tracking-wide opacity-70 mt-0.5">Score</span>
+          </div>
+        )}
       </div>
 
-      <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">{tool.description}</p>
+      <p className="text-sm text-gray-600 leading-relaxed line-clamp-2 flex-1">{tool.description}</p>
 
       <div className="flex flex-wrap gap-1.5">
         {tool.rechtsgebiet.map(tag => (

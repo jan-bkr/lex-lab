@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { mockTools } from '@/lib/mock-data'
 import { Tool, Rechtsgebiet } from '@/types'
 
-type SortOption = 'votes' | 'newest' | 'alpha'
+type SortOption = 'score' | 'votes' | 'newest' | 'alpha'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
 
@@ -28,6 +28,7 @@ interface SupabaseToolRow {
   featured: boolean | null
   submitted_by: string | null
   created_at: string
+  lexlab_score: number | null
 }
 
 function mapRow(row: SupabaseToolRow): Tool {
@@ -43,6 +44,7 @@ function mapRow(row: SupabaseToolRow): Tool {
     votes: row.votes ?? 0,
     isNew: row.is_new ?? false,
     createdAt: row.created_at,
+    lexlabScore: row.lexlab_score,
   }
 }
 
@@ -81,7 +83,7 @@ function ToolsPageInner() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState<Rechtsgebiet | 'Alle'>(initialFilter)
-  const [sort, setSort] = useState<SortOption>('votes')
+  const [sort, setSort] = useState<SortOption>('score')
 
   useEffect(() => {
     async function fetchTools() {
@@ -112,6 +114,7 @@ function ToolsPageInner() {
       return matchesSearch && matchesFilter
     })
     .sort((a, b) => {
+      if (sort === 'score') return (b.lexlabScore ?? 0) - (a.lexlabScore ?? 0)
       if (sort === 'votes') return b.votes - a.votes
       if (sort === 'newest')
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -175,6 +178,7 @@ function ToolsPageInner() {
               onChange={e => setSort(e.target.value as SortOption)}
               className="appearance-none pl-3 pr-8 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
             >
+              <option value="score">LexLab Score</option>
               <option value="votes">Meiste Votes</option>
               <option value="newest">Neueste</option>
               <option value="alpha">Alphabetisch</option>

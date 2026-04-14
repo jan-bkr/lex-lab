@@ -700,14 +700,10 @@ export default function ToolDetailPage({
           )}
 
           {/* Screenshot */}
-          {tool.screenshotUrl ? (
+          {tool.screenshotUrl && (
             <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={tool.screenshotUrl} alt={`${tool.name} Screenshot`} className="w-full object-cover" />
-            </div>
-          ) : (
-            <div className="rounded-xl border-2 border-dashed border-gray-200 py-8 text-center">
-              <p className="text-sm text-gray-400">Screenshot folgt in Kürze</p>
             </div>
           )}
 
