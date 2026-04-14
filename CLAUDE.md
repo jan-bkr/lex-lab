@@ -16,6 +16,7 @@
 | KI (Prompt Builder) | Claude Haiku via `@anthropic-ai/sdk` | `claude-haiku-4-5` |
 | Analytics | @vercel/analytics + @vercel/speed-insights | ^2 |
 | RSS | rss-parser | ^3.13.0 |
+| Rate Limiting | @upstash/ratelimit + @upstash/redis | ^2 / ^1 |
 | Datum | date-fns (inkl. `de`-Locale) | ^4.1.0 |
 | TypeScript | strict mode | ^5 |
 | Linting | ESLint 9 (flat config) + eslint-config-next | ^9 |
@@ -64,8 +65,8 @@ src/
 │   │   ├── news/                   # News-Verwaltung
 │   │   ├── comments/               # Kommentar-Moderation
 │   │   └── prompts/                # Prompt-Verwaltung
-│   ├── api/                        # Route Handlers (alle POST-only, außer vote-status)
-│   │   ├── pipeline/               # RSS→Claude→Supabase-Cron (POST, maxDuration=60)
+│   ├── api/                        # Route Handlers (alle POST-only, außer vote-status + pipeline)
+│   │   ├── pipeline/               # RSS→Claude→Supabase-Cron (GET+POST, maxDuration=60)
 │   │   ├── tools/vote/             # Vote-Toggle (POST, IP-Ratelimit: 20/24h pro IP+Tool)
 │   │   ├── tools/vote-status/      # Vote-Status abfragen (GET)
 │   │   ├── tools/[id]/comments/    # Kommentare laden + speichern
@@ -100,6 +101,7 @@ src/
 │   │   ├── client.ts               # Browser-Client (anon key, RLS aktiv)
 │   │   ├── server.ts               # Server-Client (cookie-basiert, SSR)
 │   │   └── admin.ts                # Service-Role-Client (nur Server, bypasses RLS)
+│   ├── rate-limit.ts               # Shared Rate Limiter: Upstash Sliding Window + In-Memory-Fallback
 │   ├── lexlab-score.ts             # Score-Berechnung: Ø gewichtet (30/25/25/10/10)×10
 │   ├── jurist-persona.ts           # JURIST_PERSONA — System-Prompt für Claude
 │   ├── rss-sources.ts              # 11 RSS-Quellen (M&A, Steuer, LegalTech, VC)
@@ -119,7 +121,10 @@ scripts/
 supabase/
 └── migrations/
     ├── 20260414000000_add_tool_votes.sql
-    └── 20260414000001_premium_tool_profiles.sql
+    ├── 20260414000001_premium_tool_profiles.sql
+    ├── 20260414000002_fix_tool_votes_privacy.sql  # DROP public SELECT policy (voter_ip ist PII)
+    ├── 20260414000003_toggle_tool_vote_rpc.sql    # toggle_tool_vote() — atomare Vote-Funktion
+    └── RUN_IN_DASHBOARD.sql                       # Kombinations-Script für Supabase SQL Editor (bereits ausgeführt)
 ```
 
 ---
@@ -201,7 +206,8 @@ export default function Page() {
 
 **Plattform:** Vercel — automatischer Deploy bei Push auf `main`
 
-**Cron-Job:** `POST /api/pipeline` täglich 06:00 UTC (konfiguriert in `vercel.json`)
+**Cron-Job:** `/api/pipeline` täglich 06:00 UTC (konfiguriert in `vercel.json`)
+- Vercel Cron sendet **GET** — Route exportiert sowohl `GET` als auch `POST` (GET = Cron, POST = manueller Trigger)
 - Auth: Vercel-Header `x-vercel-cron: 1` (automatisch) oder `Authorization: Bearer CRON_SECRET` (manuell)
 - Limit: `maxDuration = 60` (Vercel Hobby Plan)
 - Verarbeitet max. 3 Items pro RSS-Quelle, 11 Quellen parallel, Cutoff: 24h
@@ -223,6 +229,8 @@ export default function Page() {
 | `ANTHROPIC_API_KEY` | Server only | Claude API — Pipeline + Prompt Builder |
 | `RESEND_API_KEY` | Server only | Newsletter-E-Mails + Kontaktformular |
 | `CRON_SECRET` | Server only | Auth für Pipeline + Cleanup + Newsletter-HMAC |
+| `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis — Rate Limiting (Vote, Comments, Prompts, Newsletter, Kontakt) |
+| `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis — Rate Limiting |
 
 ---
 
@@ -262,11 +270,13 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 4. **Tailwind CSS v4** — kein `tailwind.config.js`, kein `@apply`. Konfiguration via PostCSS. Plugin heißt `@tailwindcss/postcss`.
 
-5. **Rate Limiting ist In-Memory** — Map-basiert, nicht persistent. Resets bei Server-Neustart, **nicht Multi-Instance-safe**:
-   - Prompt Builder: 10 Generierungen/Tag pro IP
-   - Newsletter: 5 Anmeldungen/h pro IP
-   - Vote-API: 20 Aktionen/24h pro IP+Tool
-   - Kontaktformular: 5 Anfragen/h pro IP
+5. **Rate Limiting via Upstash Redis** — `src/lib/rate-limit.ts`, Sliding Window, multi-instance-safe:
+   - Vote: 20/24h pro `IP:toolId`
+   - Comments: 5/h pro IP
+   - Prompt Builder: 10/Tag pro IP
+   - Newsletter: 5/h pro IP
+   - Kontaktformular: 5/h pro IP
+   - Fallback auf In-Memory-Map wenn `UPSTASH_REDIS_REST_URL` nicht gesetzt (lokale Dev-Umgebung)
 
 6. **Claude-Modelle:**
    - Pipeline (`/api/pipeline`): direkte `fetch`-Aufrufe, Modell `claude-haiku-4-5-20251001`
@@ -291,7 +301,6 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 ## Offene TODOs
 
-- [ ] **Rate Limiting** auf Redis/Upstash migrieren (Vote, Prompt Builder, Newsletter — alle In-Memory)
 - [ ] **Workflows-Admin-UI** — DB-Tabelle existiert, aber kein `/admin/workflows`-Page
 - [ ] **Events-Admin-UI** — DB-Tabelle existiert, aber kein `/admin/events`-Page
 - [ ] **Newsletter-Admin-UI** — `newsletter_subscribers`-Tabelle hat keine Admin-Ansicht
@@ -309,6 +318,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **LexLab Score auf Tools-Übersichtsseite** (2026-04-14) — `ToolCard.tsx` zeigt farbcodierten Score-Badge (grün ≥80 / amber ≥60 / rot <60) oben rechts. Tools-Seite lädt `lexlab_score` aus Supabase, sortiert standardmäßig nach Score absteigend. Neues Dropdown-Option „LexLab Score" als Default-Sortierung.
 - [x] **Kontaktformular gehärtet** (2026-04-14) — `api/kontakt`: Rate Limiting (5/h pro IP), Origin-Check, HTML-Escaping aller User-Inputs, Feldlängenlimits.
 - [x] **Cleanup-Route auf POST+Auth umgestellt** (2026-04-14) — `api/admin/cleanup`: von GET auf POST, CRON_SECRET-Pflichtcheck.
+- [x] **Sicherheits- und Betriebs-Paket** (2026-04-14) — Admin Server Actions intern mit `requireAdminSession()` abgesichert; `tool_votes` SELECT-Policy entfernt (voter_ip = PII); Pipeline-Route exportiert GET+POST (Vercel Cron sendet GET); Vote-Zählung atomar via `toggle_tool_vote()` RPC (Migration 000003); Rate Limiting auf Upstash Redis migriert (`src/lib/rate-limit.ts`, Sliding Window, 5 Endpunkte, In-Memory-Fallback für lokale Entwicklung).
 
 ---
 
@@ -318,6 +328,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - Vor größeren Umstrukturierungen (Routen, Schema, Refactorings) nachfragen
 - **Nie** `admin.ts`-Supabase-Client in Client-Komponenten (`'use client'`) verwenden
 - **Nie** Secrets, API-Keys oder `.env`-Werte in Code, Logs oder diese Datei schreiben
+- **Jede write-only Server Action** muss `await requireAdminSession()` als erste Zeile haben — Layout-Schutz allein reicht nicht (Actions sind direkte HTTP-Endpunkte)
 - Server Actions in `actions.ts` immer mit `revalidatePath()` für betroffene Routen abschließen
 - Bei Tailwind-Änderungen: v4-Syntax (kein `tailwind.config.js`, kein `@apply`)
 - Bei neuen Pages mit `useSearchParams()`: in `<Suspense>` einbetten
@@ -339,3 +350,5 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - Kein Prettier, kein `tailwind.config.js`, keine `middleware.ts` — alles bewusst weggelassen
 - Git: direkte Commits auf `main`, automatischer Vercel-Deploy
 - Breaking Change: `params` in Pages ist `Promise` → immer `await params` schreiben
+- Rate Limiting: zentrales Modul `src/lib/rate-limit.ts` — `checkRateLimit(key, identifier)` gibt `{ allowed, remaining }` zurück. Kein inline Map-Code in Routen schreiben.
+- Neue DB-Funktionen über `adminSupabase.rpc('funktionsname', { ...params })` aufrufen (Beispiel: `toggle_tool_vote`)
