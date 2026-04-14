@@ -6,7 +6,7 @@ import { ChevronUp, Copy, Check, ArrowLeft, MessageSquare, Grid3X3 } from 'lucid
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
 import { mockTools } from '@/lib/mock-data'
-import { Tool, Rechtsgebiet } from '@/types'
+import { Tool, ToolComment, Rechtsgebiet } from '@/types'
 import { useAnalytics } from '@/hooks/useAnalytics'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -29,15 +29,18 @@ interface SupabaseToolRow {
   pricing_type: 'free' | 'freemium' | 'paid' | 'enterprise' | null
   pricing_url: string | null
   screenshot_url: string | null
-}
-
-interface ToolComment {
-  id: string
-  name: string
-  role: string
-  rechtsgebiet: string[]
-  comment: string
-  created_at: string
+  // Premium profile fields
+  long_description: string | null
+  best_for: string[] | null
+  not_for: string[] | null
+  verdict: string | null
+  last_reviewed_at: string | null
+  score_praxisreife: number | null
+  score_datenschutz: number | null
+  score_dach: number | null
+  score_ux: number | null
+  score_preis: number | null
+  lexlab_score: number | null
 }
 
 // ─── Mappers ──────────────────────────────────────────────────────────────────
@@ -58,6 +61,17 @@ function mapRow(row: SupabaseToolRow): Tool {
     pricingType: row.pricing_type,
     pricingUrl: row.pricing_url,
     screenshotUrl: row.screenshot_url,
+    longDescription: row.long_description,
+    bestFor: row.best_for,
+    notFor: row.not_for,
+    verdict: row.verdict,
+    lastReviewedAt: row.last_reviewed_at,
+    scorePraxisreife: row.score_praxisreife,
+    scoreDatenschutz: row.score_datenschutz,
+    scoreDach: row.score_dach,
+    scoreUx: row.score_ux,
+    scorePreis: row.score_preis,
+    lexlabScore: row.lexlab_score,
   }
 }
 
@@ -166,13 +180,46 @@ const ROLES = ['Rechtsanwalt', 'Steuerberater', 'Inhouse-Jurist', 'Student/Refer
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
 const MAX_COMMENT = 500
 
+function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [hovered, setHovered] = useState(0)
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map(i => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => onChange(i === value ? 0 : i)}
+          onMouseEnter={() => setHovered(i)}
+          onMouseLeave={() => setHovered(0)}
+          aria-label={`${i} Stern${i > 1 ? 'e' : ''}`}
+          className="focus:outline-none transition-transform hover:scale-110"
+        >
+          <svg
+            className={`w-6 h-6 transition-colors ${i <= (hovered || value) ? 'text-amber-400' : 'text-gray-200'}`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        </button>
+      ))}
+      {value > 0 && (
+        <span className="ml-1 text-xs text-gray-500">{value}/5</span>
+      )}
+    </div>
+  )
+}
+
 function CommentForm({ toolId, onSubmitted }: { toolId: string; onSubmitted: () => void }) {
   const [name, setName] = useState('')
   const [role, setRole] = useState(ROLES[0])
   const [comment, setComment] = useState('')
+  const [rating, setRating] = useState(0)
   const [rechtsgebiet, setRechtsgebiet] = useState<string[]>([])
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+
+  const canSubmit = name.trim().length > 0 && (comment.trim().length > 0 || rating > 0)
 
   function toggleRg(rg: string) {
     setRechtsgebiet(prev =>
@@ -182,14 +229,20 @@ function CommentForm({ toolId, onSubmitted }: { toolId: string; onSubmitted: () 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim() || !comment.trim()) return
+    if (!canSubmit) return
     setStatus('loading')
     setErrorMsg('')
     try {
       const res = await fetch(`/api/tools/${toolId}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, role, comment, rechtsgebiet }),
+        body: JSON.stringify({
+          name,
+          role,
+          comment: comment.trim() || null,
+          rating: rating > 0 ? rating : null,
+          rechtsgebiet,
+        }),
       })
       if (!res.ok) {
         const d = await res.json()
@@ -206,7 +259,7 @@ function CommentForm({ toolId, onSubmitted }: { toolId: string; onSubmitted: () 
   if (status === 'success') {
     return (
       <div className="bg-green-50 border border-green-100 rounded-xl p-4 text-sm text-green-700">
-        ✓ Danke! Dein Kommentar wird geprüft und bald veröffentlicht.
+        ✓ Danke! Dein Beitrag wird geprüft und bald veröffentlicht.
       </div>
     )
   }
@@ -238,13 +291,19 @@ function CommentForm({ toolId, onSubmitted }: { toolId: string; onSubmitted: () 
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Erfahrungsbericht *</label>
+        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Bewertung (optional)</label>
+        <StarPicker value={rating} onChange={setRating} />
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+          Erfahrungsbericht <span className="font-normal text-gray-400">(optional, wenn Bewertung vergeben)</span>
+        </label>
         <div className="relative">
           <textarea
             value={comment}
             onChange={e => { if (e.target.value.length <= MAX_COMMENT) setComment(e.target.value) }}
             placeholder="Teile deine Erfahrungen mit diesem Tool..."
-            required
             className="w-full min-h-[100px] text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 resize-none leading-relaxed"
           />
           <span className={`absolute bottom-2.5 right-3 text-xs ${comment.length > MAX_COMMENT * 0.9 ? 'text-amber-500' : 'text-gray-300'}`}>
@@ -278,10 +337,10 @@ function CommentForm({ toolId, onSubmitted }: { toolId: string; onSubmitted: () 
       )}
 
       <div className="flex items-center justify-between gap-4">
-        <p className="text-xs text-gray-400">Kommentare werden vor Veröffentlichung geprüft.</p>
+        <p className="text-xs text-gray-400">Beiträge werden vor Veröffentlichung geprüft.</p>
         <button
           type="submit"
-          disabled={status === 'loading' || !name.trim() || !comment.trim()}
+          disabled={status === 'loading' || !canSubmit}
           className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
         >
           {status === 'loading' ? 'Wird gesendet…' : 'Erfahrung teilen'}
@@ -292,6 +351,18 @@ function CommentForm({ toolId, onSubmitted }: { toolId: string; onSubmitted: () 
 }
 
 // ─── Comment card ─────────────────────────────────────────────────────────────
+
+function StarDisplay({ rating }: { rating: number }) {
+  return (
+    <span className="flex items-center gap-0.5" aria-label={`${rating} von 5 Sternen`}>
+      {[1, 2, 3, 4, 5].map(i => (
+        <svg key={i} className={`w-3.5 h-3.5 ${i <= rating ? 'text-amber-400' : 'text-gray-200'}`} fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </span>
+  )
+}
 
 function CommentCard({ comment }: { comment: ToolComment }) {
   return (
@@ -310,10 +381,13 @@ function CommentCard({ comment }: { comment: ToolComment }) {
               {rg}
             </span>
           ))}
+          {comment.rating != null && <StarDisplay rating={comment.rating} />}
         </div>
         <span className="text-xs text-gray-400">{relativeDate(comment.created_at)}</span>
       </div>
-      <p className="text-sm text-gray-600 leading-relaxed">{comment.comment}</p>
+      {comment.comment && (
+        <p className="text-sm text-gray-600 leading-relaxed">{comment.comment}</p>
+      )}
     </div>
   )
 }

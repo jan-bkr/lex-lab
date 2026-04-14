@@ -16,6 +16,29 @@ export interface Tool {
   pricingType?: 'free' | 'freemium' | 'paid' | 'enterprise' | null
   pricingUrl?: string | null
   screenshotUrl?: string | null
+  // Premium profile fields
+  longDescription?: string | null
+  bestFor?: string[] | null
+  notFor?: string[] | null
+  verdict?: string | null
+  lastReviewedAt?: string | null
+  // LexLab Score (each 1–10, null = not yet scored)
+  scorePraxisreife?: number | null
+  scoreDatenschutz?: number | null
+  scoreDach?: number | null
+  scoreUx?: number | null
+  scorePreis?: number | null
+  lexlabScore?: number | null
+}
+
+export interface ToolComment {
+  id: string
+  name: string
+  role: string
+  rechtsgebiet: string[]
+  comment: string | null
+  rating: number | null   // 1–5 stars, optional
+  created_at: string
 }
 
 export interface Workflow {
