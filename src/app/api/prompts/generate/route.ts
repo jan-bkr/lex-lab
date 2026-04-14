@@ -32,6 +32,14 @@ const SACHVERHALT_MAX = 800
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 
+// Periodic cleanup: remove expired entries every hour to prevent unbounded growth
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, val] of rateLimitMap) {
+    if (now >= val.resetAt) rateLimitMap.delete(key)
+  }
+}, 60 * 60 * 1000)
+
 function isSameOrigin(req: NextRequest): boolean {
   const origin = req.headers.get('origin')
   if (!origin) return true // server-to-server or same-origin (no Origin header)

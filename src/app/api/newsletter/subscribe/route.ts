@@ -1,5 +1,6 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
+import { makeToken } from '@/app/api/newsletter/unsubscribe/route'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,6 +8,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const SUBSCRIBE_WINDOW_MS = 60 * 60 * 1000
 const MAX_SUBSCRIPTIONS_PER_IP = 5
 const subscribeLimit = new Map<string, { count: number; resetAt: number }>()
+
+// ─── Periodic cleanup: remove expired entries every hour ─────────────────────
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, val] of subscribeLimit) {
+    if (now >= val.resetAt) subscribeLimit.delete(key)
+  }
+}, 60 * 60 * 1000)
 
 function getClientIp(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -106,6 +115,9 @@ export async function POST(request: Request): Promise<Response> {
   // Send welcome email via Resend
   try {
     const resend = new Resend(process.env.RESEND_API_KEY)
+    const unsubToken = makeToken(email)
+    const unsubUrl   = `https://www.lex-lab.de/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubToken}`
+
     const { error: resendError } = await resend.emails.send({
       from: 'lex-lab.de <newsletter@lex-lab.de>',
       to: email,
@@ -114,9 +126,12 @@ export async function POST(request: Request): Promise<Response> {
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #111827;">Willkommen bei lex-lab.de</h1>
           <p>Du erhältst ab jetzt wöchentlich die besten KI-Tools, Workflows und News für den deutschen Rechtsmarkt.</p>
-          <p style="color: #6B7280; font-size: 14px;">Du kannst dich jederzeit abmelden. Kein Spam, versprochen.</p>
+          <p style="color: #6B7280; font-size: 14px;">Kein Spam, versprochen.</p>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
-          <p style="color: #9CA3AF; font-size: 12px;">lex-lab.de · Kein Rechtsrat · Keine Steuerberatung</p>
+          <p style="color: #9CA3AF; font-size: 12px;">
+            lex-lab.de · Kein Rechtsrat · Keine Steuerberatung<br>
+            <a href="${unsubUrl}" style="color: #9CA3AF;">Abmelden</a>
+          </p>
         </div>
       `,
     })
