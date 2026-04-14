@@ -174,6 +174,62 @@ function SimilarToolsList({ tools }: { tools: Tool[] }) {
   )
 }
 
+// ─── LexLab Score ─────────────────────────────────────────────────────────────
+
+const SCORE_ROWS: { key: keyof Tool; label: string }[] = [
+  { key: 'scorePraxisreife', label: 'Praxisreife' },
+  { key: 'scoreDatenschutz', label: 'Datenschutz/DSGVO' },
+  { key: 'scoreDach',        label: 'DACH-Relevanz' },
+  { key: 'scoreUx',         label: 'UX/Usability' },
+  { key: 'scorePreis',      label: 'Preis-Leistung' },
+]
+
+function scoreColors(s: number) {
+  if (s >= 80) return { ring: 'border-green-200', bg: 'bg-green-50', text: 'text-green-700', bar: 'bg-green-500' }
+  if (s >= 60) return { ring: 'border-amber-200', bg: 'bg-amber-50', text: 'text-amber-700', bar: 'bg-amber-400' }
+  return { ring: 'border-red-200', bg: 'bg-red-50', text: 'text-red-600', bar: 'bg-red-400' }
+}
+
+function LexLabScoreCard({ tool }: { tool: Tool }) {
+  if (!tool.lexlabScore) return null
+  const c = scoreColors(tool.lexlabScore)
+  const subScores = SCORE_ROWS.filter(r => tool[r.key] != null)
+  return (
+    <div className={`border rounded-xl p-4 space-y-3 ${c.ring} ${c.bg}`}>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">LexLab Score</p>
+        {tool.lastReviewedAt && (
+          <p className="text-[10px] text-gray-400">
+            Geprüft {relativeDate(tool.lastReviewedAt)}
+          </p>
+        )}
+      </div>
+      <div className="flex items-baseline gap-1">
+        <span className={`text-4xl font-display font-bold ${c.text}`}>{tool.lexlabScore}</span>
+        <span className="text-sm text-gray-400">/100</span>
+      </div>
+      {subScores.length > 0 && (
+        <div className="space-y-2 pt-1">
+          {subScores.map(({ key, label }) => {
+            const val = tool[key] as number
+            return (
+              <div key={key}>
+                <div className="flex justify-between mb-0.5">
+                  <span className="text-[11px] text-gray-500">{label}</span>
+                  <span className="text-[11px] font-semibold text-gray-600">{val}/10</span>
+                </div>
+                <div className="h-1 bg-white/70 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${c.bar}`} style={{ width: `${val * 10}%` }} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Comment form ─────────────────────────────────────────────────────────────
 
 const ROLES = ['Rechtsanwalt', 'Steuerberater', 'Inhouse-Jurist', 'Student/Referendar', 'Sonstiges']
@@ -595,8 +651,53 @@ export default function ToolDetailPage({
           {/* Description */}
           <div className="bg-white border border-gray-100 rounded-xl p-6">
             <h2 className="font-display font-semibold text-gray-900 mb-3">Beschreibung</h2>
-            <p className="text-gray-600 leading-relaxed text-sm">{tool.description}</p>
+            <p className="text-gray-600 leading-relaxed text-sm">
+              {tool.longDescription ?? tool.description}
+            </p>
           </div>
+
+          {/* Best For / Not For */}
+          {((tool.bestFor && tool.bestFor.length > 0) || (tool.notFor && tool.notFor.length > 0)) && (
+            <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <h2 className="font-display font-semibold text-gray-900 mb-4">Für wen geeignet?</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {tool.bestFor && tool.bestFor.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2">Geeignet für</p>
+                    <ul className="space-y-1.5">
+                      {tool.bestFor.map((item, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                          <span className="mt-0.5 w-4 h-4 flex-shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[10px] font-bold">✓</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {tool.notFor && tool.notFor.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2">Nicht geeignet für</p>
+                    <ul className="space-y-1.5">
+                      {tool.notFor.map((item, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                          <span className="mt-0.5 w-4 h-4 flex-shrink-0 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-[10px] font-bold">✕</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Verdict */}
+          {tool.verdict && (
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
+              <h2 className="font-display font-semibold text-gray-900 mb-2">Redaktionelles Fazit</h2>
+              <p className="text-gray-700 leading-relaxed text-sm italic">{tool.verdict}</p>
+            </div>
+          )}
 
           {/* Screenshot */}
           {tool.screenshotUrl ? (
@@ -646,6 +747,9 @@ export default function ToolDetailPage({
               <PricingBadge type={tool.pricingType} url={tool.pricingUrl} />
             </div>
           )}
+
+          {/* LexLab Score */}
+          <LexLabScoreCard tool={tool} />
 
           {/* Upvote / Unvote toggle */}
           <button
