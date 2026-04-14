@@ -266,6 +266,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
    - Prompt Builder: 10 Generierungen/Tag pro IP
    - Newsletter: 5 Anmeldungen/h pro IP
    - Vote-API: 20 Aktionen/24h pro IP+Tool
+   - Kontaktformular: 5 Anfragen/h pro IP
 
 6. **Claude-Modelle:**
    - Pipeline (`/api/pipeline`): direkte `fetch`-Aufrufe, Modell `claude-haiku-4-5-20251001`
@@ -295,7 +296,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [ ] **Events-Admin-UI** — DB-Tabelle existiert, aber kein `/admin/events`-Page
 - [ ] **Newsletter-Admin-UI** — `newsletter_subscribers`-Tabelle hat keine Admin-Ansicht
 - [ ] **Beiträge-Seite** (`/beitraege`) ist vollständiger Placeholder ohne Inhalt
-- [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt)
+- [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt). Platzhalter auf Detailseite wurde bereits entfernt — Screenshot wird nur gerendert wenn URL vorhanden.
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
 - [ ] **Prompt-Detailseiten** — `/prompts/[slug]` im Sitemap referenziert, aber keine entsprechende Page-Datei gefunden
 - [ ] **News-Detailseiten** — `/news/[slug]` im Sitemap, Seite zu prüfen
@@ -305,6 +306,9 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 - [x] **Premium-Profile Bulk-Import** (2026-04-14) — 42 Tools mit `long_description`, `best_for`, `not_for`, `verdict`, LexLab-Scores und `last_reviewed_at` befüllt. Score-Spanne: 35 (quickbooks-claude) – 91 (datev-ki).
 - [x] **Premium-Profil UI auf Tool-Detailseiten** (2026-04-14) — `ToolDetailClient.tsx` zeigt jetzt alle Premium-Felder: lange Beschreibung (ersetzt Kurztext), „Für wen geeignet?" (Best-for/Not-for zweispaltig mit ✓/✕), „Redaktionelles Fazit" (Verdict, blauer Kasten) und „LexLab Score" in der Sidebar (Gesamtscore + 5 Sub-Score-Balken, farbcodiert grün/amber/rot). Felder werden nur gerendert wenn in DB vorhanden (null-safe).
+- [x] **LexLab Score auf Tools-Übersichtsseite** (2026-04-14) — `ToolCard.tsx` zeigt farbcodierten Score-Badge (grün ≥80 / amber ≥60 / rot <60) oben rechts. Tools-Seite lädt `lexlab_score` aus Supabase, sortiert standardmäßig nach Score absteigend. Neues Dropdown-Option „LexLab Score" als Default-Sortierung.
+- [x] **Kontaktformular gehärtet** (2026-04-14) — `api/kontakt`: Rate Limiting (5/h pro IP), Origin-Check, HTML-Escaping aller User-Inputs, Feldlängenlimits.
+- [x] **Cleanup-Route auf POST+Auth umgestellt** (2026-04-14) — `api/admin/cleanup`: von GET auf POST, CRON_SECRET-Pflichtcheck.
 
 ---
 
