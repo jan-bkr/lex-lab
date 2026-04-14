@@ -220,7 +220,11 @@ export default function BuilderPage() {
 
       if (!res.ok) throw new Error(data.error ?? 'Unbekannter Fehler')
 
-      setGeneratedPrompt(JURIST_PERSONA + '\n\n---\n\n' + data.prompt)
+      const cleanPrompt = data.prompt
+        .replace(/^```[a-z]*\n?/i, '')
+        .replace(/\n?```\s*$/,     '')
+        .trim()
+      setGeneratedPrompt(JURIST_PERSONA + '\n\n---\n\n' + cleanPrompt)
       if (typeof data.remaining === 'number') setRemaining(data.remaining)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fehler bei der Generierung.')
