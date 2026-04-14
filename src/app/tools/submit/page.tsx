@@ -2,20 +2,10 @@
 
 import { useState } from 'react'
 import { CheckCircle, AlertCircle } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { Rechtsgebiet } from '@/types'
 import { useAnalytics } from '@/hooks/useAnalytics'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-}
 
 interface FormState {
   name: string
@@ -74,24 +64,32 @@ export default function SubmitToolPage() {
 
     setStatus('loading')
     trackEvent(AnalyticsEvents.TOOL_SUBMIT_START)
-    const supabase = createClient()
-    const { error } = await supabase.from('tools').insert({
-      name: form.name.trim(),
-      slug: slugify(form.name),
-      url: form.url.trim(),
-      tagline: form.tagline.trim(),
-      description: form.description.trim(),
-      rechtsgebiet: form.rechtsgebiet,
-      submitted_by: form.email.trim() || null,
-      status: 'pending',
-    })
 
-    if (error) {
+    try {
+      const res = await fetch('/api/tools/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          url: form.url.trim(),
+          tagline: form.tagline.trim(),
+          description: form.description.trim(),
+          rechtsgebiet: form.rechtsgebiet,
+          email: form.email.trim() || undefined,
+        }),
+      })
+
+      if (res.ok) {
+        trackEvent(AnalyticsEvents.TOOL_SUBMIT_SUCCESS, { tool_name: form.name.trim() })
+        setStatus('success')
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setErrorMsg(data.error ?? 'Es ist ein Fehler aufgetreten. Bitte versuche es erneut.')
+        setStatus('error')
+      }
+    } catch {
       setErrorMsg('Es ist ein Fehler aufgetreten. Bitte versuche es erneut.')
       setStatus('error')
-    } else {
-      trackEvent(AnalyticsEvents.TOOL_SUBMIT_SUCCESS, { tool_name: form.name.trim() })
-      setStatus('success')
     }
   }
 

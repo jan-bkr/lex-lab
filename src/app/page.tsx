@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase, Grid3X3, Newspaper, Mail } from 'lucide-react'
-import { mockTools, mockWorkflows, mockPrompts, mockNews, mockEvents } from '@/lib/mock-data'
 import { ToolCard } from '@/components/ToolCard'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { NewsletterForm } from '@/components/NewsletterForm'
@@ -138,34 +137,20 @@ export default async function HomePage() {
     adminSupabase.from('tools').select('rechtsgebiet').eq('status', 'approved'),
   ])
 
-  // Map with mock fallbacks
-  const topTools: Tool[] =
-    toolsRes.data && toolsRes.data.length > 0
-      ? toolsRes.data.map(mapTool)
-      : [...mockTools].sort((a, b) => b.votes - a.votes).slice(0, 3)
+  // Map without mock fallbacks — sections are hidden when data is absent
+  const topTools: Tool[] = toolsRes.data?.length ? toolsRes.data.map(mapTool) : []
 
-  const recentNews: NewsArticle[] =
-    newsRes.data && newsRes.data.length > 0
-      ? newsRes.data.map(mapNews)
-      : mockNews.filter(n => n.sourceUrl !== '#').slice(0, 4)
+  const recentNews: NewsArticle[] = newsRes.data?.length ? newsRes.data.map(mapNews) : []
 
-  const upcomingEvents: Event[] =
-    eventsRes.data && eventsRes.data.length > 0
-      ? eventsRes.data.map(mapEvent)
-      : mockEvents.slice(0, 3)
+  const upcomingEvents: Event[] = eventsRes.data?.length ? eventsRes.data.map(mapEvent) : []
 
-  const workflows: Workflow[] =
-    workflowsRes.data && workflowsRes.data.length > 0
-      ? workflowsRes.data.map(mapWorkflow)
-      : mockWorkflows.slice(0, 3)
+  const workflows: Workflow[] = workflowsRes.data?.length ? workflowsRes.data.map(mapWorkflow) : []
 
-  const promptOfDay: Prompt =
-    promptRes.data && promptRes.data.length > 0
-      ? mapPrompt(promptRes.data[0])
-      : mockPrompts[0]
+  const promptOfDay: Prompt | null =
+    promptRes.data?.length ? mapPrompt(promptRes.data[0]) : null
 
   // Compute per-rechtsgebiet counts from all approved tools
-  const fallbackCounts: Record<Rechtsgebiet, number> = { Steuerrecht: 14, 'M&A': 21, Gesellschaftsrecht: 11, 'Venture Capital': 9 }
+  const fallbackCounts: Record<Rechtsgebiet, number> = { Steuerrecht: 0, 'M&A': 0, Gesellschaftsrecht: 0, 'Venture Capital': 0 }
   const rgCounts: Record<string, number> = {}
   if (allToolsRes.data && allToolsRes.data.length > 0) {
     for (const row of allToolsRes.data) {
@@ -211,19 +196,21 @@ export default async function HomePage() {
       </section>
 
       {/* TOOLS OF THE WEEK */}
-      <section className="mb-6">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
-            <Flame className="w-5 h-5 text-orange-500" /> Tools der Woche
-          </h2>
-          <Link href="/tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-            Alle Tools <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {topTools.map(tool => <ToolCard key={tool.id} tool={tool} />)}
-        </div>
-      </section>
+      {topTools.length > 0 && (
+        <section className="mb-6">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
+              <Flame className="w-5 h-5 text-orange-500" /> Tools der Woche
+            </h2>
+            <Link href="/tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+              Alle Tools <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {topTools.map(tool => <ToolCard key={tool.id} tool={tool} />)}
+          </div>
+        </section>
+      )}
 
       {/* KATEGORIEN */}
       <section className="mb-14 pt-8 border-t border-gray-100">
@@ -248,87 +235,97 @@ export default async function HomePage() {
       </section>
 
       {/* WORKFLOWS + PROMPT */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-14">
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-gray-400" /> Neue Workflows
-            </h2>
-            <Link href="/workflows" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              Alle <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="flex flex-col gap-3">
-            {workflows.map(wf => (
-              <Link key={wf.id} href={`/workflows/${wf.slug}`}
-                className={`block bg-white border border-gray-100 border-l-4 ${workflowBorder[wf.rechtsgebiet[0]]} rounded-xl p-4 hover:shadow-md hover:border-gray-200 transition-all group`}>
-                <div className="flex items-start justify-between gap-2">
-                  <p className="font-sans font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">{wf.title}</p>
-                  <ArrowRight className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5" />
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <RechtsgebietTag tag={wf.rechtsgebiet[0]} />
-                  <span className="text-xs text-gray-400">{wf.readingTime} min</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+      {(workflows.length > 0 || promptOfDay) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-14">
+          {workflows.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-gray-400" /> Neue Workflows
+                </h2>
+                <Link href="/workflows" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                  Alle <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+              <div className="flex flex-col gap-3">
+                {workflows.map(wf => (
+                  <Link key={wf.id} href={`/workflows/${wf.slug}`}
+                    className={`block bg-white border border-gray-100 border-l-4 ${workflowBorder[wf.rechtsgebiet[0]]} rounded-xl p-4 hover:shadow-md hover:border-gray-200 transition-all group`}>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-sans font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">{wf.title}</p>
+                      <ArrowRight className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5" />
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <RechtsgebietTag tag={wf.rechtsgebiet[0]} />
+                      <span className="text-xs text-gray-400">{wf.readingTime} min</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
-        <PromptOfDay prompt={promptOfDay} />
-      </div>
+          {promptOfDay && <PromptOfDay prompt={promptOfDay} />}
+        </div>
+      )}
 
       {/* NEWS + EVENTS */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-14">
-        <section className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2"><Newspaper className="w-5 h-5 text-gray-400" /> Aktuelles</h2>
-            <Link href="/news" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              Alle News <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="bg-white border border-gray-100 rounded-xl divide-y divide-gray-50 overflow-hidden">
-            {recentNews.map(article => (
-              <a key={article.id} href={article.sourceUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-start gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors group">
-                <span className={`flex-shrink-0 text-[10px] font-bold border rounded-md px-1.5 py-0.5 mt-0.5 ${sourceBadgeStyle[article.sourceName] ?? 'bg-gray-50 text-gray-600 border-gray-200'}`}>
-                  {article.sourceName}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">{article.title}</p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: de })}
-                    {article.aiGenerated && <span className="ml-2 text-gray-300">· KI-Zusammenfassung</span>}
-                  </p>
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-gray-400" /> Events
-            </h2>
-            <Link href="/events" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              Alle <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="flex flex-col gap-2">
-            {upcomingEvents.map(ev => (
-              <div key={ev.id} className="bg-white border border-gray-100 rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${eventTypeBadge[ev.type]}`}>{ev.type}</span>
-                  <span className="text-xs text-gray-400">{format(new Date(ev.date), 'd. MMM', { locale: de })}</span>
-                </div>
-                <p className="text-sm font-medium text-gray-800 leading-snug line-clamp-2">{ev.title}</p>
-                {ev.description && <p className="text-xs text-gray-400 mt-1">{ev.description}</p>}
+      {(recentNews.length > 0 || upcomingEvents.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-14">
+          {recentNews.length > 0 && (
+            <section className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2"><Newspaper className="w-5 h-5 text-gray-400" /> Aktuelles</h2>
+                <Link href="/news" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                  Alle News <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
-            ))}
-          </div>
-        </section>
-      </div>
+              <div className="bg-white border border-gray-100 rounded-xl divide-y divide-gray-50 overflow-hidden">
+                {recentNews.map(article => (
+                  <a key={article.id} href={article.sourceUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-start gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors group">
+                    <span className={`flex-shrink-0 text-[10px] font-bold border rounded-md px-1.5 py-0.5 mt-0.5 ${sourceBadgeStyle[article.sourceName] ?? 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                      {article.sourceName}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">{article.title}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: de })}
+                        {article.aiGenerated && <span className="ml-2 text-gray-300">· KI-Zusammenfassung</span>}
+                      </p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {upcomingEvents.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-gray-400" /> Events
+                </h2>
+                <Link href="/events" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                  Alle <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+              <div className="flex flex-col gap-2">
+                {upcomingEvents.map(ev => (
+                  <div key={ev.id} className="bg-white border border-gray-100 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${eventTypeBadge[ev.type]}`}>{ev.type}</span>
+                      <span className="text-xs text-gray-400">{format(new Date(ev.date), 'd. MMM', { locale: de })}</span>
+                    </div>
+                    <p className="text-sm font-medium text-gray-800 leading-snug line-clamp-2">{ev.title}</p>
+                    {ev.description && <p className="text-xs text-gray-400 mt-1">{ev.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      )}
 
       {/* NEWSLETTER CTA */}
       <section className="bg-white border border-gray-100 rounded-2xl p-8 mb-16 text-center">

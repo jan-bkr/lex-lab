@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { mockEvents } from '@/lib/mock-data'
 import { Event as LexEvent } from '@/types'
 
 const TYPE_STYLES: Record<string, string> = {
@@ -86,6 +85,7 @@ function EventCard({ event }: { event: LexEvent }) {
 export default function EventsPage() {
   const [events, setEvents] = useState<LexEvent[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     async function fetchEvents() {
@@ -95,10 +95,10 @@ export default function EventsPage() {
         .select('*')
         .order('date', { ascending: true })
 
-      if (error || !data || data.length === 0) {
-        setEvents(mockEvents)
+      if (error) {
+        setLoadError(true)
       } else {
-        setEvents((data as EventRow[]).map(mapRow))
+        setEvents(data ? (data as EventRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -117,6 +117,22 @@ export default function EventsPage() {
         {[1, 2, 3].map(i => (
           <div key={i} className="h-24 bg-gray-100 rounded-xl" />
         ))}
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <div className="mb-8">
+          <h1 className="font-display text-3xl text-gray-900">Events & Termine</h1>
+          <p className="text-gray-500 mt-1 text-sm">
+            BFH/BGH-Verhandlungen, Gesetzgebungsfristen und Konferenzen
+          </p>
+        </div>
+        <p className="text-sm text-gray-500">
+          Events konnten nicht geladen werden. Bitte später erneut versuchen.
+        </p>
       </div>
     )
   }

@@ -67,6 +67,7 @@ src/
 │   │   └── prompts/                # Prompt-Verwaltung
 │   ├── api/                        # Route Handlers (alle POST-only, außer vote-status + pipeline)
 │   │   ├── pipeline/               # RSS→Claude→Supabase-Cron (GET+POST, maxDuration=60)
+│   │   ├── tools/submit/           # Tool-Einreichung (POST, Rate Limit: 5/Tag pro IP, schreibt via adminSupabase)
 │   │   ├── tools/vote/             # Vote-Toggle (POST, IP-Ratelimit: 20/24h pro IP+Tool)
 │   │   ├── tools/vote-status/      # Vote-Status abfragen (GET)
 │   │   ├── tools/[id]/comments/    # Kommentare laden + speichern
@@ -160,11 +161,21 @@ function mapTool(r: any): Tool {
 
 Niemals DB-Rohdaten direkt als Domain-Types verwenden.
 
-### Mock-Fallback-Pattern
-Öffentliche Seiten laden aus Supabase und fallen auf Mock-Daten zurück wenn DB leer oder fehlt:
+### Fehler- und Leer-Zustände (kein Mock-Fallback!)
+Öffentliche Seiten zeigen bei DB-Fehler einen Fehler-State, bei leerem Ergebnis einen Empty-State.
+**Niemals Mock-Daten als Fallback auf Live-Seiten verwenden** — das täuscht Nutzer und untergräbt das Vertrauen.
 
 ```typescript
-const tools = dbResult.data?.length ? dbResult.data.map(mapTool) : mockTools
+// Server Component (Homepage):
+const tools: Tool[] = toolsRes.data?.length ? toolsRes.data.map(mapTool) : []
+// → Sektion wird nur gerendert wenn tools.length > 0
+
+// Client Component (Tools-/Prompts-/Workflows-/Events-Page):
+if (error) {
+  setLoadError(true)      // → Fehler-State: "… konnten nicht geladen werden"
+} else {
+  setItems(data ? data.map(mapRow) : [])  // → Empty-State wenn leer
+}
 ```
 
 ### Styling
@@ -229,7 +240,7 @@ export default function Page() {
 | `ANTHROPIC_API_KEY` | Server only | Claude API — Pipeline + Prompt Builder |
 | `RESEND_API_KEY` | Server only | Newsletter-E-Mails + Kontaktformular |
 | `CRON_SECRET` | Server only | Auth für Pipeline + Cleanup + Newsletter-HMAC |
-| `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis — Rate Limiting (Vote, Comments, Prompts, Newsletter, Kontakt) |
+| `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis — Rate Limiting (Vote, Comments, Prompts, Newsletter, Kontakt, Tool-Submit) |
 | `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis — Rate Limiting |
 
 ---
@@ -276,6 +287,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
    - Prompt Builder: 10/Tag pro IP
    - Newsletter: 5/h pro IP
    - Kontaktformular: 5/h pro IP
+   - Tool-Einreichung: 5/Tag pro IP (`toolsubmit`)
    - Fallback auf In-Memory-Map wenn `UPSTASH_REDIS_REST_URL` nicht gesetzt (lokale Dev-Umgebung)
 
 6. **Claude-Modelle:**
@@ -319,6 +331,9 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Kontaktformular gehärtet** (2026-04-14) — `api/kontakt`: Rate Limiting (5/h pro IP), Origin-Check, HTML-Escaping aller User-Inputs, Feldlängenlimits.
 - [x] **Cleanup-Route auf POST+Auth umgestellt** (2026-04-14) — `api/admin/cleanup`: von GET auf POST, CRON_SECRET-Pflichtcheck.
 - [x] **Sicherheits- und Betriebs-Paket** (2026-04-14) — Admin Server Actions intern mit `requireAdminSession()` abgesichert; `tool_votes` SELECT-Policy entfernt (voter_ip = PII); Pipeline-Route exportiert GET+POST (Vercel Cron sendet GET); Vote-Zählung atomar via `toggle_tool_vote()` RPC (Migration 000003); Rate Limiting auf Upstash Redis migriert (`src/lib/rate-limit.ts`, Sliding Window, 5 Endpunkte, In-Memory-Fallback für lokale Entwicklung).
+- [x] **Public Truth & Submit Hardening** (2026-04-14) — `/tools/submit` von Browser-Anon-Write auf serverseitigen API-Route-Handler (`/api/tools/submit`) umgestellt: Validierung, Rate Limit (5/Tag pro IP), schreibt via `adminSupabase`. Mock-Fallbacks auf allen öffentlichen Seiten (Homepage, Tools, Prompts, Workflows, Events) durch echte Fehler-/Leer-States ersetzt. Sitemap bereinigt: `/prompts/[slug]` und `/news/[slug]` entfernt (Seiten existieren nicht). Navbar: `/beitraege` mit „bald"-Badge markiert statt leerem Link.
+
+> **Langfristig für `/tools/submit`:** Der aktuelle schmale Fix (API Route) ist korrekt, aber nicht optimal. Die sauberere Langzeitlösung ist ein vollständiger Server Action mit Moderationsbenachrichtigung (E-Mail an Admin via Resend), dedizierter Slug-Kollisionsprüfung und optionalem Double-Opt-In für den Einreicher. Priorität: mittel — erst nach Workflow-Content-Modell und pricing/pricing_type-Bereinigung.
 
 ---
 

@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Clock, ArrowRight } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
-import { mockWorkflows } from '@/lib/mock-data'
 import { Workflow, Rechtsgebiet } from '@/types'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
@@ -48,6 +47,7 @@ function borderColor(rechtsgebiet: Rechtsgebiet[]): string {
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [activeFilter, setActiveFilter] = useState<Rechtsgebiet | 'Alle'>('Alle')
 
   useEffect(() => {
@@ -59,10 +59,10 @@ export default function WorkflowsPage() {
         .eq('published', true)
         .order('created_at', { ascending: false })
 
-      if (error || !data || data.length === 0) {
-        setWorkflows(mockWorkflows)
+      if (error) {
+        setLoadError(true)
       } else {
-        setWorkflows((data as WorkflowRow[]).map(mapRow))
+        setWorkflows(data ? (data as WorkflowRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -98,7 +98,11 @@ export default function WorkflowsPage() {
         ))}
       </div>
 
-      {loading ? (
+      {loadError ? (
+        <div className="text-center py-16 text-sm text-gray-500">
+          Workflows konnten nicht geladen werden. Bitte später erneut versuchen.
+        </div>
+      ) : loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="bg-white border border-gray-100 rounded-xl p-5 animate-pulse space-y-3">
@@ -107,6 +111,10 @@ export default function WorkflowsPage() {
               <div className="h-3 bg-gray-100 rounded w-5/6" />
             </div>
           ))}
+        </div>
+      ) : filtered.length === 0 && activeFilter === 'Alle' ? (
+        <div className="text-center py-16 text-sm text-gray-400">
+          Noch keine Workflows verfügbar.
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-sm text-gray-400">

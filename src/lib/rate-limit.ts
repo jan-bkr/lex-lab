@@ -22,6 +22,7 @@ const LIMITS = {
   prompts:    { max: 10, window: '1 d'  as Duration, windowMs: 24 * 60 * 60 * 1000 },
   newsletter: { max: 5,  window: '1 h'  as Duration, windowMs:      60 * 60 * 1000 },
   kontakt:    { max: 5,  window: '1 h'  as Duration, windowMs:      60 * 60 * 1000 },
+  toolsubmit: { max: 5,  window: '1 d'  as Duration, windowMs: 24 * 60 * 60 * 1000 },
 } as const
 
 export type RateLimitKey = keyof typeof LIMITS

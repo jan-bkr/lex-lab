@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { PromptModal } from '@/components/PromptModal'
 import { createClient } from '@/lib/supabase/client'
-import { mockPrompts } from '@/lib/mock-data'
 import { Prompt, Rechtsgebiet } from '@/types'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
@@ -87,6 +86,7 @@ function PromptCard({
 export default function PromptsPage() {
   const [prompts, setPrompts] = useState<PromptWithDay[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [activeFilter, setActiveFilter] = useState<Rechtsgebiet | 'Alle'>('Alle')
   const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDay | null>(null)
 
@@ -99,10 +99,10 @@ export default function PromptsPage() {
         .order('is_prompt_of_day', { ascending: false })
         .order('created_at', { ascending: false })
 
-      if (error || !data || data.length === 0) {
-        setPrompts(mockPrompts.map(p => ({ ...p, isPromptOfDay: false })))
+      if (error) {
+        setLoadError(true)
       } else {
-        setPrompts((data as PromptRow[]).map(mapRow))
+        setPrompts(data ? (data as PromptRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -157,7 +157,11 @@ export default function PromptsPage() {
         ))}
       </div>
 
-      {loading ? (
+      {loadError ? (
+        <div className="text-center py-16 text-sm text-gray-500">
+          Prompts konnten nicht geladen werden. Bitte später erneut versuchen.
+        </div>
+      ) : loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-white border border-gray-100 rounded-xl p-5 animate-pulse space-y-3">
@@ -166,6 +170,10 @@ export default function PromptsPage() {
               <div className="h-10 bg-gray-100 rounded" />
             </div>
           ))}
+        </div>
+      ) : filtered.length === 0 && activeFilter === 'Alle' ? (
+        <div className="text-center py-16 text-sm text-gray-400">
+          Noch keine Prompts verfügbar.
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-sm text-gray-400">

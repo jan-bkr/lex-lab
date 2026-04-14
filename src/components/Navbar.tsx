@@ -9,7 +9,7 @@ const navLinks = [
   { href: '/workflows', label: 'Workflows' },
   { href: '/prompts', label: 'Prompts' },
   { href: '/prompts/builder', label: '✦ Builder', highlight: true },
-  { href: '/beitraege', label: 'Beiträge' },
+  { href: '/beitraege', label: 'Beiträge', soon: true },
   { href: '/news', label: 'News' },
   { href: '/events', label: 'Events' },
 ]
@@ -42,13 +42,18 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-all duration-150 font-medium ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-all duration-150 font-medium ${
                   link.highlight
                     ? 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
                     : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 {link.label}
+                {link.soon && (
+                  <span className="text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 leading-none">
+                    bald
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -84,9 +89,14 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="block py-2.5 text-sm text-gray-600 hover:text-gray-900 font-medium"
+              className="inline-flex items-center gap-2 py-2.5 text-sm text-gray-600 hover:text-gray-900 font-medium"
             >
               {link.label}
+              {link.soon && (
+                <span className="text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 leading-none">
+                  bald
+                </span>
+              )}
             </Link>
           ))}
           <Link

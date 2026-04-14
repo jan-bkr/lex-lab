@@ -43,29 +43,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  // Dynamic prompt routes
-  const { data: prompts } = await adminSupabase
-    .from('prompts')
-    .select('slug, created_at')
-  const prompt_routes: MetadataRoute.Sitemap = (prompts ?? []).map(p => ({
-    url: `${BASE}/prompts/${p.slug}`,
-    lastModified: new Date(p.created_at),
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }))
-
-  // Dynamic news routes
-  const { data: news } = await adminSupabase
-    .from('news_articles')
-    .select('slug, published_at')
-    .order('published_at', { ascending: false })
-    .limit(200)
-  const news_routes: MetadataRoute.Sitemap = (news ?? []).map(n => ({
-    url: `${BASE}/news/${n.slug}`,
-    lastModified: new Date(n.published_at),
-    changeFrequency: 'never',
-    priority: 0.5,
-  }))
-
-  return [...static_routes, ...tool_routes, ...workflow_routes, ...prompt_routes, ...news_routes]
+  return [...static_routes, ...tool_routes, ...workflow_routes]
 }

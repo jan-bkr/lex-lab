@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { Search, ChevronDown } from 'lucide-react'
 import { ToolCard } from '@/components/ToolCard'
 import { createClient } from '@/lib/supabase/client'
-import { mockTools } from '@/lib/mock-data'
 import { Tool, Rechtsgebiet } from '@/types'
 
 type SortOption = 'score' | 'votes' | 'newest' | 'alpha'
@@ -81,6 +80,7 @@ function ToolsPageInner() {
 
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState<Rechtsgebiet | 'Alle'>(initialFilter)
   const [sort, setSort] = useState<SortOption>('score')
@@ -93,10 +93,10 @@ function ToolsPageInner() {
         .select('*')
         .eq('status', 'approved')
 
-      if (error || !data || data.length === 0) {
-        setTools(mockTools)
+      if (error) {
+        setLoadError(true)
       } else {
-        setTools((data as SupabaseToolRow[]).map(mapRow))
+        setTools(data ? (data as SupabaseToolRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -193,11 +193,21 @@ function ToolsPageInner() {
       </div>
 
       {/* Content */}
-      {loading ? (
+      {loadError ? (
+        <div className="text-center py-20">
+          <p className="text-sm text-gray-500">
+            Tools konnten nicht geladen werden. Bitte später erneut versuchen.
+          </p>
+        </div>
+      ) : loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
+        </div>
+      ) : filtered.length === 0 && !search && activeFilter === 'Alle' ? (
+        <div className="text-center py-20">
+          <p className="text-sm text-gray-400">Noch keine Tools verfügbar.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
