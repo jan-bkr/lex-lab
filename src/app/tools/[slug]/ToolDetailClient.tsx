@@ -7,6 +7,7 @@ import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
 import { mockTools } from '@/lib/mock-data'
 import { Tool, Rechtsgebiet } from '@/types'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -325,6 +326,7 @@ export default function ToolDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = use(params)
+  const { trackEvent, AnalyticsEvents } = useAnalytics()
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -413,8 +415,13 @@ export default function ToolDetailPage({
         const data = await res.json()
         setVotes(data.votes)
         setVoted(data.voted)
-        if (data.voted) localStorage.setItem(`voted_${tool.id}`, '1')
-        else localStorage.removeItem(`voted_${tool.id}`)
+        if (data.voted) {
+          localStorage.setItem(`voted_${tool.id}`, '1')
+          trackEvent(AnalyticsEvents.TOOL_VOTE, { tool_slug: tool.slug, rechtsgebiet: tool.rechtsgebiet?.[0] })
+        } else {
+          localStorage.removeItem(`voted_${tool.id}`)
+          trackEvent(AnalyticsEvents.TOOL_UNVOTE, { tool_slug: tool.slug, rechtsgebiet: tool.rechtsgebiet?.[0] })
+        }
       } else {
         // Revert
         setVotes(v => isVoting ? v - 1 : v + 1)
