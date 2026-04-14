@@ -112,7 +112,7 @@ export default function ImpressumPage() {
             KI-Hinweis
           </h2>
           <p className="mb-4">
-            Teile der auf dieser Website veröffentlichten Inhalte, insbesondere Nachrichtenzusammenfassungen im News-Bereich, werden mithilfe von Künstlicher Intelligenz (KI) automatisiert erstellt oder bearbeitet. Diese Inhalte sind entsprechend als „KI-Zusammenfassung" gekennzeichnet. Die inhaltliche Verantwortung für alle veröffentlichten Inhalte liegt bei Jan Becker.
+            Teile der auf dieser Website veröffentlichten Inhalte, insbesondere Nachrichtenzusammenfassungen im News-Bereich, werden mithilfe von Künstlicher Intelligenz (KI) automatisiert erstellt oder bearbeitet. Diese Inhalte sind entsprechend als &bdquo;KI-Zusammenfassung&ldquo; gekennzeichnet. Die inhaltliche Verantwortung für alle veröffentlichten Inhalte liegt bei Jan Becker.
           </p>
           <p>
             <span className="font-medium text-gray-700">Hinweis nach § 18 Abs. 3 MStV:</span> Automatisiert erstellte Inhalte auf dieser Website (insbesondere KI-generierte Nachrichtenzusammenfassungen) sind als solche gekennzeichnet.

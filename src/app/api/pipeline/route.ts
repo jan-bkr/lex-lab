@@ -186,8 +186,11 @@ async function processSource(
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
+// Vercel Cron Jobs send GET requests (no method can be specified in vercel.json).
+// Manual triggers via curl use POST with Authorization: Bearer <CRON_SECRET>.
+// Both methods share identical auth + processing logic.
 
-export async function POST(request: Request): Promise<Response> {
+async function handleRequest(request: Request): Promise<Response> {
   const runStart = Date.now()
   const runId    = Math.random().toString(36).slice(2, 8)
 
@@ -249,3 +252,6 @@ export async function POST(request: Request): Promise<Response> {
     errors,
   })
 }
+
+export async function GET(request: Request):  Promise<Response> { return handleRequest(request) }
+export async function POST(request: Request): Promise<Response> { return handleRequest(request) }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 type Params = { params: Promise<{ id: string }> }
 type AllowedRechtsgebiet = 'Steuerrecht' | 'M&A' | 'Gesellschaftsrecht' | 'Venture Capital'
@@ -8,22 +9,12 @@ type AllowedRechtsgebiet = 'Steuerrecht' | 'M&A' | 'Gesellschaftsrecht' | 'Ventu
 const COMMENT_LIMIT = 500
 const NAME_LIMIT = 80
 const ROLE_LIMIT = 80
-const COMMENT_WINDOW_MS = 60 * 60 * 1000
-const MAX_COMMENTS_PER_IP = 5
 const ALLOWED_RECHTSGEBIETE: AllowedRechtsgebiet[] = [
   'Steuerrecht',
   'M&A',
   'Gesellschaftsrecht',
   'Venture Capital',
 ]
-const commentLimit = new Map<string, { count: number; resetAt: number }>()
-
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, val] of commentLimit) {
-    if (now >= val.resetAt) commentLimit.delete(key)
-  }
-}, 60 * 60 * 1000)
 
 function getClientIp(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -42,23 +33,6 @@ function isSameOrigin(request: NextRequest): boolean {
   } catch {
     return false
   }
-}
-
-function checkRateLimit(key: string): boolean {
-  const now = Date.now()
-  const current = commentLimit.get(key)
-
-  if (!current || now >= current.resetAt) {
-    commentLimit.set(key, { count: 1, resetAt: now + COMMENT_WINDOW_MS })
-    return true
-  }
-
-  if (current.count >= MAX_COMMENTS_PER_IP) {
-    return false
-  }
-
-  commentLimit.set(key, { count: current.count + 1, resetAt: current.resetAt })
-  return true
 }
 
 // ─── GET: fetch approved comments for a tool ──────────────────────────────────
@@ -94,7 +68,8 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 
   const ip = getClientIp(req)
-  if (!checkRateLimit(ip)) {
+  const { allowed } = await checkRateLimit('comments', ip)
+  if (!allowed) {
     return NextResponse.json({ error: 'Zu viele Anfragen. Bitte später erneut versuchen.' }, { status: 429 })
   }
 

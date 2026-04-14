@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -6,9 +7,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const NAME_LIMIT = 120
 const SUBJECT_LIMIT = 150
 const MESSAGE_LIMIT = 5000
-const CONTACT_WINDOW_MS = 60 * 60 * 1000
-const MAX_CONTACT_REQUESTS_PER_IP = 5
-const contactLimit = new Map<string, { count: number; resetAt: number }>()
 
 function getClientIp(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -27,23 +25,6 @@ function isSameOrigin(request: Request): boolean {
   } catch {
     return false
   }
-}
-
-function checkRateLimit(key: string): boolean {
-  const now = Date.now()
-  const current = contactLimit.get(key)
-
-  if (!current || now >= current.resetAt) {
-    contactLimit.set(key, { count: 1, resetAt: now + CONTACT_WINDOW_MS })
-    return true
-  }
-
-  if (current.count >= MAX_CONTACT_REQUESTS_PER_IP) {
-    return false
-  }
-
-  contactLimit.set(key, { count: current.count + 1, resetAt: current.resetAt })
-  return true
 }
 
 function escapeHtml(value: string): string {
@@ -86,7 +67,8 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const ip = getClientIp(request)
-  if (!checkRateLimit(ip)) {
+  const { allowed } = await checkRateLimit('kontakt', ip)
+  if (!allowed) {
     return Response.json({ error: 'Zu viele Anfragen. Bitte später erneut versuchen.' }, { status: 429 })
   }
 

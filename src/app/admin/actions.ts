@@ -1,7 +1,18 @@
 'use server'
 
 import { adminSupabase } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+
+// ─── Auth guard ───────────────────────────────────────────────────────────────
+// Server Actions are direct HTTP endpoints — the admin layout only protects the
+// UI, not the action themselves. Every write action must call this guard first.
+
+async function requireAdminSession(): Promise<void> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+}
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
@@ -119,6 +130,7 @@ export interface UpdateToolPayload {
 }
 
 export async function updateTool(id: string, payload: UpdateToolPayload): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase
     .from('tools')
     .update({
@@ -152,6 +164,7 @@ export async function updateTool(id: string, payload: UpdateToolPayload): Promis
 }
 
 export async function approveTool(id: string): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase
     .from('tools')
     .update({ status: 'approved' })
@@ -162,6 +175,7 @@ export async function approveTool(id: string): Promise<void> {
 }
 
 export async function rejectTool(id: string): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase
     .from('tools')
     .update({ status: 'rejected' })
@@ -182,6 +196,7 @@ export async function fetchAllNews(): Promise<AdminNewsArticle[]> {
 }
 
 export async function deleteNewsArticle(id: string): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase.from('news_articles').delete().eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/news')
@@ -198,6 +213,7 @@ interface NewsInsert {
 }
 
 export async function addNewsArticle(data: NewsInsert): Promise<void> {
+  await requireAdminSession()
   const slug =
     data.title
       .toLowerCase()
@@ -243,6 +259,7 @@ export async function fetchComments(status: 'pending' | 'approved'): Promise<Adm
 }
 
 export async function approveComment(id: string): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase
     .from('tool_comments')
     .update({ status: 'approved' })
@@ -252,6 +269,7 @@ export async function approveComment(id: string): Promise<void> {
 }
 
 export async function rejectComment(id: string): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase
     .from('tool_comments')
     .delete()
@@ -272,6 +290,7 @@ export async function fetchAllPrompts(): Promise<AdminPrompt[]> {
 }
 
 export async function setPromptOfDay(id: string): Promise<void> {
+  await requireAdminSession()
   // Clear all first
   const { error: clearError } = await adminSupabase
     .from('prompts')
@@ -289,6 +308,7 @@ export async function setPromptOfDay(id: string): Promise<void> {
 }
 
 export async function clearPromptOfDay(id: string): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase
     .from('prompts')
     .update({ is_prompt_of_day: false })
@@ -299,6 +319,7 @@ export async function clearPromptOfDay(id: string): Promise<void> {
 }
 
 export async function deletePrompt(id: string): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase.from('prompts').delete().eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/prompts')
@@ -314,6 +335,7 @@ interface PromptInsert {
 }
 
 export async function addPrompt(data: PromptInsert): Promise<void> {
+  await requireAdminSession()
   const { error } = await adminSupabase.from('prompts').insert({
     ...data,
     is_prompt_of_day: false,

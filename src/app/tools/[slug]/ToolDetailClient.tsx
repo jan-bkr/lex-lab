@@ -513,6 +513,7 @@ export default function ToolDetailPage({
       .then(d => setComments(d.comments ?? []))
       .catch(() => {})
       .finally(() => setCommentsLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- tool.id is the relevant dep; full tool object would cause spurious refetches on reference changes
   }, [tool?.id])
 
   const similarTools = tools

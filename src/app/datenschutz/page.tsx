@@ -133,7 +133,7 @@ export default function DatenschutzPage() {
           <p>
             Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher
             Inhalte eine SSL- bzw. TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie
-            daran, dass die Adresszeile des Browsers von „http://" auf „https://" wechselt und an dem
+            daran, dass die Adresszeile des Browsers von &bdquo;http://&ldquo; auf &bdquo;https://&ldquo; wechselt und an dem
             Schloss-Symbol in Ihrer Browserzeile.
           </p>
         </section>

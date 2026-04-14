@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { JURIST_PERSONA } from '@/lib/jurist-persona'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const DAILY_LIMIT = 10
 
 const ALLOWED_RECHTSGEBIETE = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'] as const
 const ALLOWED_AUFGABEN = [
@@ -27,18 +26,6 @@ const ALLOWED_DETAILTIEFE = [
 const ALLOWED_SPRACHE = ['Deutsch (Standard)', 'Englisch'] as const
 
 const SACHVERHALT_MAX = 800
-
-// ─── In-memory rate limiter (resets on server restart) ────────────────────────
-
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-
-// Periodic cleanup: remove expired entries every hour to prevent unbounded growth
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, val] of rateLimitMap) {
-    if (now >= val.resetAt) rateLimitMap.delete(key)
-  }
-}, 60 * 60 * 1000)
 
 function isSameOrigin(req: NextRequest): boolean {
   const origin = req.headers.get('origin')
@@ -67,22 +54,12 @@ export async function POST(req: NextRequest) {
 
   // ── Rate limiting ──
   const ip = getClientIp(req)
-  const now = Date.now()
-  const midnight = new Date()
-  midnight.setHours(24, 0, 0, 0)
-  const resetAt = midnight.getTime()
-
-  const current = rateLimitMap.get(ip)
-  if (current && now < current.resetAt) {
-    if (current.count >= DAILY_LIMIT) {
-      return NextResponse.json(
-        { error: 'RATE_LIMIT_EXCEEDED', limit: DAILY_LIMIT },
-        { status: 429 }
-      )
-    }
-    rateLimitMap.set(ip, { count: current.count + 1, resetAt: current.resetAt })
-  } else {
-    rateLimitMap.set(ip, { count: 1, resetAt })
+  const { allowed, remaining } = await checkRateLimit('prompts', ip)
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'RATE_LIMIT_EXCEEDED', limit: 10 },
+      { status: 429 }
+    )
   }
 
   // ── Parse + validate input ──
@@ -148,8 +125,6 @@ Erstelle den optimalen Prompt für diese juristische Aufgabe.`,
     const promptText = (
       message.content[0].type === 'text' ? message.content[0].text : ''
     ).replace(/\[ENDE\]\s*$/, '').trimEnd()
-
-    const remaining = DAILY_LIMIT - (rateLimitMap.get(ip)?.count ?? 1)
 
     return NextResponse.json({ prompt: promptText, remaining })
   } catch (err) {

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase, Grid3X3, Sparkles, Newspaper, Mail } from 'lucide-react'
+import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase, Grid3X3, Newspaper, Mail } from 'lucide-react'
 import { mockTools, mockWorkflows, mockPrompts, mockNews, mockEvents } from '@/lib/mock-data'
 import { ToolCard } from '@/components/ToolCard'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'

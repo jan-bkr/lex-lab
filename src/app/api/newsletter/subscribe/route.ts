@@ -1,21 +1,11 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import { makeToken } from '@/app/api/newsletter/unsubscribe/route'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const SUBSCRIBE_WINDOW_MS = 60 * 60 * 1000
-const MAX_SUBSCRIPTIONS_PER_IP = 5
-const subscribeLimit = new Map<string, { count: number; resetAt: number }>()
-
-// ─── Periodic cleanup: remove expired entries every hour ─────────────────────
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, val] of subscribeLimit) {
-    if (now >= val.resetAt) subscribeLimit.delete(key)
-  }
-}, 60 * 60 * 1000)
 
 function getClientIp(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -34,23 +24,6 @@ function isSameOrigin(request: Request): boolean {
   } catch {
     return false
   }
-}
-
-function checkRateLimit(key: string): boolean {
-  const now = Date.now()
-  const current = subscribeLimit.get(key)
-
-  if (!current || now >= current.resetAt) {
-    subscribeLimit.set(key, { count: 1, resetAt: now + SUBSCRIBE_WINDOW_MS })
-    return true
-  }
-
-  if (current.count >= MAX_SUBSCRIPTIONS_PER_IP) {
-    return false
-  }
-
-  subscribeLimit.set(key, { count: current.count + 1, resetAt: current.resetAt })
-  return true
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -78,7 +51,8 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const ip = getClientIp(request)
-  if (!checkRateLimit(ip)) {
+  const { allowed } = await checkRateLimit('newsletter', ip)
+  if (!allowed) {
     return Response.json({ error: 'Zu viele Anfragen. Bitte später erneut versuchen.' }, { status: 429 })
   }
 
