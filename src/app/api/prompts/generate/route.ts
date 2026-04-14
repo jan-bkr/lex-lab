@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { JURIST_PERSONA } from '@/lib/jurist-persona'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -120,7 +121,7 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5',
       max_tokens: 1500,
-      system: `Du bist ein erfahrener Rechtsanwalt und Steuerberater auf Partnerniveau einer führenden deutschen Wirtschaftskanzlei. Erstelle einen präzisen, professionellen Prompt der einen KI-Assistenten anweist, die beschriebene juristische Aufgabe auf höchstem Niveau zu bearbeiten. Der Prompt soll: (1) die KI in die richtige Rolle versetzen, (2) die Aufgabe klar strukturieren mit nummerierten Prüfungsschritten, (3) relevante Gesetze, Normen und Prüfungspunkte explizit nennen, (4) das gewünschte Ausgabeformat definieren, (5) einen Platzhalter [SACHVERHALT EINFÜGEN] für den konkreten Fall enthalten. Antworte NUR mit dem fertigen Prompt, ohne Erklärungen oder Präambel.`,
+      system: JURIST_PERSONA + `\n\nDeine Aufgabe jetzt: Erstelle ausschließlich den aufgabenspezifischen Teil eines juristischen Prompts. Deine Rolle und Arbeitsweise sind bereits definiert und werden automatisch vorangestellt — schreibe KEINE Rolleneinleitung, KEIN "Du bist...". Beginne direkt mit der Aufgabenbeschreibung. Der generierte Teil soll: (1) die konkrete juristische Aufgabe klar strukturieren mit nummerierten Prüfungsschritten, (2) relevante Gesetze, Normen und Prüfungspunkte explizit nennen, (3) das gewünschte Ausgabeformat definieren, (4) einen Platzhalter [SACHVERHALT EINFÜGEN] enthalten. Antworte NUR mit dem Aufgabenteil, ohne Erklärungen, ohne Präambel, ohne Markdown-Codeblock.`,
       messages: [
         {
           role: 'user',
