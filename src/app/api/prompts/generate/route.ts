@@ -120,8 +120,9 @@ export async function POST(req: NextRequest) {
   try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5',
-      max_tokens: 1500,
-      system: JURIST_PERSONA + `\n\nDeine Aufgabe jetzt: Erstelle ausschließlich den aufgabenspezifischen Teil eines juristischen Prompts. Deine Rolle und Arbeitsweise sind bereits definiert und werden automatisch vorangestellt — schreibe KEINE Rolleneinleitung, KEIN "Du bist...". Beginne direkt mit der Aufgabenbeschreibung. Der generierte Teil soll: (1) die konkrete juristische Aufgabe klar strukturieren mit nummerierten Prüfungsschritten, (2) relevante Gesetze, Normen und Prüfungspunkte explizit nennen, (3) das gewünschte Ausgabeformat definieren, (4) einen Platzhalter [SACHVERHALT EINFÜGEN] enthalten. Antworte NUR mit dem Aufgabenteil, ohne Erklärungen, ohne Präambel, ohne Markdown-Codeblock.`,
+      max_tokens: 2000,
+      stop_sequences: ['[ENDE]'],
+      system: JURIST_PERSONA + `\n\nDeine Aufgabe jetzt: Erstelle ausschließlich den aufgabenspezifischen Teil eines juristischen Prompts. Deine Rolle und Arbeitsweise sind bereits definiert und werden automatisch vorangestellt — schreibe KEINE Rolleneinleitung, KEIN "Du bist...". Beginne direkt mit der Aufgabenbeschreibung. Der generierte Teil soll: (1) die konkrete juristische Aufgabe klar strukturieren mit nummerierten Prüfungsschritten, (2) relevante Gesetze, Normen und Prüfungspunkte explizit nennen, (3) das gewünschte Ausgabeformat definieren, (4) einen Platzhalter [SACHVERHALT EINFÜGEN] enthalten. Antworte NUR mit dem Aufgabenteil, ohne Erklärungen, ohne Präambel, ohne Markdown-Codeblock. Wichtig: Der generierte Prompt muss vollständig und mit einem sauberen Satz enden. Wenn der Platz nicht reicht für alle Details, kürze frühere Abschnitte — aber das Ende muss immer ein vollständiger, abgeschlossener Satz sein. Niemals mitten im Satz oder mitten in einem Abschnitt aufhören. Beende deinen Output mit [ENDE].`,
       messages: [
         {
           role: 'user',
@@ -136,8 +137,9 @@ Erstelle den optimalen Prompt für diese juristische Aufgabe.`,
       ],
     })
 
-    const promptText =
+    const promptText = (
       message.content[0].type === 'text' ? message.content[0].text : ''
+    ).replace(/\[ENDE\]\s*$/, '').trimEnd()
 
     const remaining = DAILY_LIMIT - (rateLimitMap.get(ip)?.count ?? 1)
 
