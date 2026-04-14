@@ -242,6 +242,9 @@ curl -X POST http://localhost:3000/api/pipeline \
 node scripts/bulk-import-tools.mjs --dry-run   # Vorschau ohne Schreibzugriff
 node scripts/bulk-import-tools.mjs             # Live gegen Supabase
 # Voraussetzung: .env.local mit NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
+
+# Vercel Deployment-Status prüfen:
+npx vercel ls                                  # Zeigt aktuelle Deployments (Building/Ready/Error)
 ```
 
 ---
@@ -280,6 +283,8 @@ node scripts/bulk-import-tools.mjs             # Live gegen Supabase
 11. **Startseite nutzt Admin-Client** (`adminSupabase`) direkt in einem Server Component — das ist korrekt (Server-seitig), aber ungewöhnlich. Begründung: öffentliche Daten ohne RLS-Overhead lesen.
 
 12. **JSON-LD Schema.org** auf der Startseite via `<script dangerouslySetInnerHTML>`. Bei neuen Seiten ggf. ergänzen.
+
+13. **Vercel-Deploy-Verzögerung** — Nach `git push` startet das Vercel-Deployment automatisch, aber mit ~30–60s Verzögerung. Status prüfen mit `npx vercel ls`. Kein manueller Trigger nötig solange GitHub-Integration aktiv ist.
 
 ---
 
