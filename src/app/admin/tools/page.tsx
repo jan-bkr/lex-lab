@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { ExternalLink, Check, X, Clock } from 'lucide-react'
+import Link from 'next/link'
+import { ExternalLink, Check, X, Clock, Pencil } from 'lucide-react'
 import { fetchTools, approveTool, rejectTool, type AdminTool } from '../actions'
 
 const TABS = ['Ausstehend', 'Genehmigt'] as const
@@ -74,26 +75,35 @@ function ToolRow({
           ))}
         </div>
 
-        {onApprove && onReject && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => onReject(tool.id)}
-              disabled={isPending}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 disabled:opacity-50 transition-colors"
-            >
-              <X className="w-3 h-3" />
-              Ablehnen
-            </button>
-            <button
-              onClick={() => onApprove(tool.id)}
-              disabled={isPending}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 disabled:opacity-50 transition-colors"
-            >
-              <Check className="w-3 h-3" />
-              Genehmigen
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          <Link
+            href={`/admin/tools/${tool.id}/edit`}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 transition-colors"
+          >
+            <Pencil className="w-3 h-3" />
+            Bearbeiten
+          </Link>
+          {onApprove && onReject && (
+            <>
+              <button
+                onClick={() => onReject(tool.id)}
+                disabled={isPending}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 disabled:opacity-50 transition-colors"
+              >
+                <X className="w-3 h-3" />
+                Ablehnen
+              </button>
+              <button
+                onClick={() => onApprove(tool.id)}
+                disabled={isPending}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 disabled:opacity-50 transition-colors"
+              >
+                <Check className="w-3 h-3" />
+                Genehmigen
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

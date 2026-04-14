@@ -66,6 +66,91 @@ export async function fetchToolCounts(): Promise<{ pending: number; approved: nu
   return { pending: pending ?? 0, approved: approved ?? 0 }
 }
 
+export interface AdminToolFull extends AdminTool {
+  pricing: string | null
+  pricing_url: string | null
+  screenshot_url: string | null
+  long_description: string | null
+  best_for: string[] | null
+  not_for: string[] | null
+  verdict: string | null
+  last_reviewed_at: string | null
+  score_praxisreife: number | null
+  score_datenschutz: number | null
+  score_dach: number | null
+  score_ux: number | null
+  score_preis: number | null
+  lexlab_score: number | null
+}
+
+export async function fetchToolById(id: string): Promise<AdminToolFull | null> {
+  const { data, error } = await adminSupabase
+    .from('tools')
+    .select('*')
+    .eq('id', id)
+    .single()
+  if (error) throw new Error(error.message)
+  return data as AdminToolFull | null
+}
+
+
+export interface UpdateToolPayload {
+  name: string
+  tagline: string
+  url: string
+  rechtsgebiet: string[]
+  category: string[]
+  pricing: string
+  pricing_url: string
+  is_new: boolean
+  featured: boolean
+  description: string
+  long_description: string
+  best_for: string[]
+  not_for: string[]
+  verdict: string
+  last_reviewed_at: string
+  score_praxisreife: number | null
+  score_datenschutz: number | null
+  score_dach: number | null
+  score_ux: number | null
+  score_preis: number | null
+  lexlab_score: number | null
+}
+
+export async function updateTool(id: string, payload: UpdateToolPayload): Promise<void> {
+  const { error } = await adminSupabase
+    .from('tools')
+    .update({
+      name:              payload.name,
+      tagline:           payload.tagline || null,
+      url:               payload.url,
+      rechtsgebiet:      payload.rechtsgebiet,
+      category:          payload.category,
+      pricing:           payload.pricing || null,
+      pricing_url:       payload.pricing_url || null,
+      is_new:            payload.is_new,
+      featured:          payload.featured,
+      description:       payload.description || null,
+      long_description:  payload.long_description || null,
+      best_for:          payload.best_for.length ? payload.best_for : null,
+      not_for:           payload.not_for.length ? payload.not_for : null,
+      verdict:           payload.verdict || null,
+      last_reviewed_at:  payload.last_reviewed_at || null,
+      score_praxisreife: payload.score_praxisreife,
+      score_datenschutz: payload.score_datenschutz,
+      score_dach:        payload.score_dach,
+      score_ux:          payload.score_ux,
+      score_preis:       payload.score_preis,
+      lexlab_score:      payload.lexlab_score,
+    })
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/tools')
+  revalidatePath(`/tools/${id}`)
+  revalidatePath('/tools')
+}
+
 export async function approveTool(id: string): Promise<void> {
   const { error } = await adminSupabase
     .from('tools')
