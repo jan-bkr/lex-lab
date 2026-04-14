@@ -2,14 +2,22 @@ import Parser from 'rss-parser'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { RSS_SOURCES, type RssSource } from '@/lib/rss-sources'
 
-// Do not cache — always run fresh
+// ─── Runtime config ───────────────────────────────────────────────────────────
+// Vercel Hobby: max 60s. Without this the default is 10s — far too short for
+// 11 RSS feeds + Claude summarisation calls.
+export const maxDuration = 60
 export const dynamic = 'force-dynamic'
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+const RSS_FETCH_TIMEOUT_MS  = 8_000  // abort slow feeds before they stall the pipeline
+const CLAUDE_TIMEOUT_MS     = 15_000 // Claude Haiku is fast but give headroom
+const MAX_ITEMS_PER_SOURCE  = 3
+
 const parser = new Parser({
-  headers: {
-    'User-Agent': 'Mozilla/5.0 (compatible; lex-lab-bot/1.0)',
-  },
+  headers: { 'User-Agent': 'Mozilla/5.0 (compatible; lex-lab-bot/1.0)' },
 })
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function slugify(title: string): string {
   return title
@@ -21,14 +29,20 @@ function slugify(title: string): string {
     .slice(0, 80)
 }
 
-interface ClaudeTextContent {
-  type: 'text'
-  text: string
+/** Races a promise against a timeout; throws with a descriptive message on expiry. */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout after ${ms}ms: ${label}`)), ms)
+    ),
+  ])
 }
 
-interface ClaudeResponse {
-  content: ClaudeTextContent[]
-}
+// ─── Claude summarisation ─────────────────────────────────────────────────────
+
+interface ClaudeTextContent { type: 'text'; text: string }
+interface ClaudeResponse    { content: ClaudeTextContent[] }
 
 async function summariseWithClaude(title: string, snippet: string): Promise<string> {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -41,12 +55,10 @@ async function summariseWithClaude(title: string, snippet: string): Promise<stri
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 200,
-      messages: [
-        {
-          role: 'user',
-          content: `Fasse diesen Artikel in 2-3 prägnanten deutschen Sätzen zusammen. Fokus auf das Wesentliche für Juristen und Steuerberater. Titel: ${title}. Inhalt: ${snippet}. Antworte nur mit der Zusammenfassung, kein Präambel.`,
-        },
-      ],
+      messages: [{
+        role: 'user',
+        content: `Fasse diesen Artikel in 2-3 prägnanten deutschen Sätzen zusammen. Fokus auf das Wesentliche für Juristen und Steuerberater. Titel: ${title}. Inhalt: ${snippet}. Antworte nur mit der Zusammenfassung, kein Präambel.`,
+      }],
     }),
   })
 
@@ -58,31 +70,42 @@ async function summariseWithClaude(title: string, snippet: string): Promise<stri
   return json.content[0]?.text?.trim() ?? ''
 }
 
+// ─── Per-source processing ────────────────────────────────────────────────────
+
 interface PipelineResult {
-  source: string
+  source:    string
   processed: number
-  inserted: number
-  skipped: number
-  error?: string
+  inserted:  number
+  skipped:   number
+  durationMs: number
+  error?:    string
 }
 
 async function processSource(
   source: RssSource,
-  maxItems: number,
   cutoffMs: number
 ): Promise<PipelineResult> {
-  const result: PipelineResult = { source: source.name, processed: 0, inserted: 0, skipped: 0 }
+  const t0     = Date.now()
+  const result: PipelineResult = {
+    source: source.name, processed: 0, inserted: 0, skipped: 0, durationMs: 0,
+  }
 
+  // ── Fetch RSS with timeout ──
   let feed: Awaited<ReturnType<typeof parser.parseURL>>
   try {
-    feed = await parser.parseURL(source.url)
+    feed = await withTimeout(
+      parser.parseURL(source.url),
+      RSS_FETCH_TIMEOUT_MS,
+      `RSS ${source.name}`
+    )
   } catch (e) {
-    result.error = e instanceof Error ? e.message : String(e)
-    console.error(`[pipeline] ${source.name} — feed fetch failed:`, result.error)
+    result.error    = e instanceof Error ? e.message : String(e)
+    result.durationMs = Date.now() - t0
+    console.error(`[pipeline] ${source.name} — feed fetch failed (${result.durationMs}ms):`, result.error)
     return result
   }
 
-  const items = feed.items.slice(0, maxItems)
+  const items = feed.items.slice(0, MAX_ITEMS_PER_SOURCE)
   console.log(`[pipeline] ${source.name} — ${items.length} item(s) to evaluate`)
 
   for (const item of items) {
@@ -91,22 +114,22 @@ async function processSource(
     const link  = item.link?.trim()
 
     if (!title || !link) {
-      console.log(`[pipeline] ${source.name} — skipping item without title/link`)
       result.skipped++
       continue
     }
 
     // Age gate — skip if older than cutoff
-    const pubDate = item.isoDate ? new Date(item.isoDate) : item.pubDate ? new Date(item.pubDate) : null
+    const pubDate = item.isoDate
+      ? new Date(item.isoDate)
+      : item.pubDate ? new Date(item.pubDate) : null
+
     if (pubDate && pubDate.getTime() < cutoffMs) {
-      console.log(`[pipeline] ${source.name} — skipping "${title}" (too old: ${pubDate.toISOString()})`)
+      console.log(`[pipeline] ${source.name} — skip (too old): "${title}"`)
       result.skipped++
       continue
     }
 
-    const slug = slugify(title) + '-' + Date.now()
-
-    // Deduplicate by source_url
+    // Dedup by source_url
     const { data: existing } = await adminSupabase
       .from('news_articles')
       .select('id')
@@ -114,32 +137,35 @@ async function processSource(
       .maybeSingle()
 
     if (existing) {
-      console.log(`[pipeline] ${source.name} — skipping "${title}" (already exists)`)
+      console.log(`[pipeline] ${source.name} — skip (duplicate): "${title}"`)
       result.skipped++
       continue
     }
 
-    // Summarise with Claude
+    // Summarise with Claude (with timeout)
     const snippet = item.contentSnippet ?? item.summary ?? item.content ?? ''
-    console.log(`[pipeline] ${source.name} — title: "${title}"`)
     let summary: string
     try {
-      summary = await summariseWithClaude(title, snippet.slice(0, 1000))
+      summary = await withTimeout(
+        summariseWithClaude(title, snippet.slice(0, 1000)),
+        CLAUDE_TIMEOUT_MS,
+        `Claude ${source.name} / ${title.slice(0, 40)}`
+      )
     } catch (e) {
       console.error(`[pipeline] ${source.name} — Claude failed for "${title}":`, e)
       result.skipped++
       continue
     }
 
-    // Insert into Supabase
+    // Insert
     const publishedAt = pubDate?.toISOString() ?? new Date().toISOString()
     const { error: insertError } = await adminSupabase.from('news_articles').insert({
       title,
-      slug,
+      slug:        slugify(title) + '-' + Date.now(),
       summary,
-      source_url: link,
+      source_url:  link,
       source_name: source.name,
-      category: source.category,
+      category:    source.category,
       published_at: publishedAt,
       ai_generated: true,
     })
@@ -150,30 +176,44 @@ async function processSource(
       continue
     }
 
-    console.log(`[pipeline] ${source.name} — inserted "${title}"`)
+    console.log(`[pipeline] ${source.name} — inserted: "${title}"`)
     result.inserted++
   }
 
+  result.durationMs = Date.now() - t0
+  console.log(`[pipeline] ${source.name} — done in ${result.durationMs}ms (inserted: ${result.inserted}, skipped: ${result.skipped})`)
   return result
 }
 
+// ─── Route handler ────────────────────────────────────────────────────────────
+
 export async function POST(request: Request): Promise<Response> {
-  // Allow Vercel cron (no auth header) OR manual trigger with secret
-  const authHeader = request.headers.get('Authorization')
-  const isVercelCron = request.headers.get('x-vercel-cron') === '1'
+  const runStart = Date.now()
+  const runId    = Math.random().toString(36).slice(2, 8)
+
+  // ── Auth ──
+  const authHeader    = request.headers.get('Authorization')
+  const isVercelCron  = request.headers.get('x-vercel-cron') === '1'
   const isManualTrigger = authHeader === `Bearer ${process.env.CRON_SECRET}`
 
   if (!isVercelCron && !isManualTrigger) {
+    console.warn(`[pipeline][${runId}] Unauthorized request — origin: ${request.headers.get('origin')}`)
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  console.log('[pipeline] Starting full pipeline run…')
+  const trigger = isVercelCron ? 'vercel-cron' : 'manual'
   const cutoffMs = Date.now() - 24 * 60 * 60 * 1000
 
-  const results = await Promise.allSettled(
-    RSS_SOURCES.map(source => processSource(source, 3, cutoffMs))
+  console.log(
+    `[pipeline][${runId}] ▶ START — trigger: ${trigger}, sources: ${RSS_SOURCES.length}, cutoff: ${new Date(cutoffMs).toISOString()}`
   )
 
+  // ── Run all sources in parallel ──
+  const results = await Promise.allSettled(
+    RSS_SOURCES.map(source => processSource(source, cutoffMs))
+  )
+
+  // ── Aggregate ──
   let totalProcessed = 0
   let totalInserted  = 0
   let totalSkipped   = 0
@@ -190,12 +230,22 @@ export async function POST(request: Request): Promise<Response> {
     }
   }
 
-  console.log(`[pipeline] Done — processed: ${totalProcessed}, inserted: ${totalInserted}, skipped: ${totalSkipped}, errors: ${errors.length}`)
+  const totalMs = Date.now() - runStart
+
+  console.log(
+    `[pipeline][${runId}] ■ END — ${totalMs}ms | processed: ${totalProcessed} | inserted: ${totalInserted} | skipped: ${totalSkipped} | errors: ${errors.length}`
+  )
+  if (errors.length > 0) {
+    console.error(`[pipeline][${runId}] Errors:`, errors)
+  }
 
   return Response.json({
-    processed: totalProcessed,
-    inserted:  totalInserted,
-    skipped:   totalSkipped,
+    runId,
+    trigger,
+    durationMs: totalMs,
+    processed:  totalProcessed,
+    inserted:   totalInserted,
+    skipped:    totalSkipped,
     errors,
   })
 }
