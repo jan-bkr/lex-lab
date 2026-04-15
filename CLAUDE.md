@@ -332,12 +332,14 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Workflows-Admin-UI** — `/admin/workflows` gebaut (2026-04-15)
 - [x] **Events-Admin-UI** — `/admin/events` gebaut (2026-04-15)
 - [x] **Newsletter-Admin-UI** — `/admin/newsletter` gebaut (2026-04-15)
-- [ ] **Beiträge-Seite** (`/beitraege`) ist vollständiger Placeholder ohne Inhalt
+- [x] **Beiträge-Seite** (`/beitraege`) als professionelles Teaser-Format geschärft (2026-04-16) — keine Baustellen-Optik mehr
+- [x] **Workflow-Detailseiten** als Premium-Teaser gestaltet (2026-04-16) — WORKFLOW_STEPS-Hardcode entfernt, intentionelle Bald-Sektion mit Lock-Icons
+- [x] **Eigene 404- und Error-Seiten** gebaut (2026-04-16) — `not-found.tsx` + `error.tsx`, brand-konsistent
+- [x] **Tool-Submit-Flow** — Admin-Benachrichtigung via Resend implementiert (2026-04-15)
 - [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt). Platzhalter auf Detailseite wurde bereits entfernt — Screenshot wird nur gerendert wenn URL vorhanden.
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
 - [ ] **Prompt-Detailseiten** — `/prompts/[slug]` existiert nicht; Seite noch nicht gebaut
 - [ ] **News-Detailseiten** — `/news/[slug]` existiert nicht; Seite noch nicht gebaut
-- [x] **Tool-Submit-Flow** — Admin-Benachrichtigung via Resend implementiert (2026-04-15)
 
 ## Erledigte Meilensteine
 
@@ -361,6 +363,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Public Read Contracts vereinheitlicht** (2026-04-15) — `select('*')` auf allen verbleibenden öffentlichen Client-Seiten durch explizite Spaltenlisten ersetzt: `news/page.tsx`, `prompts/page.tsx`, `events/page.tsx`, `workflows/page.tsx`, `WorkflowDetailClient.tsx`. Homepage (`page.tsx`) ebenfalls auf explizite Selects umgestellt (5 adminSupabase-Queries). `content`-Spalte aus lokalem `WorkflowRow`-Interface in beiden Workflow-Dateien entfernt — wurde nie gemappt oder gerendert. Kein `select('*')` mehr in öffentlichen Queries.
 - [x] **`pricing`-Spaltenname-Fix** (2026-04-15) — DB-Spalte heißt `pricing`, nicht `pricing_type`. Der Fehler `42703 column tools.pricing_type does not exist` brach jede Tool-Detailseite. Korrigiert in `ToolDetailClient.tsx` (Select-String, Interface, Mapper), `actions.ts` (`AdminToolFull`, `UpdateToolPayload`, DB-Update) und `EditForm.tsx` (State + Payload). Ein früherer Hinweis in diesem CLAUDE.md, der `pricing_type` als korrekte Spalte beschrieb, war falsch.
 - [x] **RLS-Bypass-Fix: anon INSERT auf `tools` + anon SELECT auf `newsletter_subscribers`** (2026-04-15) — (1) anon INSERT-Policy `"Anyone can submit"` auf `tools` entfernt — der Submit-Flow läuft vollständig serverseitig via `adminSupabase`; direkte anon-INSERTs umgehen Rate Limit, Validierung und Origin-Check. (2) Public SELECT-Policy `"Service role can read"` (roles={public}, qual=true) auf `newsletter_subscribers` entfernt — legt sonst die gesamte E-Mail-Liste für jeden anon-Key-Inhaber offen (DSGVO-Verstoß). Migrations: `20260415000003` + `20260415000004`. **Im Supabase SQL Editor ausgeführt und verifiziert ✅** — `tools` hat nur noch `"Public read approved tools"` (SELECT); `newsletter_subscribers` hat nur noch `"Anyone can subscribe"` (INSERT).
+
+- [x] **Phase B — Produktreife** (2026-04-16) — (1) `/beitraege`: Disabled-Reaction-Buttons entfernt, Artikel-Teaser als bewusstes Teaser-Format mit sauberem Card-Layout und "erscheint in Kürze"-Copy geschärft. (2) Workflow-Detailseiten: `WORKFLOW_STEPS`-Hardcode vollständig entfernt, ersetzt durch `WorkflowStepsTeaser`-Komponente mit 5 generischen Lock-Icon-Schritten (opacity-40) + Newsletter-CTA — sieht intentionell aus, keine Baustellen-Optik. (3) `src/app/not-found.tsx` + `src/app/error.tsx` neu erstellt — brand-konsistente 404- und Error-Boundary-Seiten mit Quick-Links resp. Reset-Button; `error.tsx` loggt `error.digest` an Console, gibt keinen Stack Trace an den User.
 
 ---
 
@@ -408,3 +412,6 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **`ToolDetailClient.tsx`** lädt das Tool per `.eq('slug', slug).maybeSingle()` (kein fetch-all mehr). Ähnliche Tools kommen aus einer separaten `.overlaps('rechtsgebiet', ...)` Abfrage mit minimalen Spalten. `SimilarToolsList` akzeptiert `Pick<Tool, 'id' | 'name' | 'slug' | 'rechtsgebiet'>[]`.
 - **`vote/route.ts`**: prüft `status = 'approved'` via DB-Lookup vor dem `toggle_tool_vote`-RPC — Votes auf nicht-öffentliche Tools werden mit 404 abgewiesen.
 - **`tools`-Spaltenname `pricing`**: Die DB-Spalte für den Preistyp heißt `pricing` (nicht `pricing_type`). Code in `ToolDetailClient.tsx`, `actions.ts` (`UpdateToolPayload`, `updateTool`) und `EditForm.tsx` verwenden `pricing`. Niemals `pricing_type` schreiben — die Spalte existiert nicht in der DB (Fehlercode `42703`).
+- **Eigene 404- und Error-Seiten**: `src/app/not-found.tsx` (Server Component) und `src/app/error.tsx` (`'use client'`) existieren. Bei Routing-Änderungen nicht vergessen, dass diese globalen Fehlerseiten das Framework-Default ersetzen. `error.tsx` zeigt `error.digest` dem User, aber keinen Stack Trace.
+- **WorkflowDetailClient hat keinen WORKFLOW_STEPS-Hardcode mehr** — alle Workflow-Detailseiten zeigen `WorkflowStepsTeaser` (generische Lock-Icon-Schritte + Newsletter-CTA). Kein slug-spezifischer Content-Hardcode.
+- **`/beitraege`**: Professionelles Teaser-Format mit zwei Artikel-Cards. Artikel-Array in `ARTICLES` konstante in `page.tsx` — neue Teaser dort ergänzen.

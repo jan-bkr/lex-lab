@@ -1,11 +1,40 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import { NewsletterForm } from '@/components/NewsletterForm'
 
 export const metadata: Metadata = {
   title: 'Beiträge',
   description: 'Gedanken, Erfahrungen und Einblicke aus der Praxis.',
 }
+
+// ─── Teaser-Artikel ────────────────────────────────────────────────────────
+interface Article {
+  category: string
+  categoryColor: string
+  title: string
+  preview: string
+  readingTime: string
+}
+
+const ARTICLES: Article[] = [
+  {
+    category: 'Erfahrungsbericht',
+    categoryColor: 'text-blue-600 bg-blue-50 border-blue-100',
+    title: 'AI Legal Club: Mein Erfahrungsbericht zum KI-Onlinekurs für Juristen',
+    preview:
+      'Ich habe den Onlinekurs des AI Legal Clubs absolviert und ein Zertifikat nach AI Act Art. 4 erhalten. In diesem Beitrag teile ich meine Erfahrungen: Was taugt der Kurs wirklich für den Kanzleialltag? Welche KI-Tools sind für Rechtsanwälte tatsächlich praxisrelevant? Und lohnt sich die Investition?',
+    readingTime: '8 Min. Lesezeit',
+  },
+  {
+    category: 'Tool-Review',
+    categoryColor: 'text-purple-600 bg-purple-50 border-purple-100',
+    title: 'TaxGraph im Praxistest: Der Claude-Konnektor für deutsches Steuerrecht',
+    preview:
+      'TaxGraph ist ein MCP-Konnektor für Claude, der direkten Zugriff auf deutsches Steuerrecht, BMF-Schreiben und aktuelle Rechtsprechung ermöglicht — direkt in der Claude-Oberfläche ohne Copy-Paste. Ich habe TaxGraph intensiv in meiner täglichen Kanzleiarbeit getestet. Mein Fazit: Was funktioniert wirklich, wo sind die Grenzen, und lohnt sich der Einsatz für Steuerrechtler und M&A-Anwälte?',
+    readingTime: '10 Min. Lesezeit',
+  },
+]
 
 export default function BeitraegePage() {
   return (
@@ -14,138 +43,74 @@ export default function BeitraegePage() {
       <div className="mb-10">
         <h1 className="font-display text-4xl text-gray-900 mb-3">Beiträge</h1>
         <p className="text-gray-500 text-sm leading-relaxed">
-          Gedanken, Erfahrungen und Einblicke aus der Praxis.
+          Praxisberichte, Tool-Reviews und Einblicke aus dem Rechtsalltag mit KI.
         </p>
       </div>
 
-      {/* Teaser card */}
-      <div className="relative bg-white border border-gray-100 rounded-xl p-6 mb-8 shadow-sm">
+      {/* Article teasers */}
+      <div className="space-y-6 mb-10">
+        {ARTICLES.map((article) => (
+          <article
+            key={article.title}
+            className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm"
+          >
+            {/* Coming-soon badge */}
+            <div className="flex justify-end mb-4">
+              <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
+                Wird bald veröffentlicht
+              </span>
+            </div>
 
-        {/* Coming soon banner */}
-        <div className="flex justify-end mb-4">
-          <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
-            📝 Wird bald veröffentlicht
-          </span>
-        </div>
+            {/* Author */}
+            <div className="flex items-center gap-3 mb-4">
+              <Image
+                src="/jan-becker.jpg"
+                alt="Jan Becker"
+                width={40}
+                height={40}
+                className="rounded-full object-cover object-top flex-shrink-0"
+              />
+              <div>
+                <p className="text-sm font-semibold text-gray-900 leading-none">Jan Becker</p>
+                <p className="text-xs text-gray-400 mt-0.5">Rechtsanwalt · {article.readingTime}</p>
+              </div>
+            </div>
 
-        {/* Author row */}
-        <div className="flex items-center gap-3 mb-4">
-          <Image
-            src="/jan-becker.jpg"
-            alt="Jan Becker"
-            width={40}
-            height={40}
-            className="rounded-full object-cover object-top flex-shrink-0"
-          />
-          <div>
-            <p className="text-sm font-semibold text-gray-900 leading-none">Jan Becker</p>
-            <p className="text-xs text-gray-400 mt-0.5">Rechtsanwalt · Demnächst</p>
-          </div>
-        </div>
+            {/* Category */}
+            <div className="mb-3">
+              <span
+                className={`text-[11px] font-semibold border rounded-md px-2 py-0.5 uppercase tracking-wide ${article.categoryColor}`}
+              >
+                {article.category}
+              </span>
+            </div>
 
-        {/* Category badge */}
-        <div className="mb-3">
-          <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-md px-2 py-0.5 uppercase tracking-wide">
-            Erfahrungsbericht
-          </span>
-        </div>
+            {/* Title */}
+            <h2 className="font-display text-2xl text-gray-900 leading-snug mb-3">
+              {article.title}
+            </h2>
 
-        {/* Title */}
-        <h2 className="font-display text-2xl text-gray-900 leading-snug mb-3">
-          AI Legal Club: Mein Erfahrungsbericht zum KI-Onlinekurs für Juristen
-        </h2>
-
-        {/* Preview text */}
-        <p className="text-sm text-gray-600 leading-relaxed mb-6">
-          Ich habe den Onlinekurs des AI Legal Clubs absolviert und ein Zertifikat nach AI Act Art. 4 erhalten.
-          In diesem Beitrag teile ich meine Erfahrungen: Was taugt der Kurs wirklich für den Kanzleialltag?
-          Welche KI-Tools sind für Rechtsanwälte tatsächlich praxisrelevant? Und lohnt sich die Investition?
-          Der vollständige Beitrag erscheint in Kürze.
-        </p>
-
-        {/* Bottom row */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-gray-50">
-          <div className="flex items-center gap-2">
-            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
-              ✦ Wertvoll
-            </button>
-            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
-              💡 Interessant
-            </button>
-            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
-              ⚖ Praxisrelevant
-            </button>
-          </div>
-          <span className="text-xs text-gray-400">💬 Kommentare folgen</span>
-        </div>
-      </div>
-
-      {/* Teaser card 2: TaxGraph */}
-      <div className="relative bg-white border border-gray-100 rounded-xl p-6 mb-8 shadow-sm">
-
-        {/* Coming soon banner */}
-        <div className="flex justify-end mb-4">
-          <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
-            📝 Wird bald veröffentlicht
-          </span>
-        </div>
-
-        {/* Author row */}
-        <div className="flex items-center gap-3 mb-4">
-          <Image
-            src="/jan-becker.jpg"
-            alt="Jan Becker"
-            width={40}
-            height={40}
-            className="rounded-full object-cover object-top flex-shrink-0"
-          />
-          <div>
-            <p className="text-sm font-semibold text-gray-900 leading-none">Jan Becker</p>
-            <p className="text-xs text-gray-400 mt-0.5">Rechtsanwalt · Demnächst</p>
-          </div>
-        </div>
-
-        {/* Category badge */}
-        <div className="mb-3">
-          <span className="text-[11px] font-semibold text-purple-600 bg-purple-50 border border-purple-100 rounded-md px-2 py-0.5 uppercase tracking-wide">
-            Tool-Review
-          </span>
-        </div>
-
-        {/* Title */}
-        <h2 className="font-display text-2xl text-gray-900 leading-snug mb-3">
-          TaxGraph im Praxistest: Der Claude-Konnektor für deutsches Steuerrecht
-        </h2>
-
-        {/* Preview text */}
-        <p className="text-sm text-gray-600 leading-relaxed mb-6">
-          TaxGraph ist ein MCP-Konnektor für Claude, der direkten Zugriff auf deutsches Steuerrecht, BMF-Schreiben und aktuelle Rechtsprechung ermöglicht — direkt in der Claude-Oberfläche ohne Copy-Paste. Ich habe TaxGraph intensiv in meiner täglichen Kanzleiarbeit getestet. Mein Fazit: Was funktioniert wirklich, wo sind die Grenzen, und lohnt sich der Einsatz für Steuerrechtler und M&A-Anwälte? Der vollständige Erfahrungsbericht erscheint in Kürze.
-        </p>
-
-        {/* Bottom row */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-gray-50">
-          <div className="flex items-center gap-2">
-            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
-              ✦ Wertvoll
-            </button>
-            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
-              💡 Interessant
-            </button>
-            <button disabled className="inline-flex items-center gap-1 text-xs text-gray-300 border border-gray-100 rounded-lg px-2.5 py-1.5 cursor-not-allowed">
-              ⚖ Praxisrelevant
-            </button>
-          </div>
-          <span className="text-xs text-gray-400">💬 Kommentare folgen</span>
-        </div>
+            {/* Preview text */}
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {article.preview} <span className="text-gray-400">— Der vollständige Beitrag erscheint in Kürze.</span>
+            </p>
+          </article>
+        ))}
       </div>
 
       {/* Newsletter CTA */}
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
-        <p className="text-sm font-medium text-blue-900 mb-1">Beiträge erscheinen in Kürze.</p>
-        <p className="text-sm text-blue-700 mb-4">
-          Abonniere den Newsletter um als Erster informiert zu werden.
+      <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
+        <p className="text-sm font-semibold text-blue-900 mb-1">Beiträge erscheinen in Kürze.</p>
+        <p className="text-sm text-blue-700 mb-5">
+          Abonniere den Newsletter — du wirst als Erster informiert, wenn neue Beiträge erscheinen.
         </p>
         <NewsletterForm />
+        <p className="text-xs text-blue-500 mt-3">
+          Bereits abonniert?{' '}
+          <Link href="/newsletter" className="underline hover:text-blue-700 transition-colors">
+            Zur Newsletter-Seite
+          </Link>
+        </p>
       </div>
     </div>
   )

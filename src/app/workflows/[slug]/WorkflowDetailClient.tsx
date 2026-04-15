@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Clock, ArrowLeft, Calendar } from 'lucide-react'
+import { Clock, ArrowLeft, Calendar, Lock } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
 import { Workflow, Rechtsgebiet } from '@/types'
@@ -30,44 +30,65 @@ function mapRow(row: WorkflowRow): Workflow {
   }
 }
 
-const WORKFLOW_STEPS: Record<string, string[]> = {
-  'due-diligence-claude-ma': [
-    'Scope definieren: Erstelle mit Claude eine strukturierte Checkliste der DD-Bereiche (Legal, Tax, IP, HR) basierend auf dem Term Sheet.',
-    'Dokumenten-Upload und Indexierung: Lade Verträge, Jahresabschlüsse und Korrespondenz in Claude und erstelle eine vollständige Dokumentenübersicht.',
-    'Red-Flag-Analyse: Nutze den Due Diligence Red Flag Scanner-Prompt für jeden Vertragstyp. Kategorisiere Findings nach Deal Breaker / Nachverhandlung / Standard.',
-    'Risikomatrix erstellen: Verdichte alle Findings in einer priorisierten Risikomatrix mit Handlungsempfehlungen und Verantwortlichkeiten.',
-    'DD-Bericht generieren: Erstelle den finalen Bericht strukturiert nach Bereichen, inklusive Executive Summary und Management Letter für den Mandanten.',
-  ],
-  'steuermemo-prompt-kette': [
-    'Sachverhalt aufbereiten: Strukturiere die Fakten in Kategorien (Beteiligte, Transaktionsstruktur, Zeitachse, Beträge) und übergib sie als Kontext an Claude.',
-    'Normenidentifikation: Führe den ersten Prompt aus — Claude identifiziert einschlägige Normen (EStG, KStG, UmwStG) und gibt eine erste rechtliche Einschätzung.',
-    'Tatbestandsprüfung: Zweiter Prompt für die detaillierte Subsumtion: Tatbestandsmerkmale werden systematisch gegen den Sachverhalt geprüft.',
-    'Steuerberechnung: Dritter Prompt mit konkreten Zahlen — Claude berechnet steuerliche Auswirkungen und prüft Wahlrechte (z.B. Teileinkünfteverfahren, Optionen).',
-    'Memo finalisieren: Abschlussprompt generiert das strukturierte Steuermemo im Kanzleiformat mit Ergebnis, Begründung und Gestaltungshinweisen.',
-  ],
-  'term-sheet-review-ki': [
-    'Term Sheet strukturieren: Unterteile das Dokument in Abschnitte (Bewertung, Finanzierung, Governance, Exit) und lade jeden Abschnitt separat in Claude.',
-    'Wirtschaftliche Kernklauseln analysieren: Prüfe Bewertung (Pre-/Post-Money), Liquidationspräferenz (partizipierend vs. nicht-partizipierend) und Anti-Dilution-Mechanismus.',
-    'Governance-Analyse: Untersuche Board-Zusammensetzung, Vetorechte, Drag-along- und Tag-along-Klauseln sowie Vesting-Bedingungen für Gründer.',
-    'Marktvergleich generieren: Claude vergleicht die Konditionen mit marktüblichen Standards und identifiziert konkrete Verhandlungsspielräume.',
-    'Mandantenbriefing erstellen: Generiere eine klare Zusammenfassung der Key Issues mit priorisierten Verhandlungsempfehlungen für das Mandantengespräch.',
-  ],
-  'gmbh-gruendung-automatisiert': [
-    'Mandantendaten erfassen: Strukturierter Fragebogen für Gesellschafter, Stammkapital, Unternehmensgegenstand, Sitz und Geschäftsführerbestellung.',
-    'Standardfall vs. Individualfall: Claude prüft, ob das vereinfachte Musterprotokoll (§ 2 Abs. 1a GmbHG) ausreicht oder eine individuelle Satzung erforderlich ist.',
-    'Satzungsentwurf generieren: KI erstellt den Satzungsentwurf mit allen Pflichtangaben und mandantenspezifischen Regelungen (Vinkulierung, Einziehung, Wettbewerbsverbot).',
-    'Gesellschafterliste und Unterlagen: Automatische Erstellung der Gesellschafterliste nach § 40 GmbHG sowie Checkliste für Einzahlungsnachweis und Handelsregisteranmeldung.',
-    'Notartermin vorbereiten: Vollständige Checkliste mit allen erforderlichen Dokumenten, Legitimationsnachweisen und Vollmachten für den Beurkundungstermin.',
-  ],
-}
-
-
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('de-DE', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   })
+}
+
+// ─── Premium bald-Platzhalter für Workflow-Schritte ────────────────────────
+const STEP_LABELS = [
+  'Scope & Vorbereitung',
+  'Daten & Kontext aufbereiten',
+  'KI-Analyse durchführen',
+  'Ergebnisse prüfen & verdichten',
+  'Dokument finalisieren',
+]
+
+function WorkflowStepsTeaser() {
+  return (
+    <div className="bg-white border border-gray-100 rounded-xl p-6">
+      <div className="flex items-start justify-between mb-4">
+        <h2 className="font-display font-semibold text-gray-900">Schritt-für-Schritt-Anleitung</h2>
+        <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5 flex-shrink-0 ml-3">
+          Erscheint in Kürze
+        </span>
+      </div>
+
+      <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+        Die vollständige Anleitung mit konkreten Prompts, Tipps und Praxisbeispielen ist in Vorbereitung.
+      </p>
+
+      {/* Faded step indicators */}
+      <ol className="space-y-3 mb-6">
+        {STEP_LABELS.map((label, i) => (
+          <li key={i} className="flex items-center gap-3 opacity-40 select-none">
+            <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-400">
+              {i + 1}
+            </span>
+            <div className="flex-1 flex items-center justify-between gap-2">
+              <span className="text-sm text-gray-400">{label}</span>
+              <Lock className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <div className="border-t border-gray-50 pt-4">
+        <p className="text-xs text-gray-400">
+          Newsletter abonnieren — du wirst informiert, sobald dieser Workflow vollständig verfügbar ist.
+        </p>
+        <Link
+          href="/newsletter"
+          className="inline-block mt-2 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+        >
+          Jetzt abonnieren &rarr;
+        </Link>
+      </div>
+    </div>
+  )
 }
 
 export default function WorkflowDetailPage({
@@ -102,8 +123,6 @@ export default function WorkflowDetailPage({
   const similar = workflows
     .filter(w => w.slug !== slug && w.rechtsgebiet.some(r => workflow?.rechtsgebiet.includes(r)))
     .slice(0, 2)
-
-  const steps = WORKFLOW_STEPS[slug] ?? null
 
   if (loadError) {
     return (
@@ -145,7 +164,7 @@ export default function WorkflowDetailPage({
           Dieser Workflow existiert nicht oder wurde entfernt.
         </p>
         <Link href="/workflows" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-          ← Workflows
+          &larr; Workflows
         </Link>
       </div>
     )
@@ -186,35 +205,7 @@ export default function WorkflowDetailPage({
             <p className="text-gray-600 leading-relaxed text-sm">{workflow.excerpt}</p>
           </div>
 
-          {steps ? (
-            <div className="bg-white border border-gray-100 rounded-xl p-6">
-              <h2 className="font-display font-semibold text-gray-900 mb-1">Workflow-Schritte</h2>
-              <p className="text-xs text-gray-400 mb-5">Kurze Beispiele — ausführliche Schritt-für-Schritt-Anleitungen folgen bald.</p>
-              <ol className="space-y-5">
-                {steps.map((step, i) => {
-                  const colonIdx = step.indexOf(':')
-                  const label = colonIdx !== -1 ? step.slice(0, colonIdx) : step
-                  const body = colonIdx !== -1 ? step.slice(colonIdx + 1).trim() : ''
-                  return (
-                    <li key={i} className="flex gap-4">
-                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
-                        {i + 1}
-                      </span>
-                      <div className="pt-0.5 text-sm">
-                        <span className="font-semibold text-gray-800">{label}:</span>
-                        {body && <span className="text-gray-600"> {body}</span>}
-                      </div>
-                    </li>
-                  )
-                })}
-              </ol>
-            </div>
-          ) : (
-            <div className="bg-white border border-gray-100 rounded-xl p-6">
-              <h2 className="font-display font-semibold text-gray-900 mb-1">Workflow-Schritte</h2>
-              <p className="text-sm text-gray-400">Die detaillierte Schritt-für-Schritt-Anleitung für diesen Workflow erscheint bald.</p>
-            </div>
-          )}
+          <WorkflowStepsTeaser />
         </div>
 
         {/* Sidebar */}
