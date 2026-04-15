@@ -1,11 +1,7 @@
 import { adminSupabase } from '@/lib/supabase/admin'
+import { getHashedIp } from '@/lib/ip'
 
 export const dynamic = 'force-dynamic'
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  return forwarded ? forwarded.split(',')[0].trim() : 'unknown'
-}
 
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url)
@@ -15,13 +11,13 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ voted: false })
   }
 
-  const ip = getClientIp(request)
+  const hashedIp = getHashedIp(request)
 
   const { data } = await adminSupabase
     .from('tool_votes')
     .select('id')
     .eq('tool_id', toolId)
-    .eq('voter_ip', ip)
+    .eq('voter_ip', hashedIp)
     .maybeSingle()
 
   return Response.json({ voted: data !== null })

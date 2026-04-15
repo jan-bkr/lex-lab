@@ -6,6 +6,15 @@ import { Resend } from 'resend'
 
 export const dynamic = 'force-dynamic'
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 const RECHTSGEBIETE = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'] as const
 
 function slugify(name: string): string {
@@ -161,11 +170,11 @@ export async function POST(req: NextRequest) {
           <p style="color: #6B7280; font-size: 13px; margin-top: 0;">via lex-lab.de Tool-Einreichung</p>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
           <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-            <tr><td style="padding: 6px 0; color: #6B7280; width: 120px;">Name</td><td style="padding: 6px 0; color: #111827; font-weight: 500;">${nameStr}</td></tr>
-            <tr><td style="padding: 6px 0; color: #6B7280;">URL</td><td style="padding: 6px 0;"><a href="${(url as string).trim()}" style="color: #2563EB;">${(url as string).trim()}</a></td></tr>
-            <tr><td style="padding: 6px 0; color: #6B7280;">Tagline</td><td style="padding: 6px 0; color: #111827;">${(tagline as string).trim()}</td></tr>
-            <tr><td style="padding: 6px 0; color: #6B7280;">Rechtsgebiet</td><td style="padding: 6px 0; color: #111827;">${(rechtsgebiet as string[]).join(', ')}</td></tr>
-            <tr><td style="padding: 6px 0; color: #6B7280;">Einreicher</td><td style="padding: 6px 0; color: #111827;">${typeof email === 'string' && email.trim() ? email.trim() : '–'}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280; width: 120px;">Name</td><td style="padding: 6px 0; color: #111827; font-weight: 500;">${escapeHtml(nameStr)}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">URL</td><td style="padding: 6px 0;"><a href="${escapeHtml((url as string).trim())}" style="color: #2563EB;">${escapeHtml((url as string).trim())}</a></td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">Tagline</td><td style="padding: 6px 0; color: #111827;">${escapeHtml((tagline as string).trim())}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">Rechtsgebiet</td><td style="padding: 6px 0; color: #111827;">${escapeHtml((rechtsgebiet as string[]).join(', '))}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">Einreicher</td><td style="padding: 6px 0; color: #111827;">${typeof email === 'string' && email.trim() ? escapeHtml(email.trim()) : '–'}</td></tr>
           </table>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
           <a href="https://www.lex-lab.de/admin/tools" style="display: inline-block; background: #2563EB; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;">

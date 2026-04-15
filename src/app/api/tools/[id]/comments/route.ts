@@ -7,6 +7,15 @@ import { getHashedIp } from '@/lib/ip'
 type Params = { params: Promise<{ id: string }> }
 type AllowedRechtsgebiet = 'Steuerrecht' | 'M&A' | 'Gesellschaftsrecht' | 'Venture Capital'
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 const COMMENT_LIMIT = 500
 const NAME_LIMIT = 80
 const ROLE_LIMIT = 80
@@ -105,6 +114,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       .from('tools')
       .select('slug')
       .eq('id', id)
+      .eq('status', 'approved')
       .maybeSingle()
 
     if (toolErr || !toolRow) {
@@ -134,18 +144,18 @@ export async function POST(req: NextRequest, { params }: Params) {
       resend.emails.send({
         from: 'lex-lab.de <kontakt@lex-lab.de>',
         to: 'janiklas.dropbox@web.de',
-        subject: `[lex-lab.de] Neuer Kommentar: ${toolRow.slug}`,
+        subject: `[lex-lab.de] Neuer Kommentar: ${escapeHtml(toolRow.slug)}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #111827; margin-bottom: 4px;">Neuer Kommentar zur Prüfung</h2>
-            <p style="color: #6B7280; font-size: 13px; margin-top: 0;">via lex-lab.de · Tool: ${toolRow.slug}</p>
+            <p style="color: #6B7280; font-size: 13px; margin-top: 0;">via lex-lab.de · Tool: ${escapeHtml(toolRow.slug)}</p>
             <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-              <tr><td style="padding: 6px 0; color: #6B7280; width: 120px;">Name</td><td style="padding: 6px 0; color: #111827; font-weight: 500;">${safeName}</td></tr>
-              <tr><td style="padding: 6px 0; color: #6B7280;">Rolle</td><td style="padding: 6px 0; color: #111827;">${safeRole || 'Sonstiges'}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280; width: 120px;">Name</td><td style="padding: 6px 0; color: #111827; font-weight: 500;">${escapeHtml(safeName)}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280;">Rolle</td><td style="padding: 6px 0; color: #111827;">${escapeHtml(safeRole || 'Sonstiges')}</td></tr>
               <tr><td style="padding: 6px 0; color: #6B7280;">Bewertung</td><td style="padding: 6px 0; color: #111827;">${stars}</td></tr>
-              <tr><td style="padding: 6px 0; color: #6B7280;">Rechtsgebiet</td><td style="padding: 6px 0; color: #111827;">${safeRechtsgebiet.join(', ') || '–'}</td></tr>
-              <tr><td style="padding: 6px 0; color: #6B7280; vertical-align: top;">Kommentar</td><td style="padding: 6px 0; color: #111827;">${safeComment ?? '–'}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280;">Rechtsgebiet</td><td style="padding: 6px 0; color: #111827;">${escapeHtml(safeRechtsgebiet.join(', ') || '–')}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280; vertical-align: top;">Kommentar</td><td style="padding: 6px 0; color: #111827;">${safeComment ? escapeHtml(safeComment) : '–'}</td></tr>
             </table>
             <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
             <a href="https://www.lex-lab.de/admin/comments" style="display: inline-block; background: #2563EB; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;">

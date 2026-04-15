@@ -31,6 +31,11 @@ function CommentRow({
             <span className="text-[10px] font-medium bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-md border border-gray-200">
               {comment.role}
             </span>
+            {comment.rating != null && (
+              <span className="text-[11px] text-amber-500 font-medium tracking-tight">
+                {'★'.repeat(comment.rating)}{'☆'.repeat(5 - comment.rating)}
+              </span>
+            )}
             {comment.rechtsgebiet?.map(rg => (
               <span key={rg} className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-md border border-blue-100">
                 {rg}
@@ -53,9 +58,15 @@ function CommentRow({
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 rounded-lg p-3">
-        {comment.comment}
-      </p>
+      {comment.comment ? (
+        <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 rounded-lg p-3">
+          {comment.comment}
+        </p>
+      ) : (
+        <p className="text-xs text-gray-400 italic bg-gray-50 rounded-lg p-3">
+          Nur Bewertung, kein Kommentartext.
+        </p>
+      )}
 
       {onApprove && onReject && (
         <div className="flex justify-end gap-2">

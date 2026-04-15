@@ -249,7 +249,8 @@ export interface AdminComment {
   name: string
   role: string
   rechtsgebiet: string[]
-  comment: string
+  comment: string | null
+  rating: number | null
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
   tools?: { name: string; slug: string }
