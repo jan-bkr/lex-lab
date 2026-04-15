@@ -222,6 +222,28 @@ export default function DatenschutzPage() {
                 Datenschutzerklärung Anthropic →
               </a>
             </div>
+
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-800 mb-1.5">Upstash Inc. (Rate Limiting)</h3>
+              <p className="mb-1.5">
+                Zum Schutz öffentlicher API-Endpunkte vor Missbrauch (z.&nbsp;B. übermäßige
+                Tool-Einreichungen, Kommentare, Newsletter-Anmeldungen) setzen wir Upstash Redis
+                ein. Dabei wird die anonymisierte IP-Adresse der anfragenden Person temporär
+                gespeichert, um die Anfragerate zu begrenzen. Diese Daten werden ausschließlich
+                für technische Schutzzwecke verwendet und nach Ablauf des jeweiligen Zeitfensters
+                automatisch gelöscht (maximal 24&nbsp;Stunden). Es findet keine dauerhafte
+                Speicherung oder Profilbildung statt.
+              </p>
+              <p className="mb-1.5">
+                <strong className="text-gray-700">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO
+                (berechtigtes Interesse an der Sicherheit und dem Schutz der Website vor automatisierten
+                Angriffen).
+              </p>
+              <a href="https://upstash.com/trust/privacy.pdf" target="_blank" rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 text-xs inline-block">
+                Datenschutzerklärung Upstash →
+              </a>
+            </div>
           </div>
         </section>
 
@@ -241,16 +263,26 @@ export default function DatenschutzPage() {
         {/* 9. Cookies */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
-            9. Cookies und Tracking
+            9. Cookies, Analyse und Performance
           </h2>
           <p className="mb-3">
-            Diese Website verwendet <strong className="text-gray-800">keine</strong> Analyse-Tools,
-            kein Tracking und keine Werbe-Cookies. Es werden ausschließlich technisch notwendige
-            Cookies gesetzt, die für den Betrieb der Website erforderlich sind (z.B. Sitzungsdaten).
+            Diese Website verwendet <strong className="text-gray-800">keine</strong> Werbe-Cookies,
+            kein Cross-Site-Tracking und keine Dienste wie Google Analytics oder Meta Pixel.
+          </p>
+          <p className="mb-3">
+            Wir setzen <strong className="text-gray-800">Vercel Analytics</strong> und{' '}
+            <strong className="text-gray-800">Vercel Speed Insights</strong> ein. Diese Dienste
+            erfassen anonyme Nutzungsstatistiken (aufgerufene Seiten, Herkunftsland, Gerätekategorie,
+            Web-Vitals-Metriken) ohne Cookies und ohne geräteübergreifende Verfolgung einzelner
+            Nutzer. Die Daten werden auf Servern von Vercel Inc. verarbeitet (siehe Abschnitt 7).
+          </p>
+          <p className="mb-3">
+            <strong className="text-gray-700">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO
+            (berechtigtes Interesse an der Verbesserung der Website-Performance und Nutzererfahrung).
           </p>
           <p>
-            Auf den Einsatz von Google Analytics, Meta Pixel oder vergleichbaren Tracking-Diensten
-            wird vollständig verzichtet.
+            Es werden ausschließlich technisch notwendige Sitzungs-Cookies gesetzt, die für den
+            Betrieb der Website (z.&nbsp;B. Admin-Authentifizierung) erforderlich sind.
           </p>
         </section>
 

@@ -114,7 +114,7 @@ export function EditForm({ tool }: { tool: AdminToolFull }) {
   const [description, setDescription] = useState(tool.description ?? '')
   const [rechtsgebiet, setRechtsgebiet] = useState<string[]>(tool.rechtsgebiet ?? [])
   const [category, setCategory] = useState(tagsToString(tool.category))
-  const [pricing, setPricing] = useState(tool.pricing ?? '')
+  const [pricingType, setPricingType] = useState(tool.pricing_type ?? '')
   const [pricingUrl, setPricingUrl] = useState(tool.pricing_url ?? '')
   const [isNew, setIsNew] = useState(tool.is_new)
   const [featured, setFeatured] = useState(tool.featured)
@@ -163,13 +163,14 @@ export function EditForm({ tool }: { tool: AdminToolFull }) {
     setSaved(false)
     try {
       const payload: UpdateToolPayload = {
+        slug:              tool.slug,
         name:              name.trim(),
         tagline:           tagline.trim(),
         url:               url.trim(),
         description:       description.trim(),
         rechtsgebiet,
         category:          stringToTags(category),
-        pricing,
+        pricing_type:      pricingType,
         pricing_url:       pricingUrl.trim(),
         is_new:            isNew,
         featured,
@@ -237,7 +238,7 @@ export function EditForm({ tool }: { tool: AdminToolFull }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Pricing-Typ">
-            <select className={inputCls} value={pricing} onChange={e => setPricing(e.target.value)}>
+            <select className={inputCls} value={pricingType} onChange={e => setPricingType(e.target.value)}>
               <option value="">— wählen —</option>
               {PRICING_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
             </select>

@@ -10,6 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .from('workflows')
     .select('title, excerpt')
     .eq('slug', slug)
+    .eq('published', true)
     .maybeSingle()
 
   if (!data) return { title: 'Workflow nicht gefunden' }

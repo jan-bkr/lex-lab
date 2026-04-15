@@ -75,18 +75,9 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Diese E-Mail-Adresse ist bereits angemeldet.' }, { status: 409 })
   }
 
-  // Insert subscriber
-  try {
-    const { error } = await adminSupabase
-      .from('newsletter_subscribers')
-      .insert({ email, confirmed: true })
-    if (error) throw error
-  } catch (err) {
-    console.error('[newsletter] insert error:', err)
-    return Response.json({ error: 'Interner Fehler bei der Anmeldung.' }, { status: 500 })
-  }
-
-  // Send welcome email via Resend
+  // Send welcome email first — only write to DB on success.
+  // This prevents the case where the subscriber is stored but never received a
+  // confirmation, which would create a silently broken opt-in record.
   try {
     const resend = new Resend(process.env.RESEND_API_KEY)
     const unsubToken = makeToken(email)
@@ -116,6 +107,19 @@ export async function POST(request: Request): Promise<Response> {
   } catch (err) {
     console.error('[newsletter] resend exception:', err)
     return Response.json({ error: 'E-Mail konnte nicht gesendet werden.' }, { status: 500 })
+  }
+
+  // Mail sent — now persist the subscriber
+  try {
+    const { error } = await adminSupabase
+      .from('newsletter_subscribers')
+      .insert({ email, confirmed: true })
+    if (error) throw error
+  } catch (err) {
+    console.error('[newsletter] insert error:', err)
+    // Welcome mail was already sent; log and return success so the user is not
+    // confused by an error after receiving the email.
+    return Response.json({ success: true })
   }
 
   return Response.json({ success: true })

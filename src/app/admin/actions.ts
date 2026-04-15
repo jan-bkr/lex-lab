@@ -60,6 +60,7 @@ export interface AdminPrompt {
 // ─── Tools ────────────────────────────────────────────────────────────────────
 
 export async function fetchTools(status: 'pending' | 'approved' | 'rejected'): Promise<AdminTool[]> {
+  await requireAdminSession()
   const { data, error } = await adminSupabase
     .from('tools')
     .select('*')
@@ -70,6 +71,7 @@ export async function fetchTools(status: 'pending' | 'approved' | 'rejected'): P
 }
 
 export async function fetchToolCounts(): Promise<{ pending: number; approved: number }> {
+  await requireAdminSession()
   const [{ count: pending }, { count: approved }] = await Promise.all([
     adminSupabase.from('tools').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     adminSupabase.from('tools').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
@@ -79,6 +81,7 @@ export async function fetchToolCounts(): Promise<{ pending: number; approved: nu
 
 export interface AdminToolFull extends AdminTool {
   pricing: string | null
+  pricing_type: string | null
   pricing_url: string | null
   screenshot_url: string | null
   long_description: string | null
@@ -95,6 +98,7 @@ export interface AdminToolFull extends AdminTool {
 }
 
 export async function fetchToolById(id: string): Promise<AdminToolFull | null> {
+  await requireAdminSession()
   const { data, error } = await adminSupabase
     .from('tools')
     .select('*')
@@ -106,12 +110,13 @@ export async function fetchToolById(id: string): Promise<AdminToolFull | null> {
 
 
 export interface UpdateToolPayload {
+  slug: string
   name: string
   tagline: string
   url: string
   rechtsgebiet: string[]
   category: string[]
-  pricing: string
+  pricing_type: string
   pricing_url: string
   is_new: boolean
   featured: boolean
@@ -139,7 +144,7 @@ export async function updateTool(id: string, payload: UpdateToolPayload): Promis
       url:               payload.url,
       rechtsgebiet:      payload.rechtsgebiet,
       category:          payload.category,
-      pricing:           payload.pricing || null,
+      pricing_type:      payload.pricing_type || null,
       pricing_url:       payload.pricing_url || null,
       is_new:            payload.is_new,
       featured:          payload.featured,
@@ -159,7 +164,7 @@ export async function updateTool(id: string, payload: UpdateToolPayload): Promis
     .eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/tools')
-  revalidatePath(`/tools/${id}`)
+  revalidatePath(`/tools/${payload.slug}`)
   revalidatePath('/tools')
 }
 
@@ -187,6 +192,7 @@ export async function rejectTool(id: string): Promise<void> {
 // ─── News ─────────────────────────────────────────────────────────────────────
 
 export async function fetchAllNews(): Promise<AdminNewsArticle[]> {
+  await requireAdminSession()
   const { data, error } = await adminSupabase
     .from('news_articles')
     .select('*')
@@ -249,6 +255,7 @@ export interface AdminComment {
 }
 
 export async function fetchComments(status: 'pending' | 'approved'): Promise<AdminComment[]> {
+  await requireAdminSession()
   const { data, error } = await adminSupabase
     .from('tool_comments')
     .select('*, tools(name, slug)')
@@ -281,6 +288,7 @@ export async function rejectComment(id: string): Promise<void> {
 // ─── Prompts ──────────────────────────────────────────────────────────────────
 
 export async function fetchAllPrompts(): Promise<AdminPrompt[]> {
+  await requireAdminSession()
   const { data, error } = await adminSupabase
     .from('prompts')
     .select('*')

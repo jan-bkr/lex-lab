@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Clock, ArrowLeft, Calendar } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
-import { mockWorkflows } from '@/lib/mock-data'
 import { Workflow, Rechtsgebiet } from '@/types'
 
 interface WorkflowRow {
@@ -87,6 +86,7 @@ export default function WorkflowDetailPage({
   const { slug } = use(params)
   const [workflows, setWorkflows] = useState<Workflow[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     async function fetchWorkflows() {
@@ -96,10 +96,10 @@ export default function WorkflowDetailPage({
         .select('*')
         .eq('published', true)
 
-      if (error || !data || data.length === 0) {
-        setWorkflows(mockWorkflows)
+      if (error) {
+        setLoadError(true)
       } else {
-        setWorkflows((data as WorkflowRow[]).map(mapRow))
+        setWorkflows(data ? (data as WorkflowRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -112,6 +112,16 @@ export default function WorkflowDetailPage({
     .slice(0, 2)
 
   const steps = WORKFLOW_STEPS[slug] ?? DEFAULT_STEPS
+
+  if (loadError) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
+        <p className="text-sm text-gray-500">
+          Workflow konnte nicht geladen werden. Bitte später erneut versuchen.
+        </p>
+      </div>
+    )
+  }
 
   if (loading) {
     return (

@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { ChevronUp, Copy, Check, ArrowLeft, MessageSquare, Grid3X3 } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
-import { mockTools } from '@/lib/mock-data'
 import { Tool, ToolComment, Rechtsgebiet } from '@/types'
 import { useAnalytics } from '@/hooks/useAnalytics'
 
@@ -459,6 +458,7 @@ export default function ToolDetailPage({
   const { trackEvent, AnalyticsEvents } = useAnalytics()
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [copied, setCopied] = useState(false)
   const [votes, setVotes] = useState(0)
   const [voted, setVoted] = useState(false)
@@ -473,10 +473,10 @@ export default function ToolDetailPage({
         .select('*')
         .eq('status', 'approved')
 
-      if (error || !data || data.length === 0) {
-        setTools(mockTools)
+      if (error) {
+        setLoadError(true)
       } else {
-        setTools((data as SupabaseToolRow[]).map(mapRow))
+        setTools(data ? (data as SupabaseToolRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -567,6 +567,17 @@ export default function ToolDetailPage({
       if (isVoting) localStorage.removeItem(`voted_${tool.id}`)
       else localStorage.setItem(`voted_${tool.id}`, '1')
     }
+  }
+
+  // ── Error state ──
+  if (loadError) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
+        <p className="text-sm text-gray-500">
+          Tool konnte nicht geladen werden. Bitte später erneut versuchen.
+        </p>
+      </div>
+    )
   }
 
   // ── Loading state ──

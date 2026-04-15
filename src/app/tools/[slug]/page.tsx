@@ -10,6 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .from('tools')
     .select('name, tagline, description')
     .eq('slug', slug)
+    .eq('status', 'approved')
     .maybeSingle()
 
   if (!data) return { title: 'Tool nicht gefunden' }
