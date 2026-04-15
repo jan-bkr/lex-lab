@@ -64,7 +64,10 @@ src/
 │   │   │       └── EditForm.tsx    # Client Component — vollständiges Edit-Formular
 │   │   ├── news/                   # News-Verwaltung
 │   │   ├── comments/               # Kommentar-Moderation
-│   │   └── prompts/                # Prompt-Verwaltung
+│   │   ├── prompts/                # Prompt-Verwaltung
+│   │   ├── workflows/              # Workflow-Verwaltung (Client, optimistic updates)
+│   │   ├── events/                 # Termin-Verwaltung (Client, vergangene Termine gedimmt)
+│   │   └── newsletter/             # Newsletter-Abonnenten (Client, Tabellen-View)
 │   ├── api/                        # Route Handlers (alle POST-only, außer vote-status + pipeline)
 │   │   ├── pipeline/               # RSS→Claude→Supabase-Cron (GET+POST, maxDuration=60)
 │   │   ├── tools/submit/           # Tool-Einreichung (POST, Rate Limit: 5/Tag pro IP, schreibt via adminSupabase)
@@ -81,9 +84,9 @@ src/
 │   ├── prompts/                    # Prompt-Bibliothek + Builder
 │   │   └── builder/                # /prompts/builder — interaktiver Prompt-Generator
 │   ├── news/                       # News-Feed
-│   ├── workflows/                  # Workflow-Guides (DB + Mock-Fallback)
+│   ├── workflows/                  # Workflow-Guides (DB, Fehler-/Leer-State)
 │   ├── newsletter/                 # Anmeldung + /abgemeldet-Bestätigung
-│   ├── events/                     # Rechtstermine (DB + Mock-Fallback)
+│   ├── events/                     # Rechtstermine (DB, Fehler-/Leer-State)
 │   ├── beitraege/                  # Beiträge (Placeholder, kein Inhalt)
 │   ├── sitemap.ts                  # Dynamische Sitemap (Tools, News, Prompts, Workflows)
 │   ├── robots.ts                   # /robots.txt — disallow /admin
@@ -103,6 +106,7 @@ src/
 │   │   ├── server.ts               # Server-Client (cookie-basiert, SSR)
 │   │   └── admin.ts                # Service-Role-Client (nur Server, bypasses RLS)
 │   ├── rate-limit.ts               # Shared Rate Limiter: Upstash Sliding Window + In-Memory-Fallback
+│   ├── ip.ts                       # IP-Pseudonymisierung: HMAC-SHA256 (IP_HASH_SECRET) → 16-char hex
 │   ├── lexlab-score.ts             # Score-Berechnung: Ø gewichtet (30/25/25/10/10)×10
 │   ├── jurist-persona.ts           # JURIST_PERSONA — System-Prompt für Claude
 │   ├── rss-sources.ts              # 11 RSS-Quellen (M&A, Steuer, LegalTech, VC)
@@ -125,6 +129,7 @@ supabase/
     ├── 20260414000001_premium_tool_profiles.sql
     ├── 20260414000002_fix_tool_votes_privacy.sql  # DROP public SELECT policy (voter_ip ist PII)
     ├── 20260414000003_toggle_tool_vote_rpc.sql    # toggle_tool_vote() — atomare Vote-Funktion
+    ├── 20260415000000_tool_comments_rls.sql       # INSERT-Policy für anon auf tool_comments (manuell ausführen!)
     └── RUN_IN_DASHBOARD.sql                       # Kombinations-Script für Supabase SQL Editor (bereits ausgeführt)
 ```
 
@@ -241,6 +246,7 @@ export default function Page() {
 | `RESEND_API_KEY` | Server only | Newsletter-E-Mails + Kontaktformular |
 | `CRON_SECRET` | Server only | Auth für Pipeline + Cleanup |
 | `NEWSLETTER_HMAC_SECRET` | Server only | HMAC-Key für Newsletter-Abmelde-Token (SHA-256) |
+| `IP_HASH_SECRET` | Server only | HMAC-Key für IP-Pseudonymisierung (`getHashedIp()`) — ohne diesen Key: SHA-256-Fallback + Prod-Warning |
 | `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis — Rate Limiting (Vote, Comments, Prompts, Newsletter, Kontakt, Tool-Submit) |
 | `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis — Rate Limiting |
 
@@ -298,7 +304,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 7. **`/tools`-Seite verwendet anon Client** (`lib/supabase/client.ts`), nicht den Admin-Client. Tool-Detailseite `/tools/[slug]` nutzt hingegen den Admin-Client im Server-Teil für `generateMetadata`.
 
-8. **Workflows + Events haben DB-Tabellen** (`workflows`, `events` in Supabase). Die Listing-Seiten und Detailseiten zeigen bei leerem Ergebnis einen Empty-State und bei DB-Fehler einen Fehler-State — kein Mock-Fallback mehr. Beide Tabellen haben noch kein eigenes Admin-UI.
+8. **Workflows + Events haben DB-Tabellen + Admin-UI** (`workflows`, `events` in Supabase). Die Listing-Seiten und Detailseiten zeigen bei leerem Ergebnis einen Empty-State und bei DB-Fehler einen Fehler-State — kein Mock-Fallback mehr. Admin-UIs unter `/admin/workflows` und `/admin/events` vorhanden.
 
 9. **Newsletter-Abmeldung** ist HMAC-signiert (`NEWSLETTER_HMAC_SECRET` als Schlüssel, SHA-256). Token-Generierung via `makeToken(email)` in `unsubscribe/route.ts`, importiert von `subscribe/route.ts`. Beide Routen schlagen hart fehl wenn `NEWSLETTER_HMAC_SECRET` nicht gesetzt ist.
 
@@ -312,19 +318,23 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 14. **Vercel-Deploy-Verzögerung** — Nach `git push` startet das Vercel-Deployment automatisch, aber mit ~30–60s Verzögerung. Status prüfen mit `npx vercel ls`. Kein manueller Trigger nötig solange GitHub-Integration aktiv ist.
 
+15. **IP-Pseudonymisierung via `getHashedIp()`** — Alle 6 öffentlichen Route Handlers nutzen `src/lib/ip.ts` statt roher IPs. HMAC-SHA256 mit `IP_HASH_SECRET`, auf 16-char hex gekürzt (Plausible/Fathom-Pattern). Deterministisch (Rate Limiting funktioniert), nicht umkehrbar. Ohne Secret: SHA-256-Fallback + Prod-Warning. Niemals rohe IPs im Rate-Limiting-Code schreiben.
+
+16. **`tool_comments` INSERT via `adminSupabase`** — Die Route `/api/tools/[id]/comments` (POST) verwendet `adminSupabase` direkt für den INSERT, nicht den anon Client. Begründung: Der Route Handler erzwingt selbst alle Sicherheitsprüfungen (same-origin, rate limit, Validierung, `status: 'pending'` hardcoded) — RLS ist daher nicht nötig. Die Migration `20260415000000_tool_comments_rls.sql` ist obsolet für diesen Use Case.
+
 ---
 
 ## Offene TODOs
 
-- [ ] **Workflows-Admin-UI** — DB-Tabelle existiert, aber kein `/admin/workflows`-Page
-- [ ] **Events-Admin-UI** — DB-Tabelle existiert, aber kein `/admin/events`-Page
-- [ ] **Newsletter-Admin-UI** — `newsletter_subscribers`-Tabelle hat keine Admin-Ansicht
+- [x] **Workflows-Admin-UI** — `/admin/workflows` gebaut (2026-04-15)
+- [x] **Events-Admin-UI** — `/admin/events` gebaut (2026-04-15)
+- [x] **Newsletter-Admin-UI** — `/admin/newsletter` gebaut (2026-04-15)
 - [ ] **Beiträge-Seite** (`/beitraege`) ist vollständiger Placeholder ohne Inhalt
 - [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt). Platzhalter auf Detailseite wurde bereits entfernt — Screenshot wird nur gerendert wenn URL vorhanden.
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
 - [ ] **Prompt-Detailseiten** — `/prompts/[slug]` existiert nicht; Seite noch nicht gebaut
 - [ ] **News-Detailseiten** — `/news/[slug]` existiert nicht; Seite noch nicht gebaut
-- [ ] **Tool-Submit-Flow** — `/tools/submit` existiert, aber Moderation-Notifications fehlen (E-Mail an Admin via Resend)
+- [x] **Tool-Submit-Flow** — Admin-Benachrichtigung via Resend implementiert (2026-04-15)
 
 ## Erledigte Meilensteine
 
@@ -339,8 +349,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 - [x] **Secrets, Fail-Closed & Public Write Completion** (2026-04-15) — `NEWSLETTER_HMAC_SECRET` von `CRON_SECRET` entkoppelt; beide Newsletter-Routen schlagen hart fehl wenn Secret fehlt. Pipeline-Auth schlägt explizit fehl wenn `CRON_SECRET` nicht gesetzt ist. `/api/tools/submit` um Same-Origin-Check und Slug-Kollisionsauflösung (`uniqueSlug` mit bis zu 10 Versuchen + Timestamp-Fallback) erweitert. News-Seite trennt DB-Fehler (Fehler-State) von leerem Ergebnis (Empty-State).
 - [x] **Revalidierung, Taxonomie & totes Code aufgeräumt** (2026-04-15) — `rejectTool` revalidiert jetzt `/tools`; `approveComment`/`rejectComment` fetchen den Tool-Slug und revalidieren `/tools/[slug]`; `deletePrompt`/`addPrompt` revalidieren `/prompts`. Admin-Prompt-Rechtsgebiete auf die 4 Kern-Rechtsgebiete beschränkt (Steuerrecht, M&A, Gesellschaftsrecht, Venture Capital) — Arbeitsrecht/Vertragsrecht/Legal Tech/Regulierung entfernt. `WorkflowDetailClient` zeigt keine generischen Default-Schritte mehr für unbekannte Slugs (Schritte werden nur bei bekannten Slugs gerendert). `mock-data.ts` gelöscht (war toter Code, null Imports). README.md ersetzt (create-next-app-Boilerplate durch echte Projektbeschreibung).
-
-> **Langfristig für `/tools/submit`:** Moderationsbenachrichtigung (E-Mail an Admin via Resend) und optionales Double-Opt-In für den Einreicher fehlen noch. Priorität: mittel.
+- [x] **IP-Pseudonymisierung, Admin-UIs & Comments-Fix** (2026-04-15) — Zentrales `src/lib/ip.ts` mit HMAC-SHA256 (`IP_HASH_SECRET`, 16-char hex, Plausible/Fathom-Pattern) eingeführt; alle 6 öffentlichen Route Handlers auf `getHashedIp()` umgestellt. Admin-UIs für Workflows, Events und Newsletter gebaut (`/admin/workflows`, `/admin/events`, `/admin/newsletter`) inkl. Server Actions (`fetchAllWorkflows`, `addWorkflow`, `toggleWorkflowPublished`, `deleteWorkflow`, `fetchAllEvents`, `addEvent`, `deleteEvent`, `fetchAllSubscribers`, `deleteSubscriber`) — alle mit `requireAdminSession()` abgesichert. AdminNav + Dashboard-Statistiken um die 3 neuen Sektionen erweitert. Tool-Submit: Admin-Benachrichtigung via Resend implementiert (fire-and-forget). Workflow-Detailseite: unbekannte Slugs zeigen Placeholder statt generischer Steps. Kommentar-INSERT auf `adminSupabase` umgestellt (anon-Client + fehlende RLS-Policy war Ursache für "Fehler beim Speichern").
 
 ---
 
@@ -374,3 +383,6 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - Breaking Change: `params` in Pages ist `Promise` → immer `await params` schreiben
 - Rate Limiting: zentrales Modul `src/lib/rate-limit.ts` — `checkRateLimit(key, identifier)` gibt `{ allowed, remaining }` zurück. Kein inline Map-Code in Routen schreiben.
 - Neue DB-Funktionen über `adminSupabase.rpc('funktionsname', { ...params })` aufrufen (Beispiel: `toggle_tool_vote`)
+- IP-Hashing: immer `getHashedIp(req)` aus `src/lib/ip.ts` verwenden — nie rohe IPs im Rate-Limiting-Code
+- Supabase Join-Types in `actions.ts`: bei TypeScript-Fehler durch ambiguous Join-Types `as unknown as { field: type } | null` verwenden
+- `tool_comments` RLS INSERT-Policy muss manuell in Supabase SQL Editor ausgeführt werden (`20260415000000_tool_comments_rls.sql`)
