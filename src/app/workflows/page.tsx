@@ -2,12 +2,50 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Clock, ArrowRight } from 'lucide-react'
+import { Clock, ArrowRight, Lock } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
+import { NewsletterForm } from '@/components/NewsletterForm'
 import { createClient } from '@/lib/supabase/client'
 import { Workflow, Rechtsgebiet } from '@/types'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
+
+// ─── Premium Teaser für noch nicht veröffentlichte Workflows ──────────────────
+interface WorkflowTeaser {
+  title: string
+  excerpt: string
+  rechtsgebiet: string
+  readingTime: number
+  categoryColor: string
+  borderColor: string
+}
+
+const WORKFLOW_TEASERS: WorkflowTeaser[] = [
+  {
+    title: 'M&A Due Diligence mit KI: Vertragsprüfung und Red-Flag-Analyse',
+    excerpt: 'Wie KI-Tools die Due-Diligence-Prüfung beschleunigen — von der ersten Sichtung bis zum vollständigen Red-Flag-Report. Mit konkreten Prompts und Checklisten für M&A-Teams.',
+    rechtsgebiet: 'M&A',
+    readingTime: 12,
+    categoryColor: 'text-purple-700 bg-purple-50 border-purple-100',
+    borderColor: 'border-l-purple-400',
+  },
+  {
+    title: 'GmbH-Gründung Schritt für Schritt: KI-gestützte Gesellschaftsrechtspraxis',
+    excerpt: 'Von der Satzungserstellung bis zur Handelsregistereintragung — wie KI-Tools Gesellschaftsrechtler bei der GmbH-Gründung unterstützen können.',
+    rechtsgebiet: 'Gesellschaftsrecht',
+    readingTime: 15,
+    categoryColor: 'text-blue-700 bg-blue-50 border-blue-100',
+    borderColor: 'border-l-blue-400',
+  },
+  {
+    title: 'Steuerliche Betriebsprüfung: Vorbereitung und Begleitung mit KI',
+    excerpt: 'Checklisten, Prompts und strukturierte Workflows für die Mandatsarbeit bei Betriebsprüfungen — KI-gestützte Prüfungsvorbereitung für Steuerberater.',
+    rechtsgebiet: 'Steuerrecht',
+    readingTime: 10,
+    categoryColor: 'text-emerald-700 bg-emerald-50 border-emerald-100',
+    borderColor: 'border-l-emerald-400',
+  },
+]
 
 const BORDER_COLORS: Record<string, string> = {
   Steuerrecht: 'border-l-emerald-400',
@@ -112,8 +150,44 @@ export default function WorkflowsPage() {
           ))}
         </div>
       ) : filtered.length === 0 && activeFilter === 'Alle' ? (
-        <div className="text-center py-16 text-sm text-gray-400">
-          Noch keine Workflows verfügbar.
+        <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            {WORKFLOW_TEASERS.map((wf) => (
+              <article
+                key={wf.title}
+                className={`bg-white border border-gray-100 border-l-4 ${wf.borderColor} rounded-xl p-6 shadow-sm flex flex-col gap-3`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className={`text-[11px] font-semibold border rounded-md px-2 py-0.5 uppercase tracking-wide flex-shrink-0 ${wf.categoryColor}`}>
+                    {wf.rechtsgebiet}
+                  </span>
+                  <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5 flex-shrink-0 whitespace-nowrap">
+                    Erscheint in Kürze
+                  </span>
+                </div>
+                <h2 className="font-display text-[15px] text-gray-900 leading-snug">
+                  {wf.title}
+                </h2>
+                <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 flex-1">
+                  {wf.excerpt}
+                </p>
+                <div className="flex items-center justify-between text-xs text-gray-400 pt-1 border-t border-gray-50">
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {wf.readingTime} Min. Lesezeit
+                  </span>
+                  <Lock className="w-3.5 h-3.5 text-gray-300" />
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
+            <p className="text-sm font-semibold text-blue-900 mb-1">Workflows erscheinen in Kürze.</p>
+            <p className="text-sm text-blue-700 mb-5">
+              Abonniere den Newsletter — du wirst als Erster informiert, wenn neue Workflows verfügbar sind.
+            </p>
+            <NewsletterForm />
+          </div>
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-sm text-gray-400">

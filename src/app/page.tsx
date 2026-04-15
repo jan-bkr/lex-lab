@@ -4,6 +4,7 @@ import { ToolCard } from '@/components/ToolCard'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { PromptOfDay } from '@/components/PromptOfDay'
+import { FinderPanel } from '@/components/FinderPanel'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { formatDistanceToNow, format } from 'date-fns'
 import { de } from 'date-fns/locale'
@@ -193,6 +194,11 @@ export default async function HomePage() {
         <div className="mt-6 text-xs text-gray-400">
           Für Kanzleien · Steuerberater · Inhouse Legal · M&A-Teams
         </div>
+      </section>
+
+      {/* TOOL FINDER */}
+      <section className="mb-10">
+        <FinderPanel />
       </section>
 
       {/* TOOLS OF THE WEEK */}
