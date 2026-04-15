@@ -155,28 +155,30 @@ export default function WorkflowsPage() {
             {WORKFLOW_TEASERS.map((wf) => (
               <article
                 key={wf.title}
-                className={`bg-white border border-gray-100 border-l-4 ${wf.borderColor} rounded-xl p-6 shadow-sm flex flex-col gap-3`}
+                className={`bg-white/70 border border-gray-100 border-l-4 ${wf.borderColor} rounded-xl p-6 flex flex-col gap-3`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <span className={`text-[11px] font-semibold border rounded-md px-2 py-0.5 uppercase tracking-wide flex-shrink-0 ${wf.categoryColor}`}>
                     {wf.rechtsgebiet}
                   </span>
-                  <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5 flex-shrink-0 whitespace-nowrap">
-                    Erscheint in Kürze
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2 py-0.5 flex-shrink-0 whitespace-nowrap">
+                    Bald verfügbar
                   </span>
                 </div>
-                <h2 className="font-display text-[15px] text-gray-900 leading-snug">
-                  {wf.title}
-                </h2>
-                <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 flex-1">
-                  {wf.excerpt}
-                </p>
-                <div className="flex items-center justify-between text-xs text-gray-400 pt-1 border-t border-gray-50">
+                <div className="flex-1">
+                  <h2 className="font-display text-[15px] text-gray-800 leading-snug mb-1.5">
+                    {wf.title}
+                  </h2>
+                  <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">
+                    {wf.excerpt}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-300 pt-2 border-t border-gray-50">
                   <span className="inline-flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {wf.readingTime} Min. Lesezeit
                   </span>
-                  <Lock className="w-3.5 h-3.5 text-gray-300" />
+                  <Lock className="w-3 h-3" />
                 </div>
               </article>
             ))}
@@ -196,32 +198,34 @@ export default function WorkflowsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filtered.map(w => (
-            <div
+            <Link
               key={w.id}
-              className={`bg-white border border-gray-100 border-l-4 ${borderColor(w.rechtsgebiet)} rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-200 flex flex-col gap-3`}
+              href={`/workflows/${w.slug}`}
+              className={`group bg-white border border-gray-100 border-l-4 ${borderColor(w.rechtsgebiet)} rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-200 flex flex-col gap-3`}
             >
-              <div>
-                <h2 className="font-display font-semibold text-[15px] text-gray-900 leading-snug mb-1">
+              <div className="flex items-start gap-2 justify-between">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {w.rechtsgebiet.map(tag => (
+                    <RechtsgebietTag key={tag} tag={tag} />
+                  ))}
+                </div>
+              </div>
+              <div className="flex-1">
+                <h2 className="font-display text-[15px] text-gray-900 leading-snug mb-1.5 group-hover:text-blue-700 transition-colors">
                   {w.title}
                 </h2>
                 <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{w.excerpt}</p>
               </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                {w.rechtsgebiet.map(tag => (
-                  <RechtsgebietTag key={tag} tag={tag} />
-                ))}
+              <div className="mt-auto pt-2 border-t border-gray-50 flex items-center justify-between">
                 <span className="inline-flex items-center gap-1 text-xs text-gray-400">
                   <Clock className="w-3 h-3" />
-                  {w.readingTime} Min.
+                  {w.readingTime} Min. Lesezeit
+                </span>
+                <span className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 group-hover:gap-2 transition-all">
+                  Lesen <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <Link
-                href={`/workflows/${w.slug}`}
-                className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors mt-auto"
-              >
-                Lesen <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+            </Link>
           ))}
         </div>
       )}

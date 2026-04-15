@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Clock, ArrowLeft, Calendar, Lock } from 'lucide-react'
+import { Clock, ArrowLeft, ArrowRight, Calendar, Lock } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
 import { Workflow, Rechtsgebiet } from '@/types'
@@ -49,43 +49,58 @@ const STEP_LABELS = [
 
 function WorkflowStepsTeaser() {
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-6">
-      <div className="flex items-start justify-between mb-4">
-        <h2 className="font-display font-semibold text-gray-900">Schritt-für-Schritt-Anleitung</h2>
-        <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5 flex-shrink-0 ml-3">
-          Erscheint in Kürze
-        </span>
+    <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+      {/* Header */}
+      <div className="px-6 pt-6 pb-5 border-b border-gray-50">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h2 className="font-display text-gray-900">Schritt-für-Schritt-Anleitung</h2>
+          <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 whitespace-nowrap flex-shrink-0">
+            In Vorbereitung
+          </span>
+        </div>
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Die vollständige Anleitung mit konkreten Prompts, Praxisbeispielen und Checklisten erscheint in Kürze.
+        </p>
       </div>
 
-      <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-        Die vollständige Anleitung mit konkreten Prompts, Tipps und Praxisbeispielen ist in Vorbereitung.
-      </p>
+      {/* Steps preview with gradient fade */}
+      <div className="relative px-6 pt-5">
+        <ol className="space-y-3.5 pb-16 select-none">
+          {STEP_LABELS.map((label, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-3"
+              style={{ opacity: Math.max(0.12, 1 - i * 0.2) }}
+            >
+              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-400">
+                {i + 1}
+              </span>
+              <div className="flex-1 flex items-center justify-between gap-2">
+                <span className="text-sm text-gray-500">{label}</span>
+                <Lock className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+              </div>
+            </li>
+          ))}
+        </ol>
+        {/* Gradient overlay fading into the CTA below */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+      </div>
 
-      {/* Faded step indicators */}
-      <ol className="space-y-3 mb-6">
-        {STEP_LABELS.map((label, i) => (
-          <li key={i} className="flex items-center gap-3 opacity-40 select-none">
-            <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-400">
-              {i + 1}
-            </span>
-            <div className="flex-1 flex items-center justify-between gap-2">
-              <span className="text-sm text-gray-400">{label}</span>
-              <Lock className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
-            </div>
-          </li>
-        ))}
-      </ol>
-
-      <div className="border-t border-gray-50 pt-4">
-        <p className="text-xs text-gray-400">
-          Newsletter abonnieren — du wirst informiert, sobald dieser Workflow vollständig verfügbar ist.
-        </p>
-        <Link
-          href="/newsletter"
-          className="inline-block mt-2 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
-        >
-          Jetzt abonnieren &rarr;
-        </Link>
+      {/* Newsletter CTA */}
+      <div className="px-6 pb-6">
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
+          <p className="text-sm font-semibold text-blue-900 mb-1">Vollständige Anleitung folgt.</p>
+          <p className="text-sm text-blue-700 leading-relaxed mb-4">
+            Abonniere den Newsletter — du wirst als Erster benachrichtigt, wenn dieser Workflow vollständig verfügbar ist.
+          </p>
+          <Link
+            href="/newsletter"
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+          >
+            Newsletter abonnieren
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     </div>
   )
@@ -201,8 +216,8 @@ export default function WorkflowDetailPage({
             </span>
           </div>
 
-          <div className="bg-white border border-gray-100 rounded-xl p-6 mb-4">
-            <p className="text-gray-600 leading-relaxed text-sm">{workflow.excerpt}</p>
+          <div className="bg-white border border-gray-100 rounded-xl p-6 mb-4 border-l-4 border-l-blue-200">
+            <p className="text-[15px] text-gray-600 leading-relaxed">{workflow.excerpt}</p>
           </div>
 
           <WorkflowStepsTeaser />
