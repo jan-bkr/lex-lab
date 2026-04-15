@@ -23,7 +23,6 @@ interface SupabaseToolRow {
   is_new: boolean | null
   status: string
   featured: boolean | null
-  submitted_by: string | null
   created_at: string
   pricing_type: 'free' | 'freemium' | 'paid' | 'enterprise' | null
   pricing_url: string | null
@@ -40,6 +39,14 @@ interface SupabaseToolRow {
   score_ux: number | null
   score_preis: number | null
   lexlab_score: number | null
+}
+
+// Minimal shape used only for the "Ähnliche Tools" sidebar list
+interface SimilarToolRow {
+  id: string
+  name: string
+  slug: string
+  rechtsgebiet: string[] | null
 }
 
 // ─── Mappers ──────────────────────────────────────────────────────────────────
@@ -139,7 +146,7 @@ function PricingBadge({ type, url }: { type: string | null | undefined; url?: st
 
 // ─── Similar tools compact list ───────────────────────────────────────────────
 
-function SimilarToolsList({ tools }: { tools: Tool[] }) {
+function SimilarToolsList({ tools }: { tools: Pick<Tool, 'id' | 'name' | 'slug' | 'rechtsgebiet'>[] }) {
   if (tools.length === 0) return null
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-5">
@@ -456,7 +463,8 @@ export default function ToolDetailPage({
 }) {
   const { slug } = use(params)
   const { trackEvent, AnalyticsEvents } = useAnalytics()
-  const [tools, setTools] = useState<Tool[]>([])
+  const [tool, setTool] = useState<Tool | null>(null)
+  const [similarTools, setSimilarTools] = useState<Pick<Tool, 'id' | 'name' | 'slug' | 'rechtsgebiet'>[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -466,28 +474,63 @@ export default function ToolDetailPage({
   const [commentsLoading, setCommentsLoading] = useState(false)
 
   useEffect(() => {
-    async function fetchTools() {
+    async function fetchTool() {
       const supabase = createClient()
+
+      // Fetch only the requested tool — no submitted_by or other PII columns
       const { data, error } = await supabase
         .from('tools')
-        .select('*')
+        .select('id,name,slug,url,tagline,description,rechtsgebiet,category,votes,is_new,status,featured,created_at,pricing_type,pricing_url,screenshot_url,long_description,best_for,not_for,verdict,last_reviewed_at,score_praxisreife,score_datenschutz,score_dach,score_ux,score_preis,lexlab_score')
         .eq('status', 'approved')
+        .eq('slug', slug)
+        .maybeSingle()
 
       if (error) {
         setLoadError(true)
-      } else {
-        setTools(data ? (data as SupabaseToolRow[]).map(mapRow) : [])
+        setLoading(false)
+        return
       }
+
+      if (!data) {
+        // Tool not found or not approved
+        setLoadError(true)
+        setLoading(false)
+        return
+      }
+
+      const toolData = mapRow(data as SupabaseToolRow)
+      setTool(toolData)
+      setVotes(toolData.votes)
+
+      // Fetch similar tools (minimal columns) using rechtsgebiet overlap
+      if (toolData.rechtsgebiet.length > 0) {
+        const { data: similarData } = await supabase
+          .from('tools')
+          .select('id,name,slug,rechtsgebiet')
+          .eq('status', 'approved')
+          .neq('slug', slug)
+          .overlaps('rechtsgebiet', toolData.rechtsgebiet)
+          .limit(3)
+
+        if (similarData) {
+          setSimilarTools(
+            (similarData as SimilarToolRow[]).map(r => ({
+              id: r.id,
+              name: r.name,
+              slug: r.slug,
+              rechtsgebiet: (r.rechtsgebiet ?? []) as Rechtsgebiet[],
+            }))
+          )
+        }
+      }
+
       setLoading(false)
     }
-    fetchTools()
-  }, [])
-
-  const tool = tools.find(t => t.slug === slug)
+    fetchTool()
+  }, [slug])
 
   useEffect(() => {
     if (tool) {
-      setVotes(tool.votes)
       // localStorage as fast initial state; server check below is the source of truth
       setVoted(localStorage.getItem(`voted_${tool.id}`) === '1')
       // Fetch server-side vote status (IP-based)
@@ -515,10 +558,6 @@ export default function ToolDetailPage({
       .finally(() => setCommentsLoading(false))
   // eslint-disable-next-line react-hooks/exhaustive-deps -- tool.id is the relevant dep; full tool object would cause spurious refetches on reference changes
   }, [tool?.id])
-
-  const similarTools = tools
-    .filter(t => t.slug !== slug && t.rechtsgebiet.some(r => tool?.rechtsgebiet.includes(r)))
-    .slice(0, 3)
 
   async function handleCopy() {
     await navigator.clipboard.writeText(window.location.href)

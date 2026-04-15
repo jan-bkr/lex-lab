@@ -25,7 +25,6 @@ interface SupabaseToolRow {
   is_new: boolean | null
   status: string
   featured: boolean | null
-  submitted_by: string | null
   created_at: string
   lexlab_score: number | null
 }
@@ -90,7 +89,7 @@ function ToolsPageInner() {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('tools')
-        .select('*')
+        .select('id,name,slug,url,tagline,description,rechtsgebiet,category,votes,is_new,status,featured,created_at,lexlab_score')
         .eq('status', 'approved')
 
       if (error) {

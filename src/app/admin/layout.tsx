@@ -20,6 +20,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!user) redirect('/admin/login')
 
+  // Optional email allowlist — mirrors the check in requireAdminSession() and proxy.ts
+  const allowedEmail = process.env.ADMIN_EMAIL
+  if (allowedEmail && user.email !== allowedEmail) redirect('/admin/login')
+
   return (
     <div className="min-h-screen flex bg-gray-100">
       <AdminNav email={user.email ?? ''} />

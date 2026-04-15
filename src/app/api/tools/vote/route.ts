@@ -40,6 +40,22 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Too many requests' }, { status: 429 })
   }
 
+  // Reject votes for non-existent or non-approved tools
+  const { data: toolRow, error: toolError } = await adminSupabase
+    .from('tools')
+    .select('id')
+    .eq('id', toolId)
+    .eq('status', 'approved')
+    .maybeSingle()
+
+  if (toolError) {
+    console.error('[vote] tool lookup error:', toolError.message)
+    return Response.json({ error: 'Vote failed' }, { status: 500 })
+  }
+  if (!toolRow) {
+    return Response.json({ error: 'Tool not found' }, { status: 404 })
+  }
+
   // ── Atomic vote toggle via RPC (single transaction: no read-then-write race) ──
   const { data, error } = await adminSupabase.rpc('toggle_tool_vote', {
     p_tool_id:  toolId,

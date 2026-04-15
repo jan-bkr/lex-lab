@@ -44,6 +44,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
+  // Optional email allowlist — mirrors the check in requireAdminSession()
+  const allowedEmail = process.env.ADMIN_EMAIL
+  if (allowedEmail && user.email !== allowedEmail) {
+    return NextResponse.redirect(new URL('/admin/login', request.url))
+  }
+
   return response
 }
 
