@@ -114,7 +114,7 @@ export function EditForm({ tool }: { tool: AdminToolFull }) {
   const [description, setDescription] = useState(tool.description ?? '')
   const [rechtsgebiet, setRechtsgebiet] = useState<string[]>(tool.rechtsgebiet ?? [])
   const [category, setCategory] = useState(tagsToString(tool.category))
-  const [pricingType, setPricingType] = useState(tool.pricing_type ?? '')
+  const [pricingType, setPricingType] = useState(tool.pricing ?? '')
   const [pricingUrl, setPricingUrl] = useState(tool.pricing_url ?? '')
   const [isNew, setIsNew] = useState(tool.is_new)
   const [featured, setFeatured] = useState(tool.featured)
@@ -170,7 +170,7 @@ export function EditForm({ tool }: { tool: AdminToolFull }) {
         description:       description.trim(),
         rechtsgebiet,
         category:          stringToTags(category),
-        pricing_type:      pricingType,
+        pricing:           pricingType,
         pricing_url:       pricingUrl.trim(),
         is_new:            isNew,
         featured,

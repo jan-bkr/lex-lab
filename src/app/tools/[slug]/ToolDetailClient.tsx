@@ -24,7 +24,7 @@ interface SupabaseToolRow {
   status: string
   featured: boolean | null
   created_at: string
-  pricing_type: 'free' | 'freemium' | 'paid' | 'enterprise' | null
+  pricing: 'free' | 'freemium' | 'paid' | 'enterprise' | null
   pricing_url: string | null
   screenshot_url: string | null
   // Premium profile fields
@@ -64,7 +64,7 @@ function mapRow(row: SupabaseToolRow): Tool {
     votes: row.votes ?? 0,
     isNew: row.is_new ?? false,
     createdAt: row.created_at,
-    pricingType: row.pricing_type,
+    pricingType: row.pricing,
     pricingUrl: row.pricing_url,
     screenshotUrl: row.screenshot_url,
     longDescription: row.long_description,
@@ -480,7 +480,7 @@ export default function ToolDetailPage({
       // Fetch only the requested tool — no submitted_by or other PII columns
       const { data, error } = await supabase
         .from('tools')
-        .select('id,name,slug,url,tagline,description,rechtsgebiet,category,votes,is_new,status,featured,created_at,pricing_type,pricing_url,screenshot_url,long_description,best_for,not_for,verdict,last_reviewed_at,score_praxisreife,score_datenschutz,score_dach,score_ux,score_preis,lexlab_score')
+        .select('id,name,slug,url,tagline,description,rechtsgebiet,category,votes,is_new,status,featured,created_at,pricing,pricing_url,screenshot_url,long_description,best_for,not_for,verdict,last_reviewed_at,score_praxisreife,score_datenschutz,score_dach,score_ux,score_preis,lexlab_score')
         .eq('status', 'approved')
         .eq('slug', slug)
         .maybeSingle()

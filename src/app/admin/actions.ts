@@ -84,7 +84,6 @@ export async function fetchToolCounts(): Promise<{ pending: number; approved: nu
 
 export interface AdminToolFull extends AdminTool {
   pricing: string | null
-  pricing_type: string | null
   pricing_url: string | null
   screenshot_url: string | null
   long_description: string | null
@@ -119,7 +118,7 @@ export interface UpdateToolPayload {
   url: string
   rechtsgebiet: string[]
   category: string[]
-  pricing_type: string
+  pricing: string
   pricing_url: string
   is_new: boolean
   featured: boolean
@@ -147,7 +146,7 @@ export async function updateTool(id: string, payload: UpdateToolPayload): Promis
       url:               payload.url,
       rechtsgebiet:      payload.rechtsgebiet,
       category:          payload.category,
-      pricing_type:      payload.pricing_type || null,
+      pricing:           payload.pricing || null,
       pricing_url:       payload.pricing_url || null,
       is_new:            payload.is_new,
       featured:          payload.featured,
