@@ -274,7 +274,7 @@ export async function approveComment(id: string): Promise<void> {
     .select('tools(slug)')
     .eq('id', id)
     .maybeSingle()
-  const toolSlug = (commentData?.tools as { slug: string } | null)?.slug
+  const toolSlug = (commentData?.tools as unknown as { slug: string } | null)?.slug
 
   const { error } = await adminSupabase
     .from('tool_comments')
@@ -293,7 +293,7 @@ export async function rejectComment(id: string): Promise<void> {
     .select('tools(slug)')
     .eq('id', id)
     .maybeSingle()
-  const toolSlug = (commentData?.tools as { slug: string } | null)?.slug
+  const toolSlug = (commentData?.tools as unknown as { slug: string } | null)?.slug
 
   const { error } = await adminSupabase
     .from('tool_comments')
