@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminSupabase } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getHashedIp } from '@/lib/ip'
 
@@ -101,9 +100,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Kommentar darf maximal 500 Zeichen lang sein.' }, { status: 400 })
     }
 
-    // Use anon client so RLS INSERT policy applies
-    const supabase = await createClient()
-    const { error } = await supabase.from('tool_comments').insert({
+    const { error } = await adminSupabase.from('tool_comments').insert({
       tool_id: id,
       name: safeName,
       role: safeRole || 'Sonstiges',
