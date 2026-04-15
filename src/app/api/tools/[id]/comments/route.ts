@@ -100,8 +100,19 @@ export async function POST(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Kommentar darf maximal 500 Zeichen lang sein.' }, { status: 400 })
     }
 
+    const { data: toolRow, error: toolErr } = await adminSupabase
+      .from('tools')
+      .select('slug')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (toolErr || !toolRow) {
+      return NextResponse.json({ error: 'Tool nicht gefunden.' }, { status: 404 })
+    }
+
     const { error } = await adminSupabase.from('tool_comments').insert({
       tool_id: id,
+      tool_slug: toolRow.slug,
       name: safeName,
       role: safeRole || 'Sonstiges',
       comment: safeComment,
