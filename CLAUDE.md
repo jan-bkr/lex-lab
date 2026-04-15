@@ -297,17 +297,19 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 7. **`/tools`-Seite verwendet anon Client** (`lib/supabase/client.ts`), nicht den Admin-Client. Tool-Detailseite `/tools/[slug]` nutzt hingegen den Admin-Client im Server-Teil für `generateMetadata`.
 
-8. **Workflows + Events haben DB-Tabellen** (`workflows`, `events` in Supabase), aber die Seiten fallen auf `mock-data.ts` zurück solange die DB leer ist. Beide Tabellen haben noch kein eigenes Admin-UI.
+8. **Workflows + Events haben DB-Tabellen** (`workflows`, `events` in Supabase). Die Listing-Seiten und Detailseiten zeigen bei leerem Ergebnis einen Empty-State und bei DB-Fehler einen Fehler-State — kein Mock-Fallback mehr. Beide Tabellen haben noch kein eigenes Admin-UI.
 
 9. **Newsletter-Abmeldung** ist HMAC-signiert (CRON_SECRET als Schlüssel, SHA-256). Token-Generierung via `makeToken(email)` in `unsubscribe/route.ts`, importiert von `subscribe/route.ts`.
 
-10. **Tool-Routing-Inkonsistenz:** Öffentliche Routen nutzen `slug` (`/tools/[slug]`), Admin-Edit nutzt `id` (`/admin/tools/[id]/edit`). Beim Verlinken korrekte ID vs. Slug verwenden.
+10. **Newsletter-Anmeldung: Mail vor DB-Write** — `api/newsletter/subscribe` sendet die Bestätigungsmail zuerst. DB-Insert erfolgt nur bei erfolgreichem Mail-Versand. Schlägt der DB-Insert nach erfolgter Mail fehl, wird `{ success: true }` zurückgegeben (Nutzer hat E-Mail erhalten) und der Fehler geloggt.
 
-11. **Startseite nutzt Admin-Client** (`adminSupabase`) direkt in einem Server Component — das ist korrekt (Server-seitig), aber ungewöhnlich. Begründung: öffentliche Daten ohne RLS-Overhead lesen.
+11. **Tool-Routing-Inkonsistenz:** Öffentliche Routen nutzen `slug` (`/tools/[slug]`), Admin-Edit nutzt `id` (`/admin/tools/[id]/edit`). Beim Verlinken korrekte ID vs. Slug verwenden.
 
-12. **JSON-LD Schema.org** auf der Startseite via `<script dangerouslySetInnerHTML>`. Bei neuen Seiten ggf. ergänzen.
+12. **Startseite nutzt Admin-Client** (`adminSupabase`) direkt in einem Server Component — das ist korrekt (Server-seitig), aber ungewöhnlich. Begründung: öffentliche Daten ohne RLS-Overhead lesen.
 
-13. **Vercel-Deploy-Verzögerung** — Nach `git push` startet das Vercel-Deployment automatisch, aber mit ~30–60s Verzögerung. Status prüfen mit `npx vercel ls`. Kein manueller Trigger nötig solange GitHub-Integration aktiv ist.
+13. **JSON-LD Schema.org** auf der Startseite via `<script dangerouslySetInnerHTML>`. Bei neuen Seiten ggf. ergänzen.
+
+14. **Vercel-Deploy-Verzögerung** — Nach `git push` startet das Vercel-Deployment automatisch, aber mit ~30–60s Verzögerung. Status prüfen mit `npx vercel ls`. Kein manueller Trigger nötig solange GitHub-Integration aktiv ist.
 
 ---
 
@@ -319,9 +321,9 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [ ] **Beiträge-Seite** (`/beitraege`) ist vollständiger Placeholder ohne Inhalt
 - [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt). Platzhalter auf Detailseite wurde bereits entfernt — Screenshot wird nur gerendert wenn URL vorhanden.
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
-- [ ] **Prompt-Detailseiten** — `/prompts/[slug]` im Sitemap referenziert, aber keine entsprechende Page-Datei gefunden
-- [ ] **News-Detailseiten** — `/news/[slug]` im Sitemap, Seite zu prüfen
-- [ ] **Tool-Submit-Flow** — `/tools/submit` existiert, aber Moderation-Notifications fehlen
+- [ ] **Prompt-Detailseiten** — `/prompts/[slug]` existiert nicht; Seite noch nicht gebaut
+- [ ] **News-Detailseiten** — `/news/[slug]` existiert nicht; Seite noch nicht gebaut
+- [ ] **Tool-Submit-Flow** — `/tools/submit` existiert, aber Moderation-Notifications fehlen (E-Mail an Admin via Resend)
 
 ## Erledigte Meilensteine
 
@@ -332,8 +334,9 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Cleanup-Route auf POST+Auth umgestellt** (2026-04-14) — `api/admin/cleanup`: von GET auf POST, CRON_SECRET-Pflichtcheck.
 - [x] **Sicherheits- und Betriebs-Paket** (2026-04-14) — Admin Server Actions intern mit `requireAdminSession()` abgesichert; `tool_votes` SELECT-Policy entfernt (voter_ip = PII); Pipeline-Route exportiert GET+POST (Vercel Cron sendet GET); Vote-Zählung atomar via `toggle_tool_vote()` RPC (Migration 000003); Rate Limiting auf Upstash Redis migriert (`src/lib/rate-limit.ts`, Sliding Window, 5 Endpunkte, In-Memory-Fallback für lokale Entwicklung).
 - [x] **Public Truth & Submit Hardening** (2026-04-14) — `/tools/submit` von Browser-Anon-Write auf serverseitigen API-Route-Handler (`/api/tools/submit`) umgestellt: Validierung, Rate Limit (5/Tag pro IP), schreibt via `adminSupabase`. Mock-Fallbacks auf allen öffentlichen Seiten (Homepage, Tools, Prompts, Workflows, Events) durch echte Fehler-/Leer-States ersetzt. Sitemap bereinigt: `/prompts/[slug]` und `/news/[slug]` entfernt (Seiten existieren nicht). Navbar: `/beitraege` mit „bald"-Badge markiert statt leerem Link.
+- [x] **Compliance, Inhaltswahrheit & Admin-Korrektheit** (2026-04-15) — Datenschutz-Seite ehrlich dokumentiert (Vercel Analytics, Upstash Redis, DSGVO Art. 6 I lit. f). Newsletter: Mail-first-Reihenfolge (DB-Write nur bei erfolgtem Mail-Versand). Mock-Fallbacks aus `ToolDetailClient.tsx` und `WorkflowDetailClient.tsx` entfernt. `generateMetadata` filtert jetzt nach `status=approved` (Tools) resp. `published=true` (Workflows). `requireAdminSession()` auf alle 6 Admin-Read-Actions ausgeweitet. `pricing_type`-Spalte end-to-end konsistent (Admin schrieb zuvor in falsche `pricing`-Spalte). `revalidatePath` in `updateTool` nutzt jetzt `payload.slug` statt interner UUID.
 
-> **Langfristig für `/tools/submit`:** Der aktuelle schmale Fix (API Route) ist korrekt, aber nicht optimal. Die sauberere Langzeitlösung ist ein vollständiger Server Action mit Moderationsbenachrichtigung (E-Mail an Admin via Resend), dedizierter Slug-Kollisionsprüfung und optionalem Double-Opt-In für den Einreicher. Priorität: mittel — erst nach Workflow-Content-Modell und pricing/pricing_type-Bereinigung.
+> **Langfristig für `/tools/submit`:** Der aktuelle schmale Fix (API Route) ist korrekt, aber nicht optimal. Die sauberere Langzeitlösung ist ein vollständiger Server Action mit Moderationsbenachrichtigung (E-Mail an Admin via Resend), dedizierter Slug-Kollisionsprüfung und optionalem Double-Opt-In für den Einreicher. Priorität: mittel.
 
 ---
 
@@ -343,7 +346,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - Vor größeren Umstrukturierungen (Routen, Schema, Refactorings) nachfragen
 - **Nie** `admin.ts`-Supabase-Client in Client-Komponenten (`'use client'`) verwenden
 - **Nie** Secrets, API-Keys oder `.env`-Werte in Code, Logs oder diese Datei schreiben
-- **Jede write-only Server Action** muss `await requireAdminSession()` als erste Zeile haben — Layout-Schutz allein reicht nicht (Actions sind direkte HTTP-Endpunkte)
+- **Jede Server Action** (read und write) muss `await requireAdminSession()` als erste Zeile haben — Layout-Schutz allein reicht nicht (Actions sind direkte HTTP-Endpunkte)
 - Server Actions in `actions.ts` immer mit `revalidatePath()` für betroffene Routen abschließen
 - Bei Tailwind-Änderungen: v4-Syntax (kein `tailwind.config.js`, kein `@apply`)
 - Bei neuen Pages mit `useSearchParams()`: in `<Suspense>` einbetten
