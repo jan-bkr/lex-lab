@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
 import WorkflowDetailClient from './WorkflowDetailClient'
 
@@ -25,6 +26,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function WorkflowDetailPage({ params }: Props) {
+export default async function WorkflowDetailPage({ params }: Props) {
+  const { slug } = await params
+  const { data } = await adminSupabase
+    .from('workflows')
+    .select('id')
+    .eq('slug', slug)
+    .eq('published', true)
+    .maybeSingle()
+
+  if (!data) notFound()
+
   return <WorkflowDetailClient params={params} />
 }

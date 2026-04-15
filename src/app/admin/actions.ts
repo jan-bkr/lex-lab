@@ -12,6 +12,9 @@ async function requireAdminSession(): Promise<void> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
+  // Optional email allowlist: set ADMIN_EMAIL in env to restrict access to one account.
+  const allowedEmail = process.env.ADMIN_EMAIL
+  if (allowedEmail && user.email !== allowedEmail) throw new Error('Forbidden')
 }
 
 // ─── Shared types ─────────────────────────────────────────────────────────────

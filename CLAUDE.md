@@ -249,6 +249,7 @@ export default function Page() {
 | `IP_HASH_SECRET` | Server only | HMAC-Key für IP-Pseudonymisierung (`getHashedIp()`) — ohne diesen Key: SHA-256-Fallback + Prod-Warning |
 | `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis — Rate Limiting (Vote, Comments, Prompts, Newsletter, Kontakt, Tool-Submit) |
 | `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis — Rate Limiting |
+| `ADMIN_EMAIL` | Server only | Optional: E-Mail-Allowlist für Admin-Zugriff — `requireAdminSession()` prüft `user.email === ADMIN_EMAIL` wenn gesetzt |
 
 ---
 
@@ -355,6 +356,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Comments `tool_slug` Fix + Admin-Notification** (2026-04-15) — Kommentar-INSERT schlug mit `23502`-Constraint-Fehler fehl, weil `tool_slug` NOT NULL in `tool_comments` nicht befüllt wurde. Route `/api/tools/[id]/comments` (POST) lädt jetzt zuerst den Slug aus `tools` und übergibt ihn beim INSERT. Außerdem: Admin-E-Mail-Benachrichtigung bei neuem Kommentar via Resend (fire-and-forget, selbes Muster wie Tool-Submit-Notification).
 - [x] **Vote-Status-Fix, HTML-Escaping & Kommentar-Härten** (2026-04-15) — `vote-status/route.ts` verwendete rohe IP statt `getHashedIp()` → Vote-Status war im UI immer `false` wenn Votes mit gehashter IP gespeichert wurden. Fix: `getClientIp()` entfernt, `getHashedIp()` importiert. Admin-E-Mail-Templates in `tools/submit` und `tools/[id]/comments` escapten User-Input nicht → `escapeHtml()`-Helper ergänzt, alle Nutzereingaben im HTML escaped. `comments/route.ts` (POST) prüft jetzt `status = 'approved'` beim Tool-Lookup — Kommentare auf pending/rejected Tools werden mit 404 abgewiesen. `AdminComment`-Interface um `rating: number | null` ergänzt; `comment: string | null` korrekt typisiert. Admin-Kommentar-UI zeigt Sternebewertung und unterscheidet Rating-only-Einträge von echten Kommentaren.
 
+- [x] **Sicherheits- und Qualitäts-Paket II** (2026-04-15) — REVOKE anon-Execute auf `toggle_tool_vote` RPC (Migration `000001`); DROP anon-INSERT-Policy auf `tool_comments` (Migration `000002`); `requireAdminSession()` um optionale `ADMIN_EMAIL`-Allowlist erweitert; Footer blendet sich auf `/admin`-Routen aus (wie Navbar); Tool- und Workflow-Detailseiten liefern echtes `notFound()` server-seitig statt HTTP-200 mit Fehler-UI; Security Headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `HSTS`) in `next.config.ts` für alle Routen; `.gitignore` um `.claude/settings.local.json` und `.claude/worktrees/` erweitert.
+
 ---
 
 ## Verhaltensregeln für Claude
@@ -389,5 +392,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - Neue DB-Funktionen über `adminSupabase.rpc('funktionsname', { ...params })` aufrufen (Beispiel: `toggle_tool_vote`)
 - IP-Hashing: immer `getHashedIp(req)` aus `src/lib/ip.ts` verwenden — nie rohe IPs im Rate-Limiting-Code
 - Supabase Join-Types in `actions.ts`: bei TypeScript-Fehler durch ambiguous Join-Types `as unknown as { field: type } | null` verwenden
-- `tool_comments` RLS INSERT-Policy muss manuell in Supabase SQL Editor ausgeführt werden (`20260415000000_tool_comments_rls.sql`)
+- `tool_comments` RLS INSERT-Policy (`20260415000000_tool_comments_rls.sql`) ist obsolet und **nicht** auszuführen — Migration `20260415000002` entfernt die Policy wieder
 - `tool_comments` INSERT: immer `tool_slug` aus `tools`-Tabelle vorab laden und mitsenden — NOT NULL-Constraint, fehlt es → Fehlercode `23502`
+- Supabase-Migrationen `20260415000001` + `20260415000002` **müssen im Supabase SQL Editor ausgeführt werden**: REVOKE anon-Execute auf `toggle_tool_vote` + DROP anon-INSERT-Policy auf `tool_comments`
+- Security Headers: `next.config.ts` setzt `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security` für alle Routen
+- `ADMIN_EMAIL` env var: wenn gesetzt, prüft `requireAdminSession()` die E-Mail — **empfohlen in Produktion**

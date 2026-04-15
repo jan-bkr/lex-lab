@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { adminSupabase } from '@/lib/supabase/admin'
 import ToolDetailClient from './ToolDetailClient'
 
@@ -25,6 +26,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function ToolDetailPage({ params }: Props) {
+export default async function ToolDetailPage({ params }: Props) {
+  const { slug } = await params
+  const { data } = await adminSupabase
+    .from('tools')
+    .select('id')
+    .eq('slug', slug)
+    .eq('status', 'approved')
+    .maybeSingle()
+
+  if (!data) notFound()
+
   return <ToolDetailClient params={params} />
 }
