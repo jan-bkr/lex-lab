@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getHashedIp } from '@/lib/ip'
@@ -124,6 +125,35 @@ export async function POST(req: NextRequest, { params }: Params) {
     if (error) {
       console.error('[comments POST] error:', error)
       return NextResponse.json({ error: 'Fehler beim Speichern.' }, { status: 500 })
+    }
+
+    // ─── Admin notification (fire-and-forget) ────────────────────────────────
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      const stars = safeRating ? '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating) : '–'
+      resend.emails.send({
+        from: 'lex-lab.de <kontakt@lex-lab.de>',
+        to: 'janiklas.dropbox@web.de',
+        subject: `[lex-lab.de] Neuer Kommentar: ${toolRow.slug}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #111827; margin-bottom: 4px;">Neuer Kommentar zur Prüfung</h2>
+            <p style="color: #6B7280; font-size: 13px; margin-top: 0;">via lex-lab.de · Tool: ${toolRow.slug}</p>
+            <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+              <tr><td style="padding: 6px 0; color: #6B7280; width: 120px;">Name</td><td style="padding: 6px 0; color: #111827; font-weight: 500;">${safeName}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280;">Rolle</td><td style="padding: 6px 0; color: #111827;">${safeRole || 'Sonstiges'}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280;">Bewertung</td><td style="padding: 6px 0; color: #111827;">${stars}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280;">Rechtsgebiet</td><td style="padding: 6px 0; color: #111827;">${safeRechtsgebiet.join(', ') || '–'}</td></tr>
+              <tr><td style="padding: 6px 0; color: #6B7280; vertical-align: top;">Kommentar</td><td style="padding: 6px 0; color: #111827;">${safeComment ?? '–'}</td></tr>
+            </table>
+            <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
+            <a href="https://www.lex-lab.de/admin/comments" style="display: inline-block; background: #2563EB; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;">
+              Im Admin prüfen →
+            </a>
+          </div>
+        `,
+      }).catch(err => console.error('[comments POST] admin notification failed:', err))
     }
 
     return NextResponse.json({ success: true })
