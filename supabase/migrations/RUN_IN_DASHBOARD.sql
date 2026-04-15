@@ -37,6 +37,7 @@ DROP POLICY IF EXISTS "Enable insert for all users" ON tools;
 --   WHERE tablename = 'newsletter_subscribers' AND cmd = 'SELECT';
 -- → should return 0 rows.
 
+DROP POLICY IF EXISTS "Service role can read" ON newsletter_subscribers;
 DROP POLICY IF EXISTS "Enable read access for all users" ON newsletter_subscribers;
 DROP POLICY IF EXISTS "Public can view subscribers" ON newsletter_subscribers;
 DROP POLICY IF EXISTS "Anyone can view subscribers" ON newsletter_subscribers;

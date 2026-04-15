@@ -21,10 +21,13 @@
 -- no read access. RLS stays enabled.
 --
 -- NOTE: Supabase may have named this policy differently. Common auto-generated
--- names are listed below. Run `SELECT policyname FROM pg_policies WHERE
--- tablename = 'newsletter_subscribers' AND cmd = 'SELECT';` to confirm
--- no SELECT policies remain.
+-- names are listed below; "Service role can read" was the confirmed live name
+-- (roles={public}, qual=true) from the 2026-04-15 audit. Run
+-- `SELECT policyname FROM pg_policies WHERE tablename =
+-- 'newsletter_subscribers' AND cmd = 'SELECT';` to confirm no SELECT policies
+-- remain.
 
+DROP POLICY IF EXISTS "Service role can read" ON newsletter_subscribers;
 DROP POLICY IF EXISTS "Enable read access for all users" ON newsletter_subscribers;
 DROP POLICY IF EXISTS "Public can view subscribers" ON newsletter_subscribers;
 DROP POLICY IF EXISTS "Anyone can view subscribers" ON newsletter_subscribers;
