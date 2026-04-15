@@ -27,6 +27,7 @@ function mapRow(row: WorkflowRow): Workflow {
     rechtsgebiet: (row.rechtsgebiet ?? []) as Rechtsgebiet[],
     readingTime: row.reading_time ?? 0,
     excerpt: row.excerpt ?? '',
+    content: row.content ?? null,
     createdAt: row.created_at,
   }
 }
@@ -111,7 +112,9 @@ export default function WorkflowDetailPage({
     .filter(w => w.slug !== slug && w.rechtsgebiet.some(r => workflow?.rechtsgebiet.includes(r)))
     .slice(0, 2)
 
-  const steps = WORKFLOW_STEPS[slug] ?? DEFAULT_STEPS
+  // DB content takes precedence over the hardcoded step map
+  const dbContent = workflow?.content?.trim() ?? null
+  const steps = dbContent ? null : (WORKFLOW_STEPS[slug] ?? DEFAULT_STEPS)
 
   if (loadError) {
     return (
@@ -196,24 +199,32 @@ export default function WorkflowDetailPage({
 
           <div className="bg-white border border-gray-100 rounded-xl p-6">
             <h2 className="font-display font-semibold text-gray-900 mb-5">Workflow-Schritte</h2>
-            <ol className="space-y-5">
-              {steps.map((step, i) => {
-                const colonIdx = step.indexOf(':')
-                const label = colonIdx !== -1 ? step.slice(0, colonIdx) : step
-                const body = colonIdx !== -1 ? step.slice(colonIdx + 1).trim() : ''
-                return (
-                  <li key={i} className="flex gap-4">
-                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
-                      {i + 1}
-                    </span>
-                    <div className="pt-0.5 text-sm">
-                      <span className="font-semibold text-gray-800">{label}:</span>
-                      {body && <span className="text-gray-600"> {body}</span>}
-                    </div>
-                  </li>
-                )
-              })}
-            </ol>
+            {dbContent ? (
+              <div className="space-y-3">
+                {dbContent.split('\n').filter(Boolean).map((para, i) => (
+                  <p key={i} className="text-sm text-gray-600 leading-relaxed">{para}</p>
+                ))}
+              </div>
+            ) : (
+              <ol className="space-y-5">
+                {steps!.map((step, i) => {
+                  const colonIdx = step.indexOf(':')
+                  const label = colonIdx !== -1 ? step.slice(0, colonIdx) : step
+                  const body = colonIdx !== -1 ? step.slice(colonIdx + 1).trim() : ''
+                  return (
+                    <li key={i} className="flex gap-4">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
+                        {i + 1}
+                      </span>
+                      <div className="pt-0.5 text-sm">
+                        <span className="font-semibold text-gray-800">{label}:</span>
+                        {body && <span className="text-gray-600"> {body}</span>}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
+            )}
           </div>
         </div>
 

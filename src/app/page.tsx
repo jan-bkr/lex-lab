@@ -39,6 +39,7 @@ function mapWorkflow(r: any): Workflow {
     rechtsgebiet: (r.rechtsgebiet ?? []) as Rechtsgebiet[],
     readingTime: r.reading_time ?? 0,
     excerpt: r.excerpt ?? '',
+    content: r.content ?? null,
     createdAt: r.created_at,
   }
 }

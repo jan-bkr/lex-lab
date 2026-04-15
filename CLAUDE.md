@@ -219,7 +219,7 @@ export default function Page() {
 
 **Cron-Job:** `/api/pipeline` täglich 06:00 UTC (konfiguriert in `vercel.json`)
 - Vercel Cron sendet **GET** — Route exportiert sowohl `GET` als auch `POST` (GET = Cron, POST = manueller Trigger)
-- Auth: Vercel-Header `x-vercel-cron: 1` (automatisch) oder `Authorization: Bearer CRON_SECRET` (manuell)
+- Auth: **ausschließlich** `Authorization: Bearer CRON_SECRET` für alle Aufrufe. Wenn `CRON_SECRET` in Vercel gesetzt ist, fügt Vercel Cron diesen Header automatisch ein. Die Route ist fail-closed: fehlt `CRON_SECRET` in den Env-Vars, gibt sie HTTP 500 zurück.
 - Limit: `maxDuration = 60` (Vercel Hobby Plan)
 - Verarbeitet max. 3 Items pro RSS-Quelle, 11 Quellen parallel, Cutoff: 24h
 
@@ -272,7 +272,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 1. **Next.js 16: `params` ist ein `Promise`** — `const { slug } = await params` in allen Pages und `generateMetadata`. Vergessen → TypeScript-Fehler zur Laufzeit.
 
-2. **Keine `middleware.ts`** — Admin-Auth läuft ausschließlich im `src/app/admin/layout.tsx` via `supabase.auth.getUser()`. Kein Next.js Middleware-File vorhanden.
+2. **Keine `middleware.ts`** — Es gibt **keine** Next.js `middleware.ts`-Datei. `src/proxy.ts` exportiert eine `proxy()`-Funktion und einen `config`, ist aber nirgends importiert und hat daher **keinen Effekt** (totes Code-Artefakt). Admin-Auth läuft ausschließlich via `requireAdminSession()` in jeder Server Action und im `src/app/admin/layout.tsx`. Nicht löschen ohne vorherige Prüfung, ob Middleware gewünscht ist.
 
 3. **Drei Supabase-Clients — nie falsch mischen:**
    - `client.ts` → Browser (anon key, RLS aktiv) — nur in `'use client'`-Komponenten
@@ -335,8 +335,9 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Sicherheits- und Betriebs-Paket** (2026-04-14) — Admin Server Actions intern mit `requireAdminSession()` abgesichert; `tool_votes` SELECT-Policy entfernt (voter_ip = PII); Pipeline-Route exportiert GET+POST (Vercel Cron sendet GET); Vote-Zählung atomar via `toggle_tool_vote()` RPC (Migration 000003); Rate Limiting auf Upstash Redis migriert (`src/lib/rate-limit.ts`, Sliding Window, 5 Endpunkte, In-Memory-Fallback für lokale Entwicklung).
 - [x] **Public Truth & Submit Hardening** (2026-04-14) — `/tools/submit` von Browser-Anon-Write auf serverseitigen API-Route-Handler (`/api/tools/submit`) umgestellt: Validierung, Rate Limit (5/Tag pro IP), schreibt via `adminSupabase`. Mock-Fallbacks auf allen öffentlichen Seiten (Homepage, Tools, Prompts, Workflows, Events) durch echte Fehler-/Leer-States ersetzt. Sitemap bereinigt: `/prompts/[slug]` und `/news/[slug]` entfernt (Seiten existieren nicht). Navbar: `/beitraege` mit „bald"-Badge markiert statt leerem Link.
 - [x] **Compliance, Inhaltswahrheit & Admin-Korrektheit** (2026-04-15) — Datenschutz-Seite ehrlich dokumentiert (Vercel Analytics, Upstash Redis, DSGVO Art. 6 I lit. f). Newsletter: Mail-first-Reihenfolge (DB-Write nur bei erfolgtem Mail-Versand). Mock-Fallbacks aus `ToolDetailClient.tsx` und `WorkflowDetailClient.tsx` entfernt. `generateMetadata` filtert jetzt nach `status=approved` (Tools) resp. `published=true` (Workflows). `requireAdminSession()` auf alle 6 Admin-Read-Actions ausgeweitet. `pricing_type`-Spalte end-to-end konsistent (Admin schrieb zuvor in falsche `pricing`-Spalte). `revalidatePath` in `updateTool` nutzt jetzt `payload.slug` statt interner UUID.
+- [x] **Secret-Härtung & State-Konsistenz** (2026-04-15) — Pipeline-Auth vereinfacht: `x-vercel-cron`-Header-Check entfernt, ausschließlich `Authorization: Bearer CRON_SECRET` (Vercel injiziert diesen Header automatisch wenn Secret gesetzt ist); fail-closed wenn `CRON_SECRET` nicht konfiguriert. Newsletter: `makeToken()` wirft wenn `CRON_SECRET` fehlt; `subscribe`-Route prüft Secret früh; `unsubscribe`-Route fängt den Fehler ab statt mit leerem HMAC-Schlüssel weiterzulaufen. News-Seite: Fehler-State und Leer-State sauber getrennt (`loadError` State, eigene Fehlermeldung). WorkflowDetailClient: `content`-Feld aus DB gerendert wenn vorhanden (Fließtext), sonst Fallback auf hardcoded Steps; `Workflow`-Typ und alle `mapRow`/`mapWorkflow`-Funktionen um `content` ergänzt. Tool-Submit: Slug erhält Timestamp-Suffix (`-${Date.now().toString(36)}`) zur Kollisionsvermeidung. `src/proxy.ts` in CLAUDE.md korrekt als totes Artefakt (nicht importiert, kein Effekt) dokumentiert.
 
-> **Langfristig für `/tools/submit`:** Der aktuelle schmale Fix (API Route) ist korrekt, aber nicht optimal. Die sauberere Langzeitlösung ist ein vollständiger Server Action mit Moderationsbenachrichtigung (E-Mail an Admin via Resend), dedizierter Slug-Kollisionsprüfung und optionalem Double-Opt-In für den Einreicher. Priorität: mittel.
+> **Langfristig für `/tools/submit`:** Der aktuelle schmale Fix (API Route) ist korrekt, aber nicht optimal. Die sauberere Langzeitlösung ist ein vollständiger Server Action mit Moderationsbenachrichtigung (E-Mail an Admin via Resend) und optionalem Double-Opt-In für den Einreicher. Priorität: mittel.
 
 ---
 

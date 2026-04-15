@@ -92,10 +92,14 @@ export async function POST(req: NextRequest) {
   }
 
   // ─── Write (server-side, via admin client) ────────────────────────────────────
+  // Append a short timestamp suffix to the slug to prevent collisions when
+  // multiple tools share the same name (e.g. two "ChatGPT" submissions).
   const nameStr = (name as string).trim()
+  const slug    = `${slugify(nameStr)}-${Date.now().toString(36)}`
+
   const { error: dbError } = await adminSupabase.from('tools').insert({
     name: nameStr,
-    slug: slugify(nameStr),
+    slug,
     url: (url as string).trim(),
     tagline: (tagline as string).trim(),
     description: (description as string).trim(),
@@ -106,6 +110,8 @@ export async function POST(req: NextRequest) {
 
   if (dbError) {
     console.error('[tools/submit] DB error:', dbError.message)
+    // Unique-constraint violations (code 23505) on slug are theoretically
+    // impossible now (timestamp suffix), but guard against edge cases.
     return NextResponse.json(
       { error: 'Es ist ein Fehler aufgetreten. Bitte versuche es erneut.' },
       { status: 500 }

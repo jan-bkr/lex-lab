@@ -73,6 +73,7 @@ function relativeDate(dateStr: string): string {
 export default function NewsPage() {
   const [articles, setArticles]   = useState<NewsArticle[]>([])
   const [loading, setLoading]     = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Alle')
 
   useEffect(() => {
@@ -84,10 +85,11 @@ export default function NewsPage() {
         .order('published_at', { ascending: false })
         .limit(50)
 
-      if (error || !data || data.length === 0) {
-        setArticles([])
+      if (error) {
+        console.error('[news] fetch error:', error.message)
+        setLoadError(true)
       } else {
-        setArticles((data as NewsRow[]).map(mapRow))
+        setArticles(data ? (data as NewsRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -125,6 +127,13 @@ export default function NewsPage() {
         ))}
       </div>
 
+      {/* Error state */}
+      {!loading && loadError && (
+        <div className="text-center py-16 text-sm text-gray-500">
+          Nachrichten konnten nicht geladen werden. Bitte später erneut versuchen.
+        </div>
+      )}
+
       {/* Skeleton */}
       {loading ? (
         <div className="space-y-3">
@@ -140,7 +149,7 @@ export default function NewsPage() {
             </div>
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : loadError ? null : filtered.length === 0 ? (
         <div className="text-center py-16 text-sm text-gray-400">
           Keine Artikel gefunden.
         </div>

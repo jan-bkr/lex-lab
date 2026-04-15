@@ -48,6 +48,7 @@ export interface Workflow {
   rechtsgebiet: Rechtsgebiet[]
   readingTime: number
   excerpt: string
+  content: string | null
   createdAt: string
 }
 

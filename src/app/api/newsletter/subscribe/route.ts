@@ -36,6 +36,10 @@ export async function POST(request: Request): Promise<Response> {
     console.error('[newsletter] RESEND_API_KEY is not set')
     return Response.json({ error: 'E-Mail-Versand derzeit nicht verfügbar.' }, { status: 500 })
   }
+  if (!process.env.CRON_SECRET) {
+    console.error('[newsletter] CRON_SECRET is not set — unsubscribe links cannot be generated')
+    return Response.json({ error: 'Newsletter-Anmeldung derzeit nicht verfügbar.' }, { status: 500 })
+  }
 
   let email: string
   try {

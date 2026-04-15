@@ -36,6 +36,7 @@ function mapRow(row: WorkflowRow): Workflow {
     rechtsgebiet: (row.rechtsgebiet ?? []) as Rechtsgebiet[],
     readingTime: row.reading_time ?? 0,
     excerpt: row.excerpt ?? '',
+    content: row.content ?? null,
     createdAt: row.created_at,
   }
 }

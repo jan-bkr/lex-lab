@@ -186,25 +186,30 @@ async function processSource(
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
-// Vercel Cron Jobs send GET requests (no method can be specified in vercel.json).
-// Manual triggers via curl use POST with Authorization: Bearer <CRON_SECRET>.
-// Both methods share identical auth + processing logic.
+// Auth: all callers (Vercel Cron and manual triggers) must present
+//   Authorization: Bearer <CRON_SECRET>
+// When CRON_SECRET is set in Vercel env vars, Vercel Cron Jobs automatically
+// inject this header on every invocation — no separate header check needed.
+// Fail-closed: if CRON_SECRET is not configured the route always returns 401.
 
 async function handleRequest(request: Request): Promise<Response> {
   const runStart = Date.now()
   const runId    = Math.random().toString(36).slice(2, 8)
 
   // ── Auth ──
-  const authHeader    = request.headers.get('Authorization')
-  const isVercelCron  = request.headers.get('x-vercel-cron') === '1'
-  const isManualTrigger = authHeader === `Bearer ${process.env.CRON_SECRET}`
+  const secret = process.env.CRON_SECRET
+  if (!secret) {
+    console.error(`[pipeline][${runId}] CRON_SECRET env var is not set — rejecting request`)
+    return Response.json({ error: 'Server misconfiguration' }, { status: 500 })
+  }
 
-  if (!isVercelCron && !isManualTrigger) {
+  const authHeader = request.headers.get('Authorization')
+  if (authHeader !== `Bearer ${secret}`) {
     console.warn(`[pipeline][${runId}] Unauthorized request — origin: ${request.headers.get('origin')}`)
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const trigger = isVercelCron ? 'vercel-cron' : 'manual'
+  const trigger = 'pipeline'
   const cutoffMs = Date.now() - 24 * 60 * 60 * 1000
 
   console.log(
