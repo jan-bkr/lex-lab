@@ -81,7 +81,7 @@ export default function NewsPage() {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('news_articles')
-        .select('*')
+        .select('id, title, slug, summary, source_url, source_name, category, published_at, ai_generated')
         .order('published_at', { ascending: false })
         .limit(50)
 

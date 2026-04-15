@@ -95,7 +95,7 @@ export default function PromptsPage() {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('prompts')
-        .select('*')
+        .select('id, title, slug, prompt_text, use_case, rechtsgebiet, example_output, is_prompt_of_day, created_at')
         .order('is_prompt_of_day', { ascending: false })
         .order('created_at', { ascending: false })
 

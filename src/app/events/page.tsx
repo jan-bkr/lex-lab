@@ -92,7 +92,7 @@ export default function EventsPage() {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('events')
-        .select('*')
+        .select('id, title, date, type, url, description, created_at')
         .order('date', { ascending: true })
 
       if (error) {

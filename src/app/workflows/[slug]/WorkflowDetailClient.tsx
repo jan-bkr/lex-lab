@@ -14,7 +14,6 @@ interface WorkflowRow {
   rechtsgebiet: string[] | null
   reading_time: number | null
   excerpt: string | null
-  content: string | null
   published: boolean
   created_at: string
 }
@@ -86,7 +85,7 @@ export default function WorkflowDetailPage({
       const supabase = createClient()
       const { data, error } = await supabase
         .from('workflows')
-        .select('*')
+        .select('id, title, slug, rechtsgebiet, reading_time, excerpt, published, created_at')
         .eq('published', true)
 
       if (error) {

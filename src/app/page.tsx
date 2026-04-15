@@ -129,11 +129,11 @@ const jsonLd = {
 export default async function HomePage() {
   // Fetch all sections in parallel
   const [toolsRes, newsRes, eventsRes, workflowsRes, promptRes, allToolsRes] = await Promise.all([
-    adminSupabase.from('tools').select('*').eq('status', 'approved').order('votes', { ascending: false }).limit(3),
-    adminSupabase.from('news_articles').select('*').neq('source_url', '#').order('published_at', { ascending: false }).limit(4),
-    adminSupabase.from('events').select('*').gt('date', new Date().toISOString()).order('date', { ascending: true }).limit(3),
-    adminSupabase.from('workflows').select('*').eq('published', true).order('created_at', { ascending: false }).limit(3),
-    adminSupabase.from('prompts').select('*').eq('is_prompt_of_day', true).limit(1),
+    adminSupabase.from('tools').select('id, name, slug, url, tagline, description, rechtsgebiet, category, votes, is_new, created_at').eq('status', 'approved').order('votes', { ascending: false }).limit(3),
+    adminSupabase.from('news_articles').select('id, title, slug, summary, source_url, source_name, category, published_at, ai_generated').neq('source_url', '#').order('published_at', { ascending: false }).limit(4),
+    adminSupabase.from('events').select('id, title, date, type, url, description').gt('date', new Date().toISOString()).order('date', { ascending: true }).limit(3),
+    adminSupabase.from('workflows').select('id, title, slug, rechtsgebiet, reading_time, excerpt, created_at').eq('published', true).order('created_at', { ascending: false }).limit(3),
+    adminSupabase.from('prompts').select('id, title, slug, prompt_text, use_case, rechtsgebiet, example_output, created_at').eq('is_prompt_of_day', true).limit(1),
     adminSupabase.from('tools').select('rechtsgebiet').eq('status', 'approved'),
   ])
 
