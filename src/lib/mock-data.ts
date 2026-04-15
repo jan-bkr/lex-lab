@@ -89,6 +89,7 @@ export const mockWorkflows: Workflow[] = [
     rechtsgebiet: ['M&A'],
     readingTime: 15,
     excerpt: 'Wie du mit Claude strukturierte Legal DD in einem Bruchteil der Zeit durchführst — von der Dokumentensichtung bis zum Risikobericht.',
+    content: null,
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -98,6 +99,7 @@ export const mockWorkflows: Workflow[] = [
     rechtsgebiet: ['Steuerrecht'],
     readingTime: 8,
     excerpt: 'Eine wiederverwendbare Prompt-Kette, die aus einem Sachverhalt ein strukturiertes Steuermemo nach Großkanzlei-Standard generiert.',
+    content: null,
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -107,6 +109,7 @@ export const mockWorkflows: Workflow[] = [
     rechtsgebiet: ['Venture Capital'],
     readingTime: 10,
     excerpt: 'Systematische KI-gestützte Analyse von VC Term Sheets: Anti-Dilution, Liquidationspräferenzen und Drag-along-Rechte auf einen Blick.',
+    content: null,
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -116,6 +119,7 @@ export const mockWorkflows: Workflow[] = [
     rechtsgebiet: ['Gesellschaftsrecht'],
     readingTime: 12,
     excerpt: 'Von der Mandatsannahme bis zur notarfähigen Satzung: Wie du den Standardfall einer GmbH-Gründung mit KI deutlich beschleunigst.',
+    content: null,
     createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ]
