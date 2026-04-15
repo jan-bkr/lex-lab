@@ -1,0 +1,31 @@
+-- Drop the anon INSERT policy on tools.
+--
+-- Background: when the tools table was first created, an RLS policy ("Anyone can
+-- submit") allowed anon clients to INSERT rows directly via the Supabase JS
+-- client. This was the original submit path.
+--
+-- Current state: /api/tools/submit is a server-side POST route handler that
+-- uses adminSupabase (service-role key, bypasses RLS) and enforces all security
+-- controls itself:
+--   • Same-origin check
+--   • Rate limiting (5 submissions/day per IP via Upstash)
+--   • Input validation + length limits
+--   • Rechtsgebiet allowlist
+--   • Unique-slug generation
+--   • status hardcoded to 'pending'
+--   • Admin notification via Resend
+--
+-- The anon INSERT policy is therefore not just redundant — it is a bypass: any
+-- client that holds the public anon key (visible in the browser bundle) can
+-- insert arbitrary rows into tools, skipping all of the above controls.
+--
+-- This migration removes the policy. RLS stays enabled on the table; the only
+-- valid write path going forward is /api/tools/submit via the server route.
+--
+-- NOTE: Supabase may have named this policy differently depending on how it was
+-- created. Common names are "Anyone can submit" and "Enable insert for all users".
+-- Both are dropped here. Run `SELECT policyname FROM pg_policies WHERE tablename =
+-- 'tools' AND cmd = 'INSERT';` in the SQL editor to verify no INSERT policies remain.
+
+DROP POLICY IF EXISTS "Anyone can submit" ON tools;
+DROP POLICY IF EXISTS "Enable insert for all users" ON tools;
