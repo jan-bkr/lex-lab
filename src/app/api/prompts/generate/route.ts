@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { JURIST_PERSONA } from '@/lib/jurist-persona'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { getHashedIp } from '@/lib/ip'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -39,11 +40,6 @@ function isSameOrigin(req: NextRequest): boolean {
   }
 }
 
-function getClientIp(req: NextRequest): string {
-  const forwarded = req.headers.get('x-forwarded-for')
-  return forwarded ? forwarded.split(',')[0].trim() : 'unknown'
-}
-
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
@@ -53,8 +49,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Rate limiting ──
-  const ip = getClientIp(req)
-  const { allowed, remaining } = await checkRateLimit('prompts', ip)
+  const { allowed, remaining } = await checkRateLimit('prompts', getHashedIp(req))
   if (!allowed) {
     return NextResponse.json(
       { error: 'RATE_LIMIT_EXCEEDED', limit: 10 },

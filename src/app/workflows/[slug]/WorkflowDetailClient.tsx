@@ -189,7 +189,8 @@ export default function WorkflowDetailPage({
 
           {steps ? (
             <div className="bg-white border border-gray-100 rounded-xl p-6">
-              <h2 className="font-display font-semibold text-gray-900 mb-5">Workflow-Schritte</h2>
+              <h2 className="font-display font-semibold text-gray-900 mb-1">Workflow-Schritte</h2>
+              <p className="text-xs text-gray-400 mb-5">Kurze Beispiele — ausführliche Schritt-für-Schritt-Anleitungen folgen bald.</p>
               <ol className="space-y-5">
                 {steps.map((step, i) => {
                   const colonIdx = step.indexOf(':')
@@ -209,7 +210,12 @@ export default function WorkflowDetailPage({
                 })}
               </ol>
             </div>
-          ) : null}
+          ) : (
+            <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <h2 className="font-display font-semibold text-gray-900 mb-1">Workflow-Schritte</h2>
+              <p className="text-sm text-gray-400">Die detaillierte Schritt-für-Schritt-Anleitung für diesen Workflow erscheint bald.</p>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}

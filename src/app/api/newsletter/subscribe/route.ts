@@ -2,15 +2,11 @@ import { adminSupabase } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import { makeToken } from '@/app/api/newsletter/unsubscribe/route'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { getHashedIp } from '@/lib/ip'
 
 export const dynamic = 'force-dynamic'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  return forwarded ? forwarded.split(',')[0].trim() : 'unknown'
-}
 
 function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get('origin')
@@ -55,8 +51,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Bitte gib eine gültige E-Mail-Adresse ein.' }, { status: 400 })
   }
 
-  const ip = getClientIp(request)
-  const { allowed } = await checkRateLimit('newsletter', ip)
+  const { allowed } = await checkRateLimit('newsletter', getHashedIp(request))
   if (!allowed) {
     return Response.json({ error: 'Zu viele Anfragen. Bitte später erneut versuchen.' }, { status: 429 })
   }

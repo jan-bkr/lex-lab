@@ -372,3 +372,130 @@ export async function addPrompt(data: PromptInsert): Promise<void> {
   revalidatePath('/admin/prompts')
   revalidatePath('/prompts')
 }
+
+// ─── Workflows ────────────────────────────────────────────────────────────────
+
+export interface AdminWorkflow {
+  id: string
+  title: string
+  slug: string
+  rechtsgebiet: string[] | null
+  reading_time: number | null
+  excerpt: string | null
+  published: boolean
+  created_at: string
+}
+
+export async function fetchAllWorkflows(): Promise<AdminWorkflow[]> {
+  await requireAdminSession()
+  const { data, error } = await adminSupabase
+    .from('workflows')
+    .select('id, title, slug, rechtsgebiet, reading_time, excerpt, published, created_at')
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as AdminWorkflow[]
+}
+
+interface WorkflowInsert {
+  title: string
+  slug: string
+  rechtsgebiet: string[]
+  reading_time: number
+  excerpt: string
+}
+
+export async function addWorkflow(data: WorkflowInsert): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase.from('workflows').insert({ ...data, published: false })
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/workflows')
+  revalidatePath('/workflows')
+}
+
+export async function toggleWorkflowPublished(id: string, published: boolean): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase.from('workflows').update({ published }).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/workflows')
+  revalidatePath('/workflows')
+}
+
+export async function deleteWorkflow(id: string): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase.from('workflows').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/workflows')
+  revalidatePath('/workflows')
+}
+
+// ─── Events ───────────────────────────────────────────────────────────────────
+
+export interface AdminEvent {
+  id: string
+  title: string
+  date: string
+  type: string
+  url: string | null
+  description: string | null
+  created_at: string
+}
+
+export async function fetchAllEvents(): Promise<AdminEvent[]> {
+  await requireAdminSession()
+  const { data, error } = await adminSupabase
+    .from('events')
+    .select('*')
+    .order('date', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as AdminEvent[]
+}
+
+interface EventInsert {
+  title: string
+  date: string
+  type: string
+  url: string
+  description: string
+}
+
+export async function addEvent(data: EventInsert): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase.from('events').insert(data)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/events')
+  revalidatePath('/events')
+}
+
+export async function deleteEvent(id: string): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase.from('events').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/events')
+  revalidatePath('/events')
+}
+
+// ─── Newsletter subscribers ───────────────────────────────────────────────────
+
+export interface AdminSubscriber {
+  id: string
+  email: string
+  confirmed: boolean
+  created_at: string
+}
+
+export async function fetchAllSubscribers(): Promise<AdminSubscriber[]> {
+  await requireAdminSession()
+  const { data, error } = await adminSupabase
+    .from('newsletter_subscribers')
+    .select('id, email, confirmed, created_at')
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as AdminSubscriber[]
+}
+
+export async function deleteSubscriber(id: string): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase.from('newsletter_subscribers').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/newsletter')
+}

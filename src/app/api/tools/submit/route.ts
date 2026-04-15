@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { getHashedIp } from '@/lib/ip'
+import { Resend } from 'resend'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,8 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ─── Rate limit ───────────────────────────────────────────────────────────────
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown'
-  const { allowed } = await checkRateLimit('toolsubmit', ip)
+  const { allowed } = await checkRateLimit('toolsubmit', getHashedIp(req))
   if (!allowed) {
     return NextResponse.json(
       { error: 'Zu viele Einreichungen. Bitte versuche es später erneut.' },
@@ -145,6 +146,34 @@ export async function POST(req: NextRequest) {
       { error: 'Es ist ein Fehler aufgetreten. Bitte versuche es erneut.' },
       { status: 500 }
     )
+  }
+
+  // ─── Admin notification (fire-and-forget, never blocks the user response) ───
+  if (process.env.RESEND_API_KEY) {
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    resend.emails.send({
+      from: 'lex-lab.de <kontakt@lex-lab.de>',
+      to: 'janiklas.dropbox@web.de',
+      subject: `[lex-lab.de] Neues Tool eingereicht: ${nameStr}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #111827; margin-bottom: 4px;">Neues Tool zur Prüfung</h2>
+          <p style="color: #6B7280; font-size: 13px; margin-top: 0;">via lex-lab.de Tool-Einreichung</p>
+          <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr><td style="padding: 6px 0; color: #6B7280; width: 120px;">Name</td><td style="padding: 6px 0; color: #111827; font-weight: 500;">${nameStr}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">URL</td><td style="padding: 6px 0;"><a href="${(url as string).trim()}" style="color: #2563EB;">${(url as string).trim()}</a></td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">Tagline</td><td style="padding: 6px 0; color: #111827;">${(tagline as string).trim()}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">Rechtsgebiet</td><td style="padding: 6px 0; color: #111827;">${(rechtsgebiet as string[]).join(', ')}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6B7280;">Einreicher</td><td style="padding: 6px 0; color: #111827;">${typeof email === 'string' && email.trim() ? email.trim() : '–'}</td></tr>
+          </table>
+          <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
+          <a href="https://www.lex-lab.de/admin/tools" style="display: inline-block; background: #2563EB; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;">
+            Im Admin prüfen →
+          </a>
+        </div>
+      `,
+    }).catch(err => console.error('[tools/submit] admin notification failed:', err))
   }
 
   return NextResponse.json({ success: true })

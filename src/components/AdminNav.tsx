@@ -11,15 +11,21 @@ import {
   LogOut,
   ArrowLeft,
   FlaskConical,
+  GitBranch,
+  Calendar,
+  Mail,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const NAV_ITEMS = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { href: '/admin/tools', label: 'Tools', icon: Wrench, exact: false },
-  { href: '/admin/news', label: 'News', icon: Newspaper, exact: false },
-  { href: '/admin/prompts', label: 'Prompts', icon: BookOpen, exact: false },
-  { href: '/admin/comments', label: 'Kommentare', icon: MessageSquare, exact: false },
+  { href: '/admin',             label: 'Dashboard',   icon: LayoutDashboard, exact: true  },
+  { href: '/admin/tools',       label: 'Tools',        icon: Wrench,          exact: false },
+  { href: '/admin/news',        label: 'News',         icon: Newspaper,       exact: false },
+  { href: '/admin/prompts',     label: 'Prompts',      icon: BookOpen,        exact: false },
+  { href: '/admin/comments',    label: 'Kommentare',   icon: MessageSquare,   exact: false },
+  { href: '/admin/workflows',   label: 'Workflows',    icon: GitBranch,       exact: false },
+  { href: '/admin/events',      label: 'Events',       icon: Calendar,        exact: false },
+  { href: '/admin/newsletter',  label: 'Newsletter',   icon: Mail,            exact: false },
 ]
 
 export default function AdminNav({ email }: { email: string }) {

@@ -1,6 +1,6 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 import Link from 'next/link'
-import { ClipboardList, CheckCircle, Newspaper, BookOpen, MessageSquare } from 'lucide-react'
+import { ClipboardList, CheckCircle, Newspaper, BookOpen, MessageSquare, GitBranch, Calendar, Mail } from 'lucide-react'
 
 export default async function AdminDashboardPage() {
   const [
@@ -9,12 +9,18 @@ export default async function AdminDashboardPage() {
     { count: newsCount },
     { count: promptsCount },
     { count: pendingCommentsCount },
+    { count: workflowsCount },
+    { count: eventsCount },
+    { count: subscribersCount },
   ] = await Promise.all([
     adminSupabase.from('tools').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     adminSupabase.from('tools').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
     adminSupabase.from('news_articles').select('*', { count: 'exact', head: true }),
     adminSupabase.from('prompts').select('*', { count: 'exact', head: true }),
     adminSupabase.from('tool_comments').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    adminSupabase.from('workflows').select('*', { count: 'exact', head: true }).eq('published', true),
+    adminSupabase.from('events').select('*', { count: 'exact', head: true }),
+    adminSupabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }).eq('confirmed', true),
   ])
 
   const stats = [
@@ -52,6 +58,27 @@ export default async function AdminDashboardPage() {
       icon: MessageSquare,
       color: 'text-orange-600',
       bg: 'bg-orange-50',
+    },
+    {
+      label: 'Workflows (live)',
+      value: workflowsCount ?? 0,
+      icon: GitBranch,
+      color: 'text-teal-600',
+      bg: 'bg-teal-50',
+    },
+    {
+      label: 'Termine',
+      value: eventsCount ?? 0,
+      icon: Calendar,
+      color: 'text-indigo-600',
+      bg: 'bg-indigo-50',
+    },
+    {
+      label: 'Newsletter-Abonnenten',
+      value: subscribersCount ?? 0,
+      icon: Mail,
+      color: 'text-pink-600',
+      bg: 'bg-pink-50',
     },
   ]
 
@@ -103,6 +130,27 @@ export default async function AdminDashboardPage() {
           >
             <MessageSquare className="w-4 h-4" />
             Kommentare prüfen{(pendingCommentsCount ?? 0) > 0 ? ` (${pendingCommentsCount})` : ''}
+          </Link>
+          <Link
+            href="/admin/workflows"
+            className="inline-flex items-center gap-2 bg-teal-50 hover:bg-teal-100 text-teal-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-teal-200"
+          >
+            <GitBranch className="w-4 h-4" />
+            Workflows verwalten
+          </Link>
+          <Link
+            href="/admin/events"
+            className="inline-flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-indigo-200"
+          >
+            <Calendar className="w-4 h-4" />
+            Termine verwalten
+          </Link>
+          <Link
+            href="/admin/newsletter"
+            className="inline-flex items-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-pink-200"
+          >
+            <Mail className="w-4 h-4" />
+            Newsletter ({subscribersCount ?? 0} Abonnenten)
           </Link>
         </div>
       </div>

@@ -1,12 +1,8 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { getHashedIp } from '@/lib/ip'
 
 export const dynamic = 'force-dynamic'
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  return forwarded ? forwarded.split(',')[0].trim() : 'unknown'
-}
 
 function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get('origin')
@@ -37,9 +33,9 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Missing toolId' }, { status: 400 })
   }
 
-  const ip = getClientIp(request)
+  const hashedIp = getHashedIp(request)
 
-  const { allowed } = await checkRateLimit('vote', `${ip}:${toolId}`)
+  const { allowed } = await checkRateLimit('vote', `${hashedIp}:${toolId}`)
   if (!allowed) {
     return Response.json({ error: 'Too many requests' }, { status: 429 })
   }
@@ -47,7 +43,7 @@ export async function POST(request: Request): Promise<Response> {
   // ── Atomic vote toggle via RPC (single transaction: no read-then-write race) ──
   const { data, error } = await adminSupabase.rpc('toggle_tool_vote', {
     p_tool_id:  toolId,
-    p_voter_ip: ip,
+    p_voter_ip: hashedIp,
   })
 
   if (error) {

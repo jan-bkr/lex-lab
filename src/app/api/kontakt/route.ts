@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { getHashedIp } from '@/lib/ip'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,11 +8,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const NAME_LIMIT = 120
 const SUBJECT_LIMIT = 150
 const MESSAGE_LIMIT = 5000
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  return forwarded ? forwarded.split(',')[0].trim() : 'unknown'
-}
 
 function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get('origin')
@@ -66,8 +62,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Die Nachricht ist zu lang.' }, { status: 400 })
   }
 
-  const ip = getClientIp(request)
-  const { allowed } = await checkRateLimit('kontakt', ip)
+  const { allowed } = await checkRateLimit('kontakt', getHashedIp(request))
   if (!allowed) {
     return Response.json({ error: 'Zu viele Anfragen. Bitte später erneut versuchen.' }, { status: 429 })
   }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { getHashedIp } from '@/lib/ip'
 
 type Params = { params: Promise<{ id: string }> }
 type AllowedRechtsgebiet = 'Steuerrecht' | 'M&A' | 'Gesellschaftsrecht' | 'Venture Capital'
@@ -15,11 +16,6 @@ const ALLOWED_RECHTSGEBIETE: AllowedRechtsgebiet[] = [
   'Gesellschaftsrecht',
   'Venture Capital',
 ]
-
-function getClientIp(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  return forwarded ? forwarded.split(',')[0].trim() : 'unknown'
-}
 
 function isSameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
@@ -67,8 +63,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Ungültige Tool-ID.' }, { status: 400 })
   }
 
-  const ip = getClientIp(req)
-  const { allowed } = await checkRateLimit('comments', ip)
+  const { allowed } = await checkRateLimit('comments', getHashedIp(req))
   if (!allowed) {
     return NextResponse.json({ error: 'Zu viele Anfragen. Bitte später erneut versuchen.' }, { status: 429 })
   }
