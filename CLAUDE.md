@@ -108,7 +108,7 @@ src/
 │   ├── rss-sources.ts              # 11 RSS-Quellen (M&A, Steuer, LegalTech, VC)
 │   ├── analytics.ts                # Vercel Analytics Helper
 │   ├── clean-text.ts               # Text-Bereinigung für Pipeline
-│   └── mock-data.ts                # Mock-Fallbacks für Tools, Workflows, Events, Prompts
+│   └── mock-data.ts                # GELÖSCHT (2026-04-15) — war toter Code
 ├── hooks/
 │   └── useAnalytics.ts
 ├── types/
@@ -338,6 +338,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Compliance, Inhaltswahrheit & Admin-Korrektheit** (2026-04-15) — Datenschutz-Seite ehrlich dokumentiert (Vercel Analytics, Upstash Redis, DSGVO Art. 6 I lit. f). Newsletter: Mail-first-Reihenfolge (DB-Write nur bei erfolgtem Mail-Versand). Mock-Fallbacks aus `ToolDetailClient.tsx` und `WorkflowDetailClient.tsx` entfernt. `generateMetadata` filtert jetzt nach `status=approved` (Tools) resp. `published=true` (Workflows). `requireAdminSession()` auf alle 6 Admin-Read-Actions ausgeweitet. `pricing_type`-Spalte end-to-end konsistent (Admin schrieb zuvor in falsche `pricing`-Spalte). `revalidatePath` in `updateTool` nutzt jetzt `payload.slug` statt interner UUID.
 
 - [x] **Secrets, Fail-Closed & Public Write Completion** (2026-04-15) — `NEWSLETTER_HMAC_SECRET` von `CRON_SECRET` entkoppelt; beide Newsletter-Routen schlagen hart fehl wenn Secret fehlt. Pipeline-Auth schlägt explizit fehl wenn `CRON_SECRET` nicht gesetzt ist. `/api/tools/submit` um Same-Origin-Check und Slug-Kollisionsauflösung (`uniqueSlug` mit bis zu 10 Versuchen + Timestamp-Fallback) erweitert. News-Seite trennt DB-Fehler (Fehler-State) von leerem Ergebnis (Empty-State).
+- [x] **Revalidierung, Taxonomie & totes Code aufgeräumt** (2026-04-15) — `rejectTool` revalidiert jetzt `/tools`; `approveComment`/`rejectComment` fetchen den Tool-Slug und revalidieren `/tools/[slug]`; `deletePrompt`/`addPrompt` revalidieren `/prompts`. Admin-Prompt-Rechtsgebiete auf die 4 Kern-Rechtsgebiete beschränkt (Steuerrecht, M&A, Gesellschaftsrecht, Venture Capital) — Arbeitsrecht/Vertragsrecht/Legal Tech/Regulierung entfernt. `WorkflowDetailClient` zeigt keine generischen Default-Schritte mehr für unbekannte Slugs (Schritte werden nur bei bekannten Slugs gerendert). `mock-data.ts` gelöscht (war toter Code, null Imports). README.md ersetzt (create-next-app-Boilerplate durch echte Projektbeschreibung).
 
 > **Langfristig für `/tools/submit`:** Moderationsbenachrichtigung (E-Mail an Admin via Resend) und optionales Double-Opt-In für den Einreicher fehlen noch. Priorität: mittel.
 

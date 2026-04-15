@@ -15,10 +15,7 @@ const RECHTSGEBIETE = [
   'Steuerrecht',
   'M&A',
   'Gesellschaftsrecht',
-  'Arbeitsrecht',
-  'Vertragsrecht',
-  'Legal Tech',
-  'Regulierung',
+  'Venture Capital',
 ]
 
 function slugify(str: string) {

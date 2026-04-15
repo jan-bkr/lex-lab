@@ -187,6 +187,7 @@ export async function rejectTool(id: string): Promise<void> {
     .eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/tools')
+  revalidatePath('/tools')
 }
 
 // ─── News ─────────────────────────────────────────────────────────────────────
@@ -267,22 +268,40 @@ export async function fetchComments(status: 'pending' | 'approved'): Promise<Adm
 
 export async function approveComment(id: string): Promise<void> {
   await requireAdminSession()
+  // Fetch tool slug before updating so we can revalidate the detail page
+  const { data: commentData } = await adminSupabase
+    .from('tool_comments')
+    .select('tools(slug)')
+    .eq('id', id)
+    .maybeSingle()
+  const toolSlug = (commentData?.tools as { slug: string } | null)?.slug
+
   const { error } = await adminSupabase
     .from('tool_comments')
     .update({ status: 'approved' })
     .eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/comments')
+  if (toolSlug) revalidatePath(`/tools/${toolSlug}`)
 }
 
 export async function rejectComment(id: string): Promise<void> {
   await requireAdminSession()
+  // Fetch tool slug before deleting so we can revalidate the detail page
+  const { data: commentData } = await adminSupabase
+    .from('tool_comments')
+    .select('tools(slug)')
+    .eq('id', id)
+    .maybeSingle()
+  const toolSlug = (commentData?.tools as { slug: string } | null)?.slug
+
   const { error } = await adminSupabase
     .from('tool_comments')
     .delete()
     .eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/comments')
+  if (toolSlug) revalidatePath(`/tools/${toolSlug}`)
 }
 
 // ─── Prompts ──────────────────────────────────────────────────────────────────
@@ -331,6 +350,7 @@ export async function deletePrompt(id: string): Promise<void> {
   const { error } = await adminSupabase.from('prompts').delete().eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/prompts')
+  revalidatePath('/prompts')
 }
 
 interface PromptInsert {
@@ -350,4 +370,5 @@ export async function addPrompt(data: PromptInsert): Promise<void> {
   })
   if (error) throw new Error(error.message)
   revalidatePath('/admin/prompts')
+  revalidatePath('/prompts')
 }

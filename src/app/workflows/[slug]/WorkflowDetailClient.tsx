@@ -62,13 +62,6 @@ const WORKFLOW_STEPS: Record<string, string[]> = {
   ],
 }
 
-const DEFAULT_STEPS = [
-  'Aufgabe definieren: Kläre den genauen Umfang und die Ziele des Workflows gemeinsam mit dem Mandanten.',
-  'Unterlagen strukturieren: Sammle alle relevanten Dokumente und bereite sie für die KI-Analyse vor.',
-  'Erstanalyse durchführen: Nutze Claude für eine erste Einschätzung und Identifikation der Kernsachverhalte.',
-  'Detailprüfung: Gehe systematisch durch die identifizierten Kernpunkte mit spezifischen Folgeprompts.',
-  'Ergebnis dokumentieren: Erstelle eine strukturierte Zusammenfassung mit konkreten Handlungsempfehlungen.',
-]
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('de-DE', {
@@ -111,7 +104,7 @@ export default function WorkflowDetailPage({
     .filter(w => w.slug !== slug && w.rechtsgebiet.some(r => workflow?.rechtsgebiet.includes(r)))
     .slice(0, 2)
 
-  const steps = WORKFLOW_STEPS[slug] ?? DEFAULT_STEPS
+  const steps = WORKFLOW_STEPS[slug] ?? null
 
   if (loadError) {
     return (
@@ -194,27 +187,29 @@ export default function WorkflowDetailPage({
             <p className="text-gray-600 leading-relaxed text-sm">{workflow.excerpt}</p>
           </div>
 
-          <div className="bg-white border border-gray-100 rounded-xl p-6">
-            <h2 className="font-display font-semibold text-gray-900 mb-5">Workflow-Schritte</h2>
-            <ol className="space-y-5">
-              {steps.map((step, i) => {
-                const colonIdx = step.indexOf(':')
-                const label = colonIdx !== -1 ? step.slice(0, colonIdx) : step
-                const body = colonIdx !== -1 ? step.slice(colonIdx + 1).trim() : ''
-                return (
-                  <li key={i} className="flex gap-4">
-                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
-                      {i + 1}
-                    </span>
-                    <div className="pt-0.5 text-sm">
-                      <span className="font-semibold text-gray-800">{label}:</span>
-                      {body && <span className="text-gray-600"> {body}</span>}
-                    </div>
-                  </li>
-                )
-              })}
-            </ol>
-          </div>
+          {steps ? (
+            <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <h2 className="font-display font-semibold text-gray-900 mb-5">Workflow-Schritte</h2>
+              <ol className="space-y-5">
+                {steps.map((step, i) => {
+                  const colonIdx = step.indexOf(':')
+                  const label = colonIdx !== -1 ? step.slice(0, colonIdx) : step
+                  const body = colonIdx !== -1 ? step.slice(colonIdx + 1).trim() : ''
+                  return (
+                    <li key={i} className="flex gap-4">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
+                        {i + 1}
+                      </span>
+                      <div className="pt-0.5 text-sm">
+                        <span className="font-semibold text-gray-800">{label}:</span>
+                        {body && <span className="text-gray-600"> {body}</span>}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
+          ) : null}
         </div>
 
         {/* Sidebar */}
