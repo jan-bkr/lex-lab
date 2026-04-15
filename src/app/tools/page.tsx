@@ -138,6 +138,24 @@ function ToolsPageInner() {
         </Link>
       </div>
 
+      {/* Tool Finder CTA */}
+      <Link
+        href="/tools/finder"
+        className="flex items-center justify-between gap-4 bg-white border border-gray-100 rounded-xl px-5 py-4 mb-6 hover:border-gray-200 hover:shadow-sm transition-all group"
+      >
+        <div>
+          <p className="text-sm font-semibold text-[#111827]">
+            Nicht sicher, welches Tool passt?
+          </p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            4 Fragen, persönliche Empfehlung — in unter 2 Minuten.
+          </p>
+        </div>
+        <span className="flex-shrink-0 text-sm font-medium text-white bg-[#111827] group-hover:bg-gray-800 px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+          Tool Finder →
+        </span>
+      </Link>
+
       {/* Sticky filter bar */}
       <div className="sticky top-[57px] z-10 bg-[#F7F7F5]/95 backdrop-blur-sm -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 pb-3 border-b border-gray-100 mb-6">
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">

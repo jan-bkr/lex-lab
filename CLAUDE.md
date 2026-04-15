@@ -336,6 +336,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Workflow-Detailseiten** als Premium-Teaser gestaltet (2026-04-16) — WORKFLOW_STEPS-Hardcode entfernt, intentionelle Bald-Sektion mit Lock-Icons
 - [x] **Eigene 404- und Error-Seiten** gebaut (2026-04-16) — `not-found.tsx` + `error.tsx`, brand-konsistent
 - [x] **Tool-Submit-Flow** — Admin-Benachrichtigung via Resend implementiert (2026-04-15)
+- [x] **Tool Finder** — `/tools/finder` gebaut (2026-04-16) — geführter 4-Schritte-Finder (Besucher-Typ, Use Case, Datenschutz, Teamgröße), client-seitiges Scoring gegen Supabase, Top-5-Empfehlungen mit Verdict + Score-Badge. Entry Point als Banner auf `/tools`.
 - [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt). Platzhalter auf Detailseite wurde bereits entfernt — Screenshot wird nur gerendert wenn URL vorhanden.
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
 - [ ] **Prompt-Detailseiten** — `/prompts/[slug]` existiert nicht; Seite noch nicht gebaut
@@ -413,5 +414,6 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **`vote/route.ts`**: prüft `status = 'approved'` via DB-Lookup vor dem `toggle_tool_vote`-RPC — Votes auf nicht-öffentliche Tools werden mit 404 abgewiesen.
 - **`tools`-Spaltenname `pricing`**: Die DB-Spalte für den Preistyp heißt `pricing` (nicht `pricing_type`). Code in `ToolDetailClient.tsx`, `actions.ts` (`UpdateToolPayload`, `updateTool`) und `EditForm.tsx` verwenden `pricing`. Niemals `pricing_type` schreiben — die Spalte existiert nicht in der DB (Fehlercode `42703`).
 - **Eigene 404- und Error-Seiten**: `src/app/not-found.tsx` (Server Component) und `src/app/error.tsx` (`'use client'`) existieren. Bei Routing-Änderungen nicht vergessen, dass diese globalen Fehlerseiten das Framework-Default ersetzen. `error.tsx` zeigt `error.digest` dem User, aber keinen Stack Trace.
+- **Tool Finder** (`/tools/finder`): `FinderClient.tsx` lädt alle approved Tools client-seitig, berechnet pro Tool einen `matchScore` aus 4 Antworten (Besucher-Typ, Use Case, Datenschutz, Teamgröße) und zeigt die Top 5. Entry Point: Banner auf `/tools`-Seite. Besucher-Typen: `anwalt | steuerberater | interdisziplinaer | inhouse` — diese 4 Kategorien sind kanonisch für LexLab, werden ggf. site-weit eingebaut.
 - **WorkflowDetailClient hat keinen WORKFLOW_STEPS-Hardcode mehr** — alle Workflow-Detailseiten zeigen `WorkflowStepsTeaser` (generische Lock-Icon-Schritte + Newsletter-CTA). Kein slug-spezifischer Content-Hardcode.
 - **`/beitraege`**: Professionelles Teaser-Format mit zwei Artikel-Cards. Artikel-Array in `ARTICLES` konstante in `page.tsx` — neue Teaser dort ergänzen.
