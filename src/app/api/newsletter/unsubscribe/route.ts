@@ -5,7 +5,11 @@ import { NextRequest } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 function makeToken(email: string): string {
-  return createHmac('sha256', process.env.CRON_SECRET ?? '')
+  const secret = process.env.NEWSLETTER_HMAC_SECRET
+  if (!secret) {
+    throw new Error('NEWSLETTER_HMAC_SECRET is not set')
+  }
+  return createHmac('sha256', secret)
     .update(email.toLowerCase())
     .digest('hex')
 }
@@ -22,6 +26,11 @@ function verifyToken(email: string, token: string): boolean {
 }
 
 export async function GET(req: NextRequest): Promise<Response> {
+  if (!process.env.NEWSLETTER_HMAC_SECRET) {
+    console.error('[newsletter/unsubscribe] NEWSLETTER_HMAC_SECRET is not set')
+    return Response.redirect(new URL('/newsletter/abgemeldet?status=error', req.url))
+  }
+
   const email = (req.nextUrl.searchParams.get('email') ?? '').toLowerCase().trim()
   const token = req.nextUrl.searchParams.get('token') ?? ''
 

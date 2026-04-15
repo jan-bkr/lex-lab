@@ -73,6 +73,7 @@ function relativeDate(dateStr: string): string {
 export default function NewsPage() {
   const [articles, setArticles]   = useState<NewsArticle[]>([])
   const [loading, setLoading]     = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Alle')
 
   useEffect(() => {
@@ -84,10 +85,11 @@ export default function NewsPage() {
         .order('published_at', { ascending: false })
         .limit(50)
 
-      if (error || !data || data.length === 0) {
-        setArticles([])
+      if (error) {
+        console.error('[news] failed to load articles:', error.message)
+        setLoadError(true)
       } else {
-        setArticles((data as NewsRow[]).map(mapRow))
+        setArticles(data ? (data as NewsRow[]).map(mapRow) : [])
       }
       setLoading(false)
     }
@@ -125,8 +127,15 @@ export default function NewsPage() {
         ))}
       </div>
 
+      {/* Error state */}
+      {loadError && (
+        <div className="text-center py-16 text-sm text-red-500">
+          Artikel konnten nicht geladen werden. Bitte versuche es später erneut.
+        </div>
+      )}
+
       {/* Skeleton */}
-      {loading ? (
+      {!loadError && loading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="bg-white border border-gray-100 rounded-xl p-5 animate-pulse space-y-2">
@@ -140,11 +149,11 @@ export default function NewsPage() {
             </div>
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : !loadError && filtered.length === 0 ? (
         <div className="text-center py-16 text-sm text-gray-400">
           Keine Artikel gefunden.
         </div>
-      ) : (
+      ) : !loadError ? (
         <div className="space-y-3">
           {filtered.map(article => {
             const hasUrl = Boolean(article.sourceUrl) && article.sourceUrl !== '#' && article.sourceUrl.startsWith('http')
@@ -210,7 +219,7 @@ export default function NewsPage() {
             )
           })}
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

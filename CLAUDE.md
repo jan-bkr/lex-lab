@@ -239,7 +239,8 @@ export default function Page() {
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | Admin-Client (bypasses RLS) |
 | `ANTHROPIC_API_KEY` | Server only | Claude API — Pipeline + Prompt Builder |
 | `RESEND_API_KEY` | Server only | Newsletter-E-Mails + Kontaktformular |
-| `CRON_SECRET` | Server only | Auth für Pipeline + Cleanup + Newsletter-HMAC |
+| `CRON_SECRET` | Server only | Auth für Pipeline + Cleanup |
+| `NEWSLETTER_HMAC_SECRET` | Server only | HMAC-Key für Newsletter-Abmelde-Token (SHA-256) |
 | `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis — Rate Limiting (Vote, Comments, Prompts, Newsletter, Kontakt, Tool-Submit) |
 | `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis — Rate Limiting |
 
@@ -299,7 +300,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 8. **Workflows + Events haben DB-Tabellen** (`workflows`, `events` in Supabase). Die Listing-Seiten und Detailseiten zeigen bei leerem Ergebnis einen Empty-State und bei DB-Fehler einen Fehler-State — kein Mock-Fallback mehr. Beide Tabellen haben noch kein eigenes Admin-UI.
 
-9. **Newsletter-Abmeldung** ist HMAC-signiert (CRON_SECRET als Schlüssel, SHA-256). Token-Generierung via `makeToken(email)` in `unsubscribe/route.ts`, importiert von `subscribe/route.ts`.
+9. **Newsletter-Abmeldung** ist HMAC-signiert (`NEWSLETTER_HMAC_SECRET` als Schlüssel, SHA-256). Token-Generierung via `makeToken(email)` in `unsubscribe/route.ts`, importiert von `subscribe/route.ts`. Beide Routen schlagen hart fehl wenn `NEWSLETTER_HMAC_SECRET` nicht gesetzt ist.
 
 10. **Newsletter-Anmeldung: Mail vor DB-Write** — `api/newsletter/subscribe` sendet die Bestätigungsmail zuerst. DB-Insert erfolgt nur bei erfolgreichem Mail-Versand. Schlägt der DB-Insert nach erfolgter Mail fehl, wird `{ success: true }` zurückgegeben (Nutzer hat E-Mail erhalten) und der Fehler geloggt.
 
@@ -336,7 +337,9 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Public Truth & Submit Hardening** (2026-04-14) — `/tools/submit` von Browser-Anon-Write auf serverseitigen API-Route-Handler (`/api/tools/submit`) umgestellt: Validierung, Rate Limit (5/Tag pro IP), schreibt via `adminSupabase`. Mock-Fallbacks auf allen öffentlichen Seiten (Homepage, Tools, Prompts, Workflows, Events) durch echte Fehler-/Leer-States ersetzt. Sitemap bereinigt: `/prompts/[slug]` und `/news/[slug]` entfernt (Seiten existieren nicht). Navbar: `/beitraege` mit „bald"-Badge markiert statt leerem Link.
 - [x] **Compliance, Inhaltswahrheit & Admin-Korrektheit** (2026-04-15) — Datenschutz-Seite ehrlich dokumentiert (Vercel Analytics, Upstash Redis, DSGVO Art. 6 I lit. f). Newsletter: Mail-first-Reihenfolge (DB-Write nur bei erfolgtem Mail-Versand). Mock-Fallbacks aus `ToolDetailClient.tsx` und `WorkflowDetailClient.tsx` entfernt. `generateMetadata` filtert jetzt nach `status=approved` (Tools) resp. `published=true` (Workflows). `requireAdminSession()` auf alle 6 Admin-Read-Actions ausgeweitet. `pricing_type`-Spalte end-to-end konsistent (Admin schrieb zuvor in falsche `pricing`-Spalte). `revalidatePath` in `updateTool` nutzt jetzt `payload.slug` statt interner UUID.
 
-> **Langfristig für `/tools/submit`:** Der aktuelle schmale Fix (API Route) ist korrekt, aber nicht optimal. Die sauberere Langzeitlösung ist ein vollständiger Server Action mit Moderationsbenachrichtigung (E-Mail an Admin via Resend), dedizierter Slug-Kollisionsprüfung und optionalem Double-Opt-In für den Einreicher. Priorität: mittel.
+- [x] **Secrets, Fail-Closed & Public Write Completion** (2026-04-15) — `NEWSLETTER_HMAC_SECRET` von `CRON_SECRET` entkoppelt; beide Newsletter-Routen schlagen hart fehl wenn Secret fehlt. Pipeline-Auth schlägt explizit fehl wenn `CRON_SECRET` nicht gesetzt ist. `/api/tools/submit` um Same-Origin-Check und Slug-Kollisionsauflösung (`uniqueSlug` mit bis zu 10 Versuchen + Timestamp-Fallback) erweitert. News-Seite trennt DB-Fehler (Fehler-State) von leerem Ergebnis (Empty-State).
+
+> **Langfristig für `/tools/submit`:** Moderationsbenachrichtigung (E-Mail an Admin via Resend) und optionales Double-Opt-In für den Einreicher fehlen noch. Priorität: mittel.
 
 ---
 

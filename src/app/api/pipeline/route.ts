@@ -195,9 +195,15 @@ async function handleRequest(request: Request): Promise<Response> {
   const runId    = Math.random().toString(36).slice(2, 8)
 
   // ── Auth ──
-  const authHeader    = request.headers.get('Authorization')
-  const isVercelCron  = request.headers.get('x-vercel-cron') === '1'
-  const isManualTrigger = authHeader === `Bearer ${process.env.CRON_SECRET}`
+  const cronSecret = process.env.CRON_SECRET
+  if (!cronSecret) {
+    console.error(`[pipeline][${runId}] CRON_SECRET is not set — rejecting all requests`)
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const authHeader      = request.headers.get('Authorization')
+  const isVercelCron    = request.headers.get('x-vercel-cron') === '1'
+  const isManualTrigger = authHeader === `Bearer ${cronSecret}`
 
   if (!isVercelCron && !isManualTrigger) {
     console.warn(`[pipeline][${runId}] Unauthorized request — origin: ${request.headers.get('origin')}`)

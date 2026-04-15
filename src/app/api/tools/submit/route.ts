@@ -15,7 +15,41 @@ function slugify(name: string): string {
     .replace(/^-|-$/g, '')
 }
 
+function isSameOrigin(req: NextRequest): boolean {
+  const origin = req.headers.get('origin')
+  if (!origin) return true
+
+  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
+  if (!host) return false
+
+  try {
+    return new URL(origin).host === host
+  } catch {
+    return false
+  }
+}
+
+/** Returns a unique slug, appending -2/-3/... if the base slug is already taken. */
+async function uniqueSlug(base: string): Promise<string> {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`
+    const { data } = await adminSupabase
+      .from('tools')
+      .select('id')
+      .eq('slug', candidate)
+      .maybeSingle()
+    if (!data) return candidate
+  }
+  // Final fallback: append timestamp to guarantee uniqueness
+  return `${base}-${Date.now()}`
+}
+
 export async function POST(req: NextRequest) {
+  // ─── Same-Origin check ────────────────────────────────────────────────────────
+  if (!isSameOrigin(req)) {
+    return NextResponse.json({ error: 'Ungültige Herkunft.' }, { status: 403 })
+  }
+
   // ─── Rate limit ───────────────────────────────────────────────────────────────
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown'
   const { allowed } = await checkRateLimit('toolsubmit', ip)
@@ -93,9 +127,10 @@ export async function POST(req: NextRequest) {
 
   // ─── Write (server-side, via admin client) ────────────────────────────────────
   const nameStr = (name as string).trim()
+  const slug = await uniqueSlug(slugify(nameStr))
   const { error: dbError } = await adminSupabase.from('tools').insert({
     name: nameStr,
-    slug: slugify(nameStr),
+    slug,
     url: (url as string).trim(),
     tagline: (tagline as string).trim(),
     description: (description as string).trim(),

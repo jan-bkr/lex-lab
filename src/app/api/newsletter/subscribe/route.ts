@@ -32,6 +32,11 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   // Guard: verify env vars are present
+  if (!process.env.NEWSLETTER_HMAC_SECRET) {
+    console.error('[newsletter] NEWSLETTER_HMAC_SECRET is not set')
+    return Response.json({ error: 'Newsletter-Service derzeit nicht verfügbar.' }, { status: 500 })
+  }
+
   if (!process.env.RESEND_API_KEY) {
     console.error('[newsletter] RESEND_API_KEY is not set')
     return Response.json({ error: 'E-Mail-Versand derzeit nicht verfügbar.' }, { status: 500 })
