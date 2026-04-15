@@ -322,6 +322,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 16. **`tool_comments` INSERT via `adminSupabase`** — Die Route `/api/tools/[id]/comments` (POST) verwendet `adminSupabase` direkt für den INSERT, nicht den anon Client. Begründung: Der Route Handler erzwingt selbst alle Sicherheitsprüfungen (same-origin, rate limit, Validierung, `status: 'pending'` hardcoded) — RLS ist daher nicht nötig. Die Migration `20260415000000_tool_comments_rls.sql` ist obsolet für diesen Use Case.
 
+17. **`tool_comments` hat `tool_slug` NOT NULL** — Die Tabelle hat eine `tool_slug`-Spalte mit NOT NULL-Constraint. Bei jedem INSERT muss zuerst der Slug via `adminSupabase.from('tools').select('slug').eq('id', toolId).maybeSingle()` geladen und als `tool_slug` übergeben werden. Fehlt das Feld, schlägt der INSERT mit Fehlercode `23502` fehl.
+
 ---
 
 ## Offene TODOs
@@ -350,6 +352,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Secrets, Fail-Closed & Public Write Completion** (2026-04-15) — `NEWSLETTER_HMAC_SECRET` von `CRON_SECRET` entkoppelt; beide Newsletter-Routen schlagen hart fehl wenn Secret fehlt. Pipeline-Auth schlägt explizit fehl wenn `CRON_SECRET` nicht gesetzt ist. `/api/tools/submit` um Same-Origin-Check und Slug-Kollisionsauflösung (`uniqueSlug` mit bis zu 10 Versuchen + Timestamp-Fallback) erweitert. News-Seite trennt DB-Fehler (Fehler-State) von leerem Ergebnis (Empty-State).
 - [x] **Revalidierung, Taxonomie & totes Code aufgeräumt** (2026-04-15) — `rejectTool` revalidiert jetzt `/tools`; `approveComment`/`rejectComment` fetchen den Tool-Slug und revalidieren `/tools/[slug]`; `deletePrompt`/`addPrompt` revalidieren `/prompts`. Admin-Prompt-Rechtsgebiete auf die 4 Kern-Rechtsgebiete beschränkt (Steuerrecht, M&A, Gesellschaftsrecht, Venture Capital) — Arbeitsrecht/Vertragsrecht/Legal Tech/Regulierung entfernt. `WorkflowDetailClient` zeigt keine generischen Default-Schritte mehr für unbekannte Slugs (Schritte werden nur bei bekannten Slugs gerendert). `mock-data.ts` gelöscht (war toter Code, null Imports). README.md ersetzt (create-next-app-Boilerplate durch echte Projektbeschreibung).
 - [x] **IP-Pseudonymisierung, Admin-UIs & Comments-Fix** (2026-04-15) — Zentrales `src/lib/ip.ts` mit HMAC-SHA256 (`IP_HASH_SECRET`, 16-char hex, Plausible/Fathom-Pattern) eingeführt; alle 6 öffentlichen Route Handlers auf `getHashedIp()` umgestellt. Admin-UIs für Workflows, Events und Newsletter gebaut (`/admin/workflows`, `/admin/events`, `/admin/newsletter`) inkl. Server Actions (`fetchAllWorkflows`, `addWorkflow`, `toggleWorkflowPublished`, `deleteWorkflow`, `fetchAllEvents`, `addEvent`, `deleteEvent`, `fetchAllSubscribers`, `deleteSubscriber`) — alle mit `requireAdminSession()` abgesichert. AdminNav + Dashboard-Statistiken um die 3 neuen Sektionen erweitert. Tool-Submit: Admin-Benachrichtigung via Resend implementiert (fire-and-forget). Workflow-Detailseite: unbekannte Slugs zeigen Placeholder statt generischer Steps. Kommentar-INSERT auf `adminSupabase` umgestellt (anon-Client + fehlende RLS-Policy war Ursache für "Fehler beim Speichern").
+- [x] **Comments `tool_slug` Fix** (2026-04-15) — Kommentar-INSERT schlug mit `23502`-Constraint-Fehler fehl, weil `tool_slug` NOT NULL in `tool_comments` nicht befüllt wurde. Route `/api/tools/[id]/comments` (POST) lädt jetzt zuerst den Slug aus `tools` und übergibt ihn beim INSERT.
 
 ---
 
@@ -386,3 +389,4 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - IP-Hashing: immer `getHashedIp(req)` aus `src/lib/ip.ts` verwenden — nie rohe IPs im Rate-Limiting-Code
 - Supabase Join-Types in `actions.ts`: bei TypeScript-Fehler durch ambiguous Join-Types `as unknown as { field: type } | null` verwenden
 - `tool_comments` RLS INSERT-Policy muss manuell in Supabase SQL Editor ausgeführt werden (`20260415000000_tool_comments_rls.sql`)
+- `tool_comments` INSERT: immer `tool_slug` aus `tools`-Tabelle vorab laden und mitsenden — NOT NULL-Constraint, fehlt es → Fehlercode `23502`
