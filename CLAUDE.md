@@ -79,11 +79,17 @@ src/
 │   │   ├── newsletter/unsubscribe/ # Abmeldung via HMAC-Token (GET)
 │   │   ├── kontakt/                # Kontaktformular → Resend (POST)
 │   │   └── admin/cleanup/          # Daten-Bereinigung (CRON_SECRET-geschützt)
-│   ├── tools/                      # Tool-Verzeichnis (Client, anon Supabase)
+│   ├── tools/                      # Tool-Verzeichnis
+│   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → ToolsContent
+│   │   ├── ToolsContent.tsx        # Client Component — Filter/Suche/Sort (initialTools prop)
 │   │   └── [slug]/                 # Detailseite: Server page.tsx + Client ToolDetailClient.tsx
 │   ├── prompts/                    # Prompt-Bibliothek + Builder
+│   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → PromptsContent
+│   │   ├── PromptsContent.tsx      # Client Component — Filter + Modal (initialPrompts prop)
 │   │   └── builder/                # /prompts/builder — interaktiver Prompt-Generator
 │   ├── news/                       # News-Feed
+│   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → NewsContent
+│   │   └── NewsContent.tsx         # Client Component — Kategorie-Filter (initialArticles prop)
 │   ├── workflows/                  # Workflow-Guides (DB, Fehler-/Leer-State)
 │   ├── newsletter/                 # Anmeldung + /abgemeldet-Bestätigung
 │   ├── events/                     # Rechtstermine (DB, Fehler-/Leer-State)
@@ -309,7 +315,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
    - Prompt Builder (`/api/prompts/generate`): Anthropic SDK, Modell `claude-haiku-4-5`
    - `JURIST_PERSONA` (`lib/jurist-persona.ts`) wird als System-Prompt übergeben UND dem Output für die UI vorangestellt — zwei verschiedene Verwendungszwecke.
 
-7. **`/tools`-Seite verwendet anon Client** (`lib/supabase/client.ts`), nicht den Admin-Client. Tool-Detailseite `/tools/[slug]` nutzt hingegen den Admin-Client im Server-Teil für `generateMetadata`.
+7. **`/tools`-, `/news`- und `/prompts`-Seiten sind server-seeded**: `page.tsx` ist jeweils Server Component (`adminSupabase`, `revalidate=3600`), der Client-Teil (`ToolsContent.tsx`, `NewsContent.tsx`, `PromptsContent.tsx`) erhält Daten als `initialTools`/`initialArticles`/`initialPrompts`-Prop und hat keinen eigenen Fetch-Lifecycle. Kein Skeleton auf First Load. Tool-Detailseite `/tools/[slug]` nutzt den Admin-Client im Server-Teil für `generateMetadata` und `fetchToolById`.
 
 8. **Workflows + Events haben DB-Tabellen + Admin-UI** (`workflows`, `events` in Supabase). Die Listing-Seiten und Detailseiten zeigen bei leerem Ergebnis einen Empty-State und bei DB-Fehler einen Fehler-State — kein Mock-Fallback mehr. Admin-UIs unter `/admin/workflows` und `/admin/events` vorhanden.
 
@@ -343,6 +349,15 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [ ] **Collections: Admin-UI** — Collections-Inhalte sind statisch in `config.ts` definiert. Kein Admin-Flow für Neuanlage.
 
 ## Erledigte Meilensteine
+
+- [x] **Premium-Qualitätssprint: SSR, Trust, Konsistenz** (2026-04-16) — Zusammenhängender Produkt-Sprint für Premium-Reife:
+  - **Server-seeding für Tools, News, Prompts**: Alle drei Kernseiten nutzen jetzt `adminSupabase` auf dem Server (page.tsx) und übergeben `initialTools/initialArticles/initialPrompts` als Props an Client-Komponenten (`ToolsContent.tsx`, `NewsContent.tsx`, `PromptsContent.tsx`). Kein Skeleton mehr auf dem First Load. Alle drei Seiten sind jetzt `○ (Static)` mit `revalidate=3600`. Metadata wurde ergänzt.
+  - **News — Vertrauenspaket**: Editorial-Framing überarbeitet: Header zeigt "Täglich aktualisiert"-Eyebrow + ruhigeren Subtext. KI-Badge aus Artikel-Karten entfernt. Footer-Note über Quellenherkunft. Filter-Active-State auf `bg-[#111827]` für Konsistenz mit Premium-Sprache. Redaktioneller Fußnotenhinweis.
+  - **Homepage**: "KI-Zusammenfassung"-Label aus News-Snippets entfernt — untergrub Vertrauen.
+  - **Newsletter**: Erfolgs-Message → "✓ Fast geschafft — bestätige deine Anmeldung per E-Mail." (ehrlicher, Double-Opt-in klar kommuniziert).
+  - **Radar**: "Wöchentlich aktualisiert" (faktisch falsch) → "Kuratiert von LexLab".
+  - **Status-Labels**: "Bald verfügbar" (Workflow-Teaser) + "Wird bald veröffentlicht" (Beiträge) → einheitlich `bald`-Badge (amber, konsistent mit Navbar).
+  - Build clean: 38/38 Seiten, lint clean, tsc clean.
 
 - [x] **Premium-Qualitätspass: Finder, Radar, Collections** (2026-04-16) — Gezielte Design-Verbesserungen nach kritischer Produktanalyse:
   - **FinderPanel**: Badge „Empfohlen" → „Persönliche Empfehlung" (semantisch korrekt); Du-Form konsistent mit FinderClient; CTA `bg-[#111827]` statt Blau; Border neutraler (gray-200 statt blue-100).

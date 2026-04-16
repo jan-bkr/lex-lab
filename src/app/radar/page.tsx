@@ -256,7 +256,7 @@ export default function RadarPage() {
               April 2026
             </span>
             <span>·</span>
-            <span>Wöchentlich aktualisiert</span>
+            <span>Kuratiert von LexLab</span>
             <span>·</span>
             <span>{SIGNALS.length} Signale</span>
           </div>

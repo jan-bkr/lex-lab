@@ -167,8 +167,8 @@ export default function WorkflowsPage() {
                   <span className={`text-[11px] font-semibold border rounded-md px-2 py-0.5 uppercase tracking-wide flex-shrink-0 ${wf.categoryColor}`}>
                     {wf.rechtsgebiet}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2 py-0.5 flex-shrink-0 whitespace-nowrap">
-                    Bald verfügbar
+                  <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-0.5 uppercase tracking-wide leading-none flex-shrink-0 whitespace-nowrap">
+                    bald
                   </span>
                 </div>
                 <div className="flex-1">

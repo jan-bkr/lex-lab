@@ -49,7 +49,7 @@ export function NewsletterForm({
     return (
       <div className={variant === 'page' ? 'text-center py-4' : ''}>
         <p className="text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 inline-block">
-          {successMessage ?? '✓ Angemeldet! Schau in dein Postfach für die Bestätigung.'}
+          {successMessage ?? '✓ Fast geschafft — bestätige deine Anmeldung per E-Mail.'}
         </p>
       </div>
     )

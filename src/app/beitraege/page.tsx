@@ -54,10 +54,10 @@ export default function BeitraegePage() {
             key={article.title}
             className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm"
           >
-            {/* Coming-soon badge */}
+            {/* Status badge */}
             <div className="flex justify-end mb-4">
-              <span className="text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
-                Wird bald veröffentlicht
+              <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-0.5 uppercase tracking-wide leading-none">
+                bald
               </span>
             </div>
 

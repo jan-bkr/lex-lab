@@ -313,7 +313,6 @@ export default async function HomePage() {
                       <p className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">{article.title}</p>
                       <p className="text-xs text-gray-400 mt-1">
                         {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: de })}
-                        {article.aiGenerated && <span className="ml-2 text-gray-300">· KI-Zusammenfassung</span>}
                       </p>
                     </div>
                   </a>
