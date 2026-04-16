@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowRight, ArrowLeft, Layers } from 'lucide-react'
 import { adminSupabase } from '@/lib/supabase/admin'
-import { COLLECTIONS, getCollection, CollectionDef, CollectionSlug } from '../config'
+import { COLLECTIONS, getCollection, CollectionDef } from '../config'
 
 export const revalidate = 3600
 
@@ -155,12 +155,14 @@ export default async function CollectionDetailPage(
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {tools.map((tool, i) => (
               <Link
                 key={tool.id}
                 href={`/tools/${tool.slug}`}
-                className="block bg-white rounded-xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-sm transition-all group"
+                className={`block bg-white rounded-xl border p-5 hover:shadow-sm transition-all group ${
+                  i === 0 ? 'border-[#111827]/20 shadow-[0_1px_4px_rgba(0,0,0,0.05)]' : 'border-gray-100 hover:border-gray-200'
+                }`}
               >
                 {/* Title row */}
                 <div className="flex items-center justify-between gap-3 mb-1">
@@ -173,6 +175,11 @@ export default async function CollectionDetailPage(
                     </h2>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
+                    {i === 0 && (
+                      <span className="text-[9px] font-bold bg-[#111827] text-white rounded-full px-2 py-0.5 leading-none tracking-wide uppercase">
+                        Top-Pick
+                      </span>
+                    )}
                     {tool.lexlab_score != null && (
                       <span className="text-[10px] text-gray-400 font-medium">LexLab</span>
                     )}
@@ -234,7 +241,7 @@ export default async function CollectionDetailPage(
           href="/tools"
           className="flex-shrink-0 inline-flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
-          Alle {' '}{(collection.slug as CollectionSlug).includes('steuer') ? 'Steuerrecht-' : ''} Tools →
+          Alle Tools durchsuchen →
         </Link>
       </section>
 

@@ -180,6 +180,13 @@ function ScoreBadge({ score }: { score: number | null }) {
   )
 }
 
+// ─── Answer label lookup ────
+
+function getAnswerLabel(key: keyof Answers, value: string): string {
+  const step = STEPS.find(s => s.key === key)
+  return step?.options.find(o => o.value === value)?.label ?? value
+}
+
 // ─── Main component ────
 
 export default function FinderClient() {
@@ -266,12 +273,14 @@ export default function FinderClient() {
 
   // ─── Results ────
   if (results) {
+    const answerKeys = Object.keys(answers) as (keyof Answers)[]
+
     return (
       <div className="min-h-screen bg-[#F7F7F5] py-14 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="mb-8 text-center">
-            <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Deine Empfehlungen</p>
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Persönliche Empfehlung</p>
             <h1 className="font-display text-3xl text-[#111827]">
               {results.length === 0
                 ? 'Keine Treffer gefunden'
@@ -284,28 +293,51 @@ export default function FinderClient() {
               </p>
             ) : (
               <p className="mt-2 text-sm text-gray-500">
-                Basierend auf deinen Antworten — sortiert nach Relevanz
+                Sortiert nach Relevanz für dein Profil
               </p>
+            )}
+            {/* Answer summary */}
+            {answerKeys.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-1.5 mt-4">
+                {answerKeys.map(key => {
+                  const val = answers[key]
+                  if (!val) return null
+                  return (
+                    <span key={key} className="text-[11px] text-gray-500 bg-white border border-gray-200 rounded-full px-2.5 py-0.5">
+                      {getAnswerLabel(key, val)}
+                    </span>
+                  )
+                })}
+              </div>
             )}
           </div>
 
           {/* Result cards */}
-          <div className="space-y-4 mb-8">
+          <div className="space-y-3 mb-8">
             {results.map((tool, i) => (
               <Link
                 key={tool.id}
                 href={`/tools/${tool.slug}`}
-                className="block bg-white rounded-xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-sm transition-all group"
+                className={`block bg-white rounded-xl border p-5 hover:shadow-sm transition-all group ${
+                  i === 0 ? 'border-[#111827]/20 shadow-[0_1px_4px_rgba(0,0,0,0.06)]' : 'border-gray-100 hover:border-gray-200'
+                }`}
               >
                 {/* Title row */}
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-xs font-mono text-gray-300 flex-shrink-0">0{i + 1}</span>
+                    <span className="text-xs font-mono text-gray-300 flex-shrink-0">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
                     <h2 className="font-semibold text-[#111827] truncate group-hover:underline">
                       {tool.name}
                     </h2>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
+                    {i === 0 && (
+                      <span className="text-[9px] font-bold bg-[#111827] text-white rounded-full px-2 py-0.5 leading-none tracking-wide uppercase">
+                        Top-Pick
+                      </span>
+                    )}
                     {tool.lexlab_score != null && (
                       <span className="text-[10px] text-gray-400 font-medium">LexLab</span>
                     )}
@@ -346,15 +378,18 @@ export default function FinderClient() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-center gap-6 text-sm">
+          <div className="flex items-center justify-center gap-3">
             <button
               onClick={restart}
-              className="text-gray-500 hover:text-[#111827] underline underline-offset-2 transition-colors"
+              className="text-sm text-gray-600 hover:text-[#111827] border border-gray-200 hover:border-gray-300 px-4 py-2 rounded-lg transition-colors"
             >
-              Finder neu starten
+              Neu starten
             </button>
-            <Link href="/tools" className="text-gray-500 hover:text-[#111827] transition-colors">
-              Alle Tools ansehen →
+            <Link
+              href="/tools"
+              className="text-sm text-gray-500 hover:text-[#111827] transition-colors px-2 py-2"
+            >
+              Alle Tools →
             </Link>
           </div>
         </div>

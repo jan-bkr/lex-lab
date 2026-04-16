@@ -154,13 +154,18 @@ function ImpactDots({ impact }: { impact: Impact }) {
   const cfg = impactConfig[impact]
   const dotColor = impact === 'hoch' ? 'bg-red-400' : impact === 'mittel' ? 'bg-amber-400' : 'bg-gray-300'
   return (
-    <span className="inline-flex items-center gap-0.5" title={cfg.label}>
-      {[1, 2, 3].map(n => (
-        <span
-          key={n}
-          className={`w-1.5 h-1.5 rounded-full ${n <= cfg.filled ? dotColor : 'bg-gray-200'}`}
-        />
-      ))}
+    <span className="inline-flex items-center gap-1.5">
+      <span className="inline-flex items-center gap-0.5">
+        {[1, 2, 3].map(n => (
+          <span
+            key={n}
+            className={`w-1.5 h-1.5 rounded-full ${n <= cfg.filled ? dotColor : 'bg-gray-200'}`}
+          />
+        ))}
+      </span>
+      {impact === 'hoch' && (
+        <span className="text-[10px] font-semibold text-red-500 leading-none">{cfg.label}</span>
+      )}
     </span>
   )
 }
@@ -243,37 +248,18 @@ export default function RadarPage() {
             Was den Markt bewegt
           </h1>
           <p className="text-gray-500 text-base leading-relaxed mb-6 max-w-xl">
-            Aktuelle Signale zu neuen Tools, Preisänderungen, Features und regulatorischen Entwicklungen im Legal-AI-Markt — mit kurzer LexLab-Einschätzung.
+            Neue Tools, Preisänderungen und regulatorische Entwicklungen — mit LexLab-Einschätzung.
           </p>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
             <span className="inline-flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-              Zuletzt aktualisiert: April 2026
+              April 2026
             </span>
             <span>·</span>
-            <span>Update-Frequenz: wöchentlich</span>
+            <span>Wöchentlich aktualisiert</span>
             <span>·</span>
             <span>{SIGNALS.length} Signale</span>
           </div>
-        </div>
-      </section>
-
-      {/* ─── Legend ─── */}
-      <section className="py-6 border-b border-gray-50">
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className="text-xs text-gray-400 font-medium mr-1">Kategorien:</span>
-          {(Object.entries(categoryConfig) as [Category, typeof categoryConfig[Category]][]).map(([key, cfg]) => (
-            <span
-              key={key}
-              className={`inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2.5 py-0.5 border ${cfg.bg} ${cfg.color} ${cfg.border}`}
-            >
-              {cfg.icon}
-              {cfg.label}
-            </span>
-          ))}
-          <span className="ml-auto text-xs text-gray-400 hidden sm:block">
-            Relevanz: <span className="inline-flex gap-0.5 align-middle ml-1">{[1,2,3].map(n => <span key={n} className={`inline-block w-1.5 h-1.5 rounded-full ${n === 1 ? 'bg-gray-300' : n === 2 ? 'bg-amber-400' : 'bg-red-400'}`} />)}</span>
-          </span>
         </div>
       </section>
 
@@ -300,7 +286,7 @@ export default function RadarPage() {
         {restSignals.length > 0 && (
           <section className="mb-10">
             {newSignals.length > 0 && (
-              <h2 className="font-display font-semibold text-lg text-gray-900 mb-5">Frühere Signale</h2>
+              <h2 className="font-display text-sm font-semibold text-gray-400 uppercase tracking-widest mb-5">Frühere Signale</h2>
             )}
             <div className="space-y-4">
               {restSignals.map(signal => (

@@ -123,15 +123,15 @@ export default function CollectionsPage() {
 
                 {/* Benefit */}
                 <div className="flex items-start gap-2 mb-5">
-                  <span className="text-green-500 text-xs mt-0.5 flex-shrink-0">✓</span>
-                  <p className="text-xs text-gray-600 font-medium leading-snug">{collection.benefit}</p>
+                  <span className="text-green-600 text-sm mt-0.5 flex-shrink-0 font-bold leading-snug">✓</span>
+                  <p className="text-sm text-gray-800 font-semibold leading-snug">{collection.benefit}</p>
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <span className="text-[11px] text-gray-400">Kuratiert von LexLab</span>
                   <span className="text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors flex items-center gap-1">
-                    Liste ansehen <ArrowRight className="w-3.5 h-3.5" />
+                    Shortlist ansehen <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
               </Link>
@@ -155,7 +155,7 @@ export default function CollectionsPage() {
             href="/tools/finder"
             className="flex-shrink-0 inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 hover:text-gray-900 text-sm font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
           >
-            Tool Finder starten →
+            Persönliche Empfehlung →
           </Link>
         </div>
       </section>
