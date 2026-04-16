@@ -211,7 +211,7 @@ async function handleRequest(request: Request): Promise<Response> {
   }
 
   const trigger = isVercelCron ? 'vercel-cron' : 'manual'
-  const cutoffMs = Date.now() - 24 * 60 * 60 * 1000
+  const cutoffMs = Date.now() - 36 * 60 * 60 * 1000
 
   console.log(
     `[pipeline][${runId}] ▶ START — trigger: ${trigger}, sources: ${RSS_SOURCES.length}, cutoff: ${new Date(cutoffMs).toISOString()}`
