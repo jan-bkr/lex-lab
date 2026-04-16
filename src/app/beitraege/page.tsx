@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { NewsletterForm } from '@/components/NewsletterForm'
 
 export const metadata: Metadata = {
-  title: 'Beiträge',
-  description: 'Gedanken, Erfahrungen und Einblicke aus der Praxis.',
+  title: 'Beiträge — LexLab',
+  description: 'Praxisberichte, Tool-Reviews und Einblicke aus dem Rechtsalltag mit KI — von Jan Becker, Rechtsanwalt und LexLab-Gründer.',
 }
 
 // ─── Teaser-Artikel ────────────────────────────────────────────────────────
@@ -39,15 +39,19 @@ const ARTICLES: Article[] = [
 export default function BeitraegePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      {/* Header */}
+
+      {/* ─── Header ─── */}
       <div className="mb-10">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+          In Vorbereitung
+        </div>
         <h1 className="font-display text-4xl text-gray-900 mb-3">Beiträge</h1>
         <p className="text-gray-500 text-sm leading-relaxed">
           Praxisberichte, Tool-Reviews und Einblicke aus dem Rechtsalltag mit KI.
         </p>
       </div>
 
-      {/* Article teasers */}
+      {/* ─── Article teasers ─── */}
       <div className="space-y-6 mb-10">
         {ARTICLES.map((article) => (
           <article
@@ -98,20 +102,69 @@ export default function BeitraegePage() {
         ))}
       </div>
 
-      {/* Newsletter CTA */}
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
-        <p className="text-sm font-semibold text-blue-900 mb-1">Beiträge erscheinen in Kürze.</p>
-        <p className="text-sm text-blue-700 mb-5">
+      {/* ─── Newsletter CTA ─── */}
+      <div className="bg-[#F0F4FF] border border-blue-100 rounded-xl p-6 mb-16">
+        <p className="text-sm font-semibold text-gray-900 mb-1">Beiträge erscheinen in Kürze.</p>
+        <p className="text-sm text-gray-600 mb-5">
           Abonniere den Newsletter — du wirst als Erster informiert, wenn neue Beiträge erscheinen.
         </p>
         <NewsletterForm />
-        <p className="text-xs text-blue-500 mt-3">
+        <p className="text-xs text-gray-400 mt-3">
           Bereits abonniert?{' '}
-          <Link href="/newsletter" className="underline hover:text-blue-700 transition-colors">
+          <Link href="/newsletter" className="underline hover:text-gray-600 transition-colors">
             Zur Newsletter-Seite
           </Link>
         </p>
       </div>
+
+      {/* ─── Founder / Editor Block ─── */}
+      <section className="pt-12 border-t border-gray-100">
+        <div className="mb-8">
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+            Hinter LexLab
+          </span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-start gap-8">
+
+          {/* Photo */}
+          <div className="flex-shrink-0">
+            <Image
+              src="/jan-becker.jpg"
+              alt="Jan Becker"
+              width={112}
+              height={112}
+              className="rounded-2xl object-cover object-top shadow-sm"
+            />
+          </div>
+
+          {/* Text */}
+          <div className="flex-1">
+            <p className="font-display text-2xl text-gray-900 mb-0.5">Jan Becker</p>
+            <p className="text-sm text-gray-400 mb-5">
+              Rechtsanwalt · Steuerrecht, M&A, Gesellschaftsrecht
+            </p>
+
+            <div className="space-y-3.5 text-[15px] text-gray-600 leading-relaxed">
+              <p>
+                LexLab ist aus einer persönlichen Frage entstanden: Was kann KI in der juristischen Praxis heute wirklich leisten — und was nicht?
+              </p>
+              <p>
+                Als Anwalt mit Schwerpunkten in Steuerrecht, M&A und Gesellschaftsrecht arbeite ich täglich mit den Tools, die ich hier bewerte. LexLab ist der Versuch, das gesammelte Wissen über KI-Werkzeuge im deutschen Rechtsmarkt sichtbar und nutzbar zu machen — für andere Juristen, die schneller lernen und besser einordnen wollen, was wirklich relevant ist.
+              </p>
+              <p>
+                Keine Werbung. Keine Affiliate-Deals. Nur eigene Einschätzungen aus der Praxis.
+              </p>
+            </div>
+
+            <p className="mt-7 font-display text-xl text-gray-300 italic leading-snug">
+              building a platform. to learn more.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Clock, ArrowRight, Lock } from 'lucide-react'
+import { Clock, ArrowRight, Lock, BookOpen } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { createClient } from '@/lib/supabase/client'
@@ -113,9 +113,13 @@ export default function WorkflowsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+          <BookOpen className="w-3.5 h-3.5" />
+          In Vorbereitung
+        </div>
         <h1 className="font-display text-3xl text-gray-900">Workflows</h1>
-        <p className="text-gray-500 mt-1 text-sm">
-          Schritt-für-Schritt KI-Workflows für juristische Aufgaben
+        <p className="text-gray-500 mt-1.5 text-sm leading-relaxed max-w-xl">
+          Schritt-für-Schritt-Anleitungen für juristische KI-Aufgaben — mit konkreten Prompts, Checklisten und Praxisbeispielen.
         </p>
       </div>
       {!loading && !loadError && workflows.length > 0 && (
@@ -132,7 +136,7 @@ export default function WorkflowsPage() {
             onClick={() => setActiveFilter(rg)}
             className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
               activeFilter === rg
-                ? 'bg-blue-600 text-white border-blue-600'
+                ? 'bg-[#111827] text-white border-[#111827]'
                 : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
             }`}
           >

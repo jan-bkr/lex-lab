@@ -85,7 +85,7 @@ export default function CollectionsPage() {
             Tool-Shortlists für konkrete Anforderungen
           </h1>
           <p className="text-gray-500 text-base leading-relaxed">
-            Redaktionell zusammengestellte Listen für M&A-Teams, Steuerberater, datenschutzbewusste Kanzleien und mehr — statt generischer Verzeichnisse.
+            Von LexLab zusammengestellte Shortlists für M&A-Teams, Steuerberater, datenschutzbewusste Kanzleien und mehr — nach Anforderungsprofil gefiltert, nicht nach Alphabet.
           </p>
         </div>
       </section>

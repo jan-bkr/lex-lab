@@ -233,6 +233,8 @@ export default function RadarPage() {
   )
   const newSignals  = sorted.filter(s => s.isNew)
   const restSignals = sorted.filter(s => !s.isNew)
+  const latestDate  = sorted[0]?.date ?? SIGNALS[0].date
+  const standLabel  = format(new Date(latestDate), 'MMMM yyyy', { locale: de })
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -252,8 +254,8 @@ export default function RadarPage() {
           </p>
           <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
             <span className="inline-flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-              April 2026
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+              Stand: {standLabel}
             </span>
             <span>·</span>
             <span>Kuratiert von LexLab</span>
@@ -327,7 +329,7 @@ export default function RadarPage() {
             Radar-Updates per E-Mail
           </div>
           <p className="text-sm text-gray-500 leading-relaxed">
-            Neue Signale, Tool-Bewertungen und Markteinblicke — wöchentlich, kostenlos.
+            Neue Signale, Tool-Bewertungen und Markteinblicke — kostenlos, jederzeit abmeldbar.
           </p>
           <NewsletterForm />
         </div>

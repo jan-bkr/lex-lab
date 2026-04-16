@@ -217,7 +217,7 @@ export default async function HomePage() {
         <section className="mb-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
-              <Flame className="w-5 h-5 text-orange-500" /> Tools der Woche
+              <Flame className="w-5 h-5 text-orange-500" /> Meist empfohlen
             </h2>
             <Link href="/tools" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
               Alle Tools <ArrowRight className="w-3.5 h-3.5" />

@@ -56,11 +56,11 @@ export default function NewsContent({ initialArticles }: { initialArticles: News
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-          Täglich aktualisiert
+          Täglich kuratiert
         </div>
         <h1 className="font-display text-3xl text-gray-900">Aktuelles</h1>
         <p className="text-gray-500 mt-1.5 text-sm leading-relaxed max-w-xl">
-          Ausgewählte Meldungen aus dem deutschen Rechts- und Steuermarkt — aus juristischen Fachquellen und eingeordnet von LexLab.
+          Ausgewählte Meldungen aus dem deutschen Rechts- und Steuermarkt — aus juristischen Fachquellen. Zusammenfassungen sind KI-generiert und dienen der Orientierung.
         </p>
       </div>
 
@@ -155,7 +155,7 @@ export default function NewsContent({ initialArticles }: { initialArticles: News
       {/* Footer note */}
       {filtered.length > 0 && (
         <p className="mt-10 text-xs text-gray-400 text-center">
-          Meldungen stammen aus juristischen Fachquellen. Zusammenfassungen werden von LexLab redaktionell aufbereitet.
+          Meldungen stammen aus juristischen Fachquellen. Zusammenfassungen sind KI-generiert — bitte stets die verlinkte Originalquelle prüfen.
         </p>
       )}
 

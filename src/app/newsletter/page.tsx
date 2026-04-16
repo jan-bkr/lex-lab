@@ -26,7 +26,7 @@ export default function NewsletterPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         <div className="bg-white border border-gray-100 rounded-xl p-4 text-center">
           <Zap className="w-5 h-5 text-blue-500 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-gray-800">Top Tools der Woche</p>
+          <p className="text-sm font-semibold text-gray-800">Meist empfohlene Tools</p>
           <p className="text-xs text-gray-400 mt-0.5">Kuratiert & kommentiert</p>
         </div>
         <div className="bg-white border border-gray-100 rounded-xl p-4 text-center">
