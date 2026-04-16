@@ -27,7 +27,21 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex gap-12">
+          <div className="flex gap-10 sm:gap-12 flex-wrap">
+            <div>
+              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Entdecken</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/tools/finder" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Tool Finder</Link>
+                <Link href="/radar" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Radar
+                  <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
+                </Link>
+                <Link href="/collections" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Kuratierte Listen
+                  <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
+                </Link>
+              </div>
+            </div>
             <div>
               <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Research</p>
               <div className="flex flex-col gap-2">

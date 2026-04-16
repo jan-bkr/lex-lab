@@ -140,8 +140,22 @@ function ToolsPageInner() {
       </div>
 
       {/* Tool Finder — primary product CTA */}
-      <div className="mb-6">
+      <div className="mb-4">
         <FinderPanel compact />
+      </div>
+
+      {/* Kuratierte Listen — secondary discovery strip */}
+      <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm px-1">
+        <span className="text-gray-400 font-medium text-xs uppercase tracking-wider">Shortlists:</span>
+        <Link href="/collections/ma-due-diligence" className="text-gray-500 hover:text-blue-600 transition-colors">M&amp;A Due Diligence</Link>
+        <span className="text-gray-200 hidden sm:block">·</span>
+        <Link href="/collections/datenschutzstark" className="text-gray-500 hover:text-blue-600 transition-colors">Datenschutzstark</Link>
+        <span className="text-gray-200 hidden sm:block">·</span>
+        <Link href="/collections/steuerrecht-essentials" className="text-gray-500 hover:text-blue-600 transition-colors">Steuerrecht</Link>
+        <span className="text-gray-200 hidden sm:block">·</span>
+        <Link href="/collections" className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+          Alle Listen →
+        </Link>
       </div>
 
       {/* Sticky filter bar */}

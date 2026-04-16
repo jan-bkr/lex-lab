@@ -4,14 +4,22 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 
-const navLinks = [
+interface NavLink {
+  href: string
+  label: string
+  soon?: boolean
+  isNew?: boolean
+  highlight?: boolean
+}
+
+const navLinks: NavLink[] = [
   { href: '/tools', label: 'Tools' },
   { href: '/workflows', label: 'Workflows', soon: true },
   { href: '/prompts', label: 'Prompts' },
   { href: '/prompts/builder', label: '✦ Builder', highlight: true },
   { href: '/beitraege', label: 'Beiträge', soon: true },
   { href: '/news', label: 'News' },
-  { href: '/events', label: 'Events' },
+  { href: '/radar', label: 'Radar', isNew: true },
 ]
 
 export default function Navbar() {
@@ -52,6 +60,11 @@ export default function Navbar() {
                 {link.soon && (
                   <span className="text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 leading-none">
                     bald
+                  </span>
+                )}
+                {link.isNew && (
+                  <span className="text-[9px] font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded px-1 py-0.5 leading-none">
+                    neu
                   </span>
                 )}
               </Link>
@@ -95,6 +108,11 @@ export default function Navbar() {
               {link.soon && (
                 <span className="text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 leading-none">
                   bald
+                </span>
+              )}
+              {link.isNew && (
+                <span className="text-[9px] font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded px-1 py-0.5 leading-none">
+                  neu
                 </span>
               )}
             </Link>

@@ -339,10 +339,17 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
 - [ ] **Prompt-Detailseiten** — `/prompts/[slug]` existiert nicht; Seite noch nicht gebaut
 - [ ] **News-Detailseiten** — `/news/[slug]` existiert nicht; Seite noch nicht gebaut
-- [ ] **State of Legal AI: Sitemap-Eintrag** — `/state-of-legal-ai` ist noch nicht in `sitemap.ts` erfasst
+- [ ] **Radar: DB-backed Signals** — aktuell statische Seed-Daten. Für echten Redaktionsbetrieb: `radar_signals`-Tabelle + Admin-UI aufbauen.
+- [ ] **Collections: Admin-UI** — Collections-Inhalte sind statisch in `config.ts` definiert. Kein Admin-Flow für Neuanlage.
 
 ## Erledigte Meilensteine
 
+- [x] **Drei neue Premium-Module** (2026-04-16) — Radar, Collections, Finder-Integration:
+  - `/radar` (LexLab Radar): Premium-Marktmonitor als Server Component. 9 Signale mit Kategorie (Tool/Feature/Pricing/Regulation/Markt), Impact-Dots (hoch/mittel/niedrig), LexLab-Einschätzung-Boxen, farbige Left-Border pro Kategorie. Statischer Seed, `revalidate: 86400`. Navbar-Eintrag „Radar" mit `isNew: true`-Badge.
+  - `/collections` + `/collections/[slug]` (Kuratierte Listen): 5 öffentliche Collections (M&A Due Diligence, Datenschutzstark, Steuerrecht Essentials, Inhouse Stack, Einsteiger Stack). Jede Collection hat statischen Filter (rechtsgebietOverlaps, minScore, minDatenschutz), der als Supabase-Query im [slug]-Page ausgeführt wird. `generateStaticParams` + `generateMetadata`. Tool-Cards analog zu FinderClient-Results für Konsistenz. Leerer DB → Empty State ohne Mock-Fallback.
+  - Tools-Seite: Kompakter Collections-Strip (Shortlists-Links) unter FinderPanel.
+  - Footer: neue „Entdecken"-Spalte mit Tool Finder, Radar, Kuratierte Listen.
+  - Sitemap: alle neuen Routen + `/state-of-legal-ai` ergänzt. Lint clean, Build clean.
 - [x] **State of Legal AI Germany 2026** (2026-04-16) — Signature Research Hub `/state-of-legal-ai`: pure Server Component, full-bleed dark Hero (`bg-[#111827]`), sticky Anchor-Nav, 9 Module (Executive Summary, Market Map, Marktbeobachtungen, Red Flags nach Persona, Shortlists mit Must/Should/Could, 5-Schritte-Framework, Vendor Watch, CTA-Grid, Newsletter). Entry Points: Homepage dark Callout-Card + Footer „Research"-Sektion. Kein Navbar-Eintrag (bewusste Entscheidung). `revalidate: 86400`, lint- und build-clean.
 - [x] **Premium Recovery Paket** (2026-04-16) — Hero wieder souverän (FinderPanel nach Top-Tools verschoben, redundante Persona-Zeile entfernt). Navbar: `Workflows` erhält `soon: true` Badge. Workflow-Karten im Listing + Startseite: `Vorschau`-Badge. Workflow-Detailseiten: dezenter Preview-Banner zwischen Metadaten und Excerpt. Workflow-Listing mit Info-Note wenn DB-Daten vorhanden. Alle Änderungen lint- und tsc-sauber.
 - [x] **Tool Finder Premium-Inszenierung** (2026-04-16) — `FinderPanel` als Shared Component, Homepage-Platzierung nach „Tools der Woche" (nicht mehr zwischen Hero und Research), compact-Prop für Tools-Seite.
@@ -408,4 +415,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **Workflow-Karten auf `/workflows` sind vollständig klickbar** — der `<Link>` wraps die gesamte Karte (group-Hover, Titelfarbe ändert sich bei Hover). Keine separaten Klickbereiche. Die WORKFLOW_TEASERS (Empty-State wenn DB leer) sind NICHT als Link umgesetzt — sie haben kein Ziel. **Statussystem**: Echte Workflow-Karten (DB-Daten) tragen ein dezentes `Vorschau`-Badge (slate, oben rechts); CTA-Text ist "Vorschau" statt "Lesen". Wenn DB-Daten vorhanden, erscheint eine schlanke Info-Note mit Lock-Icon und Newsletter-Link oben auf der Listing-Seite. Workflow-Detailseiten haben einen Preview-Banner (slate, Lock-Icon, "Workflow-Vorschau") zwischen Metadaten und Excerpt-Block. Navbar: `Workflows` hat `soon: true` (wie Beiträge).
 - **`/beitraege`**: Professionelles Teaser-Format mit zwei Artikel-Cards. Artikel-Array in `ARTICLES` konstante in `page.tsx` — neue Teaser dort ergänzen.
 - **`ANTHROPIC_API_KEY` 401-Fehler**: Wenn `/api/pipeline` oder `/api/prompts/generate` mit `401 Invalid authentication credentials` schlagen, ist der Key in Vercel abgelaufen oder falsch gesetzt. Prüfen: console.anthropic.com → API Keys + Vercel → Settings → Environment Variables → `ANTHROPIC_API_KEY`. Nach Änderung: neues Deployment nötig.
-- **`sitemap.ts`**: Erfasst derzeit Tools, News, Prompts, Workflows — `/state-of-legal-ai` und `/beitraege` sind **nicht** in der Sitemap. Bei SEO-Relevanz manuell ergänzen.
+- **`sitemap.ts`**: Erfasst Tools, News, Prompts, Workflows, Radar, alle 5 Collections-Slugs, `/state-of-legal-ai`. Nur `/beitraege` fehlt noch (kein eigener Inhalt).
+- **Radar-Signale (`/radar`)**: Statische Seed-Daten in `src/app/radar/page.tsx` (SIGNALS-Array). Für Redaktionsbetrieb: `radar_signals`-Tabelle + Admin-UI bauen, Page auf DB-Fetch umstellen.
+- **Collections-Config (`src/app/collections/config.ts`)**: Geteilte Konfiguration für `/collections` (Listing) und `/collections/[slug]` (Detail). 5 Collections: `ma-due-diligence`, `datenschutzstark`, `steuerrecht-essentials`, `inhouse-stack`, `einsteiger-stack`. Filter via `rechtsgebietOverlaps`, `minScore`, `minDatenschutz`. Neue Collections → Config ergänzen, `generateStaticParams` updaten.
+- **Navbar**: `Radar` hat `isNew: true` Badge (blau). `isNew` ist jetzt in der `NavLink`-Interface definiert. Badge-Rendering in Desktop-Nav und Mobile-Menü vorhanden.
+- **Footer**: Neue Spalte „Entdecken" mit Tool Finder, Radar (Neu-Badge), Kuratierte Listen (Neu-Badge). Steht vor „Research" und „Rechtliches".
