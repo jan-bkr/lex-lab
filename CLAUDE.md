@@ -101,7 +101,7 @@ src/
 │   └── globals.css
 ├── components/                     # Shared UI-Komponenten
 │   ├── Navbar.tsx · Footer.tsx
-│   ├── ToolCard.tsx                # Karte für Tool-Listings
+│   ├── ToolCard.tsx                # Karte für Tool-Listings — vollständig klickbar via Stretched-Link-Pattern
 │   ├── RechtsgebietTag.tsx         # Farbige Tag-Pill pro Rechtsgebiet
 │   ├── NewsletterForm.tsx          # Newsletter-Anmeldeformular (Client)
 │   ├── PromptModal.tsx             # Modal-Overlay für Prompt-Details
@@ -114,7 +114,7 @@ src/
 │   │   └── admin.ts                # Service-Role-Client (nur Server, bypasses RLS)
 │   ├── rate-limit.ts               # Shared Rate Limiter: Upstash Sliding Window + In-Memory-Fallback
 │   ├── ip.ts                       # IP-Pseudonymisierung: HMAC-SHA256 (IP_HASH_SECRET) → 16-char hex
-│   ├── lexlab-score.ts             # Score-Berechnung: Ø gewichtet (30/25/25/10/10)×10
+│   ├── lexlab-score.ts             # Score-Berechnung: Ø gewichtet (35/20/25/10/10)×10
 │   ├── jurist-persona.ts           # JURIST_PERSONA — System-Prompt für Claude
 │   ├── rss-sources.ts              # 11 RSS-Quellen (M&A, Steuer, LegalTech, VC)
 │   ├── analytics.ts                # Vercel Analytics Helper
@@ -350,6 +350,13 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 ## Erledigte Meilensteine
 
+- [x] **Interaktions- & Score-Qualitätssprint** (2026-04-16) — Premium-Konsistenz und glaubwürdigere Produktbewertung:
+  - **ToolCard vollständig klickbar**: Stretched-Link-Pattern (`absolute inset-0`) navigiert zur Detailseite. „Ansehen →" und Vote-Button bleiben per `relative z-10` eigenständig. HTML-valide, kein nested `<a>`.
+  - **Event-Kacheln Homepage**: Konditionaler `<a>`-Wrapper (nur wenn `ev.url !== '#'`), Hover-State `group-hover:text-blue-600`. Konsistenz mit anderen klickbaren Kacheln der Plattform.
+  - **LexLab Score Rebalancing**: Gewichte angepasst — Praxisreife 30→**35%**, Datenschutz 25→**20%**. Tools mit starkem Praxisnutzen aber Datenschutz-Kompromissen werden realistischer bewertet. DACH/UX/Preis unverändert. Operativer Nachschritt: `node scripts/bulk-import-tools.mjs` für DB-Neuberechnung.
+  - **Methodik-Transparenz**: Dezente einzeilige Note in `LexLabScoreCard` — Perspektive (kleine Kanzlei, DACH-Fokus) und Gewichtungslogik als Vertrauensanker, kein Disclaimer-Ton.
+  - Build clean: 38/38 Seiten, lint clean, tsc clean.
+
 - [x] **Trust- und Produktwahrheits-Sprint** (2026-04-16) — Chirurgische Produktwahrheits-Korrekturen über alle sichtbaren Flächen:
   - **Newsletter-Erfolgsmeldung**: War `"Fast geschafft — bestätige deine Anmeldung"` (implizierte DOI, der nicht existiert) → `"Angemeldet — eine Willkommens-E-Mail ist unterwegs."` (korrekt: Nutzer ist sofort abonniert, bekommt Welcome-Mail).
   - **News**: "Täglich aktualisiert" → "Täglich kuratiert". Header-Subtext + Footer explizit: "Zusammenfassungen sind KI-generiert" — Transparenz als Vertrauensanker.
@@ -459,3 +466,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **News-Eyebrow**: "Täglich kuratiert" (nicht "Täglich aktualisiert"). Footer-Note: "Zusammenfassungen sind KI-generiert" — so lassen, Transparenz ist hier Produktentscheidung.
 - **Workflows-Filter-Aktiv**: `bg-[#111827]` (wie News/Prompts/Tools), nicht `bg-blue-600`.
 - **Collections-Beschreibung**: "Von LexLab zusammengestellte Shortlists... nach Anforderungsprofil gefiltert" — **nicht** "redaktionell zusammengestellte" (wäre Overstatement, Collections sind DB-Filter-Konfigurationen).
+- **ToolCard Stretched-Link-Pattern**: `ToolCard.tsx` nutzt ein absolut positioniertes `<Link>` (`absolute inset-0 rounded-xl`) als primäres Klickziel für die Detailseite. „Ansehen →" (`<a>`) und der Vote-Button (`<button>`) liegen im `relative z-10`-Container darunter und bleiben eigenständig klickbar. Kein `<a>` in `<a>` — HTML-valide. Nicht auf `onClick`-Navigation am div umbauen.
+- **Event-Kacheln Homepage**: Kacheln werden in `<a target="_blank">` gerendert wenn `ev.url !== '#'`, sonst `<div>`. Hover-State (`group-hover:text-blue-600`) nur wenn URL vorhanden. Nicht als `<Link>` — Events verlinken auf externe Seiten.
+- **LexLab Score — Gewichte**: `src/lib/lexlab-score.ts` — Praxisreife **35%**, Datenschutz **20%**, DACH-Relevanz **25%**, UX **10%**, Preis **10%**. Summe = 100. Nicht auf alte 30/25-Verteilung zurücksetzen — Datenschutz-Defizit soll ein insgesamt starkes Tool nicht unverhältnismäßig bestrafen. Nach Gewichtsänderung: `node scripts/bulk-import-tools.mjs` ausführen, um `lexlab_score` in der DB neu zu berechnen.
+- **LexLabScoreCard Methodik-Note**: Am Ende der Score-Card in `ToolDetailClient.tsx` steht eine einzeilige Transparenznotiz (Perspektive, DACH-Fokus, Gewichtungslogik). Nicht entfernen — sie macht den Score glaubwürdiger statt defensiver.
