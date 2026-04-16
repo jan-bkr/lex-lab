@@ -118,6 +118,12 @@ export default function WorkflowsPage() {
           Schritt-für-Schritt KI-Workflows für juristische Aufgaben
         </p>
       </div>
+      {!loading && !loadError && workflows.length > 0 && (
+        <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-6 text-sm text-slate-600">
+          <Lock className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+          <span>Die vollständigen Anleitungen erscheinen in Kürze. Abonniere den <a href="/newsletter" className="font-medium text-slate-700 underline underline-offset-2 hover:text-slate-900 transition-colors">Newsletter</a>, um als Erster informiert zu werden.</span>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-1.5 mb-6">
         {(['Alle', ...RECHTSGEBIETE] as const).map(rg => (
@@ -209,6 +215,9 @@ export default function WorkflowsPage() {
                     <RechtsgebietTag key={tag} tag={tag} />
                   ))}
                 </div>
+                <span className="flex-shrink-0 text-[9px] font-semibold uppercase tracking-wider text-slate-400 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 whitespace-nowrap">
+                  Vorschau
+                </span>
               </div>
               <div className="flex-1">
                 <h2 className="font-display text-[15px] text-gray-900 leading-snug mb-1.5 group-hover:text-blue-700 transition-colors">
@@ -222,7 +231,7 @@ export default function WorkflowsPage() {
                   {w.readingTime} Min. Lesezeit
                 </span>
                 <span className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 group-hover:gap-2 transition-all">
-                  Lesen <ArrowRight className="w-3.5 h-3.5" />
+                  Vorschau <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </Link>

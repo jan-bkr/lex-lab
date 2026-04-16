@@ -202,7 +202,7 @@ export default function WorkflowDetailPage({
             {workflow.title}
           </h1>
 
-          <div className="flex items-center gap-3 flex-wrap mb-6">
+          <div className="flex items-center gap-3 flex-wrap mb-5">
             {workflow.rechtsgebiet.map(tag => (
               <RechtsgebietTag key={tag} tag={tag} />
             ))}
@@ -214,6 +214,17 @@ export default function WorkflowDetailPage({
               <Calendar className="w-3 h-3" />
               {formatDate(workflow.createdAt)}
             </span>
+          </div>
+
+          {/* Preview-Banner */}
+          <div className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 mb-5">
+            <Lock className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-slate-700 leading-snug">Workflow-Vorschau</p>
+              <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">
+                Die vollständige Schritt-für-Schritt-Anleitung ist in Vorbereitung. Abonniere den Newsletter, um als Erster informiert zu werden.
+              </p>
+            </div>
           </div>
 
           <div className="bg-white border border-gray-100 rounded-xl p-6 mb-4 border-l-4 border-l-blue-200">

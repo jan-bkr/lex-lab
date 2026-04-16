@@ -6,7 +6,7 @@ import { Menu, X } from 'lucide-react'
 
 const navLinks = [
   { href: '/tools', label: 'Tools' },
-  { href: '/workflows', label: 'Workflows' },
+  { href: '/workflows', label: 'Workflows', soon: true },
   { href: '/prompts', label: 'Prompts' },
   { href: '/prompts/builder', label: '✦ Builder', highlight: true },
   { href: '/beitraege', label: 'Beiträge', soon: true },

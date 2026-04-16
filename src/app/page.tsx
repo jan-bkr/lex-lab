@@ -191,14 +191,6 @@ export default async function HomePage() {
             Prompt Builder testen
           </Link>
         </div>
-        <div className="mt-6 text-xs text-gray-400">
-          Für Kanzleien · Steuerberater · Inhouse Legal · M&A-Teams
-        </div>
-      </section>
-
-      {/* TOOL FINDER */}
-      <section className="mb-10">
-        <FinderPanel />
       </section>
 
       {/* STATE OF LEGAL AI — Research Report Callout */}
@@ -237,8 +229,13 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* TOOL FINDER */}
+      <section className="mb-12 pt-8 border-t border-gray-100">
+        <FinderPanel />
+      </section>
+
       {/* KATEGORIEN */}
-      <section className="mb-14 pt-8 border-t border-gray-100">
+      <section className="mb-14">
         <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2"><Grid3X3 className="w-5 h-5 text-gray-400" /> Tools nach Rechtsgebiet</h2>
         <p className="text-sm text-gray-500 mt-1 mb-4">Alle KI-Tools gefiltert nach deinem Fachgebiet</p>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -278,7 +275,7 @@ export default async function HomePage() {
                     className={`block bg-white border border-gray-100 border-l-4 ${workflowBorder[wf.rechtsgebiet[0]]} rounded-xl p-4 hover:shadow-md hover:border-gray-200 transition-all group`}>
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-sans font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">{wf.title}</p>
-                      <ArrowRight className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5" />
+                      <span className="flex-shrink-0 text-[9px] font-semibold uppercase tracking-wider text-slate-400 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 mt-0.5 whitespace-nowrap">Vorschau</span>
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <RechtsgebietTag tag={wf.rechtsgebiet[0]} />
