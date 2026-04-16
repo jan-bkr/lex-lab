@@ -321,7 +321,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 9. **Newsletter-Abmeldung** ist HMAC-signiert (`NEWSLETTER_HMAC_SECRET` als Schlüssel, SHA-256). Token-Generierung via `makeToken(email)` in `unsubscribe/route.ts`, importiert von `subscribe/route.ts`. Beide Routen schlagen hart fehl wenn `NEWSLETTER_HMAC_SECRET` nicht gesetzt ist.
 
-10. **Newsletter-Anmeldung: Mail vor DB-Write** — `api/newsletter/subscribe` sendet die Bestätigungsmail zuerst. DB-Insert erfolgt nur bei erfolgreichem Mail-Versand. Schlägt der DB-Insert nach erfolgter Mail fehl, wird `{ success: true }` zurückgegeben (Nutzer hat E-Mail erhalten) und der Fehler geloggt.
+10. **Newsletter-Anmeldung: Mail vor DB-Write, kein DOI** — `api/newsletter/subscribe` sendet eine Welcome-Mail (`"Willkommen bei lex-lab.de"`) zuerst; DB-Insert nur bei erfolgreichem Mail-Versand. Der Nutzer ist nach dem API-Aufruf **sofort abonniert** (kein Double Opt-in, kein Bestätigungsklick nötig). Schlägt der DB-Insert nach erfolgter Mail fehl, wird `{ success: true }` zurückgegeben und der Fehler geloggt. Die UI-Erfolgsmeldung lautet deshalb "Angemeldet — eine Willkommens-E-Mail ist unterwegs." — **nicht** "bestätige deine Anmeldung".
 
 11. **Tool-Routing-Inkonsistenz:** Öffentliche Routen nutzen `slug` (`/tools/[slug]`), Admin-Edit nutzt `id` (`/admin/tools/[id]/edit`). Beim Verlinken korrekte ID vs. Slug verwenden.
 
@@ -350,11 +350,21 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 ## Erledigte Meilensteine
 
+- [x] **Trust- und Produktwahrheits-Sprint** (2026-04-16) — Chirurgische Produktwahrheits-Korrekturen über alle sichtbaren Flächen:
+  - **Newsletter-Erfolgsmeldung**: War `"Fast geschafft — bestätige deine Anmeldung"` (implizierte DOI, der nicht existiert) → `"Angemeldet — eine Willkommens-E-Mail ist unterwegs."` (korrekt: Nutzer ist sofort abonniert, bekommt Welcome-Mail).
+  - **News**: "Täglich aktualisiert" → "Täglich kuratiert". Header-Subtext + Footer explizit: "Zusammenfassungen sind KI-generiert" — Transparenz als Vertrauensanker.
+  - **Radar**: Hardcodiertes "April 2026" → dynamisches Stand-Datum aus dem neuesten Signal (`sorted[0].date`). Grüner Live-Punkt → grauer Punkt + "Stand:" Prefix. "Wöchentlich" aus Newsletter-CTA entfernt.
+  - **Homepage**: "Tools der Woche" → "Meist empfohlen" (query ist votes-basiertes All-time-Ranking, kein wöchentliches Picking).
+  - **Collections**: "Redaktionell zusammengestellte Listen" → "Von LexLab zusammengestellte Shortlists... nach Anforderungsprofil gefiltert" (Collections sind DB-Filter, keine redaktionellen Einzelentscheidungen).
+  - **Workflows**: "In Vorbereitung"-Eyebrow; Filter-Aktiv-Farbe `bg-blue-600` → `bg-[#111827]` (systemkonsistent mit News/Prompts).
+  - **Beiträge**: Neuer hochwertiger Founder/Editor-Block "Hinter LexLab" — Jan Becker mit Foto (112×112), professionelle Bio (Rechtsanwalt, Steuerrecht/M&A/GesR), drei Absätze zur Plattform-Entstehung, Slogan `"building a platform. to learn more."` als Display-Italic. Header-Eyebrow "In Vorbereitung". Newsletter-CTA visuell angepasst.
+  - Build clean: 38/38 Seiten, lint clean, tsc clean.
+
 - [x] **Premium-Qualitätssprint: SSR, Trust, Konsistenz** (2026-04-16) — Zusammenhängender Produkt-Sprint für Premium-Reife:
   - **Server-seeding für Tools, News, Prompts**: Alle drei Kernseiten nutzen jetzt `adminSupabase` auf dem Server (page.tsx) und übergeben `initialTools/initialArticles/initialPrompts` als Props an Client-Komponenten (`ToolsContent.tsx`, `NewsContent.tsx`, `PromptsContent.tsx`). Kein Skeleton mehr auf dem First Load. Alle drei Seiten sind jetzt `○ (Static)` mit `revalidate=3600`. Metadata wurde ergänzt.
   - **News — Vertrauenspaket**: Editorial-Framing überarbeitet: Header zeigt "Täglich aktualisiert"-Eyebrow + ruhigeren Subtext. KI-Badge aus Artikel-Karten entfernt. Footer-Note über Quellenherkunft. Filter-Active-State auf `bg-[#111827]` für Konsistenz mit Premium-Sprache. Redaktioneller Fußnotenhinweis.
   - **Homepage**: "KI-Zusammenfassung"-Label aus News-Snippets entfernt — untergrub Vertrauen.
-  - **Newsletter**: Erfolgs-Message → "✓ Fast geschafft — bestätige deine Anmeldung per E-Mail." (ehrlicher, Double-Opt-in klar kommuniziert).
+  - **Newsletter**: Erfolgs-Message → "✓ Fast geschafft — bestätige deine Anmeldung per E-Mail." (später korrigiert — kein DOI, s. Trust-Sprint).
   - **Radar**: "Wöchentlich aktualisiert" (faktisch falsch) → "Kuratiert von LexLab".
   - **Status-Labels**: "Bald verfügbar" (Workflow-Teaser) + "Wird bald veröffentlicht" (Beiträge) → einheitlich `bald`-Badge (amber, konsistent mit Navbar).
   - Build clean: 38/38 Seiten, lint clean, tsc clean.
@@ -437,10 +447,15 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **Du-Form im Finder**: FinderClient und FinderPanel verwenden durchgehend „du"-Form. Nicht auf „Sie" wechseln — das wurde bewusst entschieden und ist konsistent ausgerichtet.
 - **WorkflowDetailClient hat keinen WORKFLOW_STEPS-Hardcode mehr** — alle Workflow-Detailseiten zeigen `WorkflowStepsTeaser` (generische Lock-Icon-Schritte + Newsletter-CTA). Kein slug-spezifischer Content-Hardcode. `WorkflowStepsTeaser` ist als Sub-Komponente inline in `WorkflowDetailClient.tsx` definiert — nicht auslagern.
 - **Workflow-Karten auf `/workflows` sind vollständig klickbar** — der `<Link>` wraps die gesamte Karte (group-Hover, Titelfarbe ändert sich bei Hover). Keine separaten Klickbereiche. Die WORKFLOW_TEASERS (Empty-State wenn DB leer) sind NICHT als Link umgesetzt — sie haben kein Ziel. **Statussystem**: Echte Workflow-Karten (DB-Daten) tragen ein dezentes `Vorschau`-Badge (slate, oben rechts); CTA-Text ist "Vorschau" statt "Lesen". Wenn DB-Daten vorhanden, erscheint eine schlanke Info-Note mit Lock-Icon und Newsletter-Link oben auf der Listing-Seite. Workflow-Detailseiten haben einen Preview-Banner (slate, Lock-Icon, "Workflow-Vorschau") zwischen Metadaten und Excerpt-Block. Navbar: `Workflows` hat `soon: true` (wie Beiträge).
-- **`/beitraege`**: Professionelles Teaser-Format mit zwei Artikel-Cards. Artikel-Array in `ARTICLES` konstante in `page.tsx` — neue Teaser dort ergänzen.
+- **`/beitraege`**: Teaser-Format mit zwei Artikel-Cards + Founder/Editor-Block "Hinter LexLab" am Ende (Jan Becker, Foto, Bio, Slogan). Artikel-Array in `ARTICLES` konstante in `page.tsx` — neue Teaser dort ergänzen. Foto-Pfad: `/jan-becker.jpg`.
 - **`ANTHROPIC_API_KEY` 401-Fehler**: Wenn `/api/pipeline` oder `/api/prompts/generate` mit `401 Invalid authentication credentials` schlagen, ist der Key in Vercel abgelaufen oder falsch gesetzt. Prüfen: console.anthropic.com → API Keys + Vercel → Settings → Environment Variables → `ANTHROPIC_API_KEY`. Nach Änderung: neues Deployment nötig.
 - **`sitemap.ts`**: Erfasst Tools, News, Prompts, Workflows, Radar, alle 5 Collections-Slugs, `/state-of-legal-ai`. Nur `/beitraege` fehlt noch (kein eigener Inhalt).
-- **Radar-Signale (`/radar`)**: Statische Seed-Daten in `src/app/radar/page.tsx` (SIGNALS-Array). Für Redaktionsbetrieb: `radar_signals`-Tabelle + Admin-UI bauen, Page auf DB-Fetch umstellen.
+- **Radar-Signale (`/radar`)**: Statische Seed-Daten in `src/app/radar/page.tsx` (SIGNALS-Array). Stand-Datum wird dynamisch aus `sorted[0].date` berechnet — bei neuen Signalen im Array zieht es automatisch mit. Für Redaktionsbetrieb: `radar_signals`-Tabelle + Admin-UI bauen, Page auf DB-Fetch umstellen.
 - **Collections-Config (`src/app/collections/config.ts`)**: Geteilte Konfiguration für `/collections` (Listing) und `/collections/[slug]` (Detail). 5 Collections: `ma-due-diligence`, `datenschutzstark`, `steuerrecht-essentials`, `inhouse-stack`, `einsteiger-stack`. Filter via `rechtsgebietOverlaps`, `minScore`, `minDatenschutz`. Neue Collections → Config ergänzen, `generateStaticParams` updaten.
 - **Navbar**: `Radar` hat `isNew: true` Badge (blau). `isNew` ist jetzt in der `NavLink`-Interface definiert. Badge-Rendering in Desktop-Nav und Mobile-Menü vorhanden.
 - **Footer**: Neue Spalte „Entdecken" mit Tool Finder, Radar (Neu-Badge), Kuratierte Listen (Neu-Badge). Steht vor „Research" und „Rechtliches".
+- **Homepage Top-Tools-Label**: Heißt "Meist empfohlen" (nicht "Tools der Woche") — Semantik entspricht dem tatsächlichen votes-basierten All-time-Ranking. Nicht zurückändern.
+- **Newsletter-Erfolg**: `NewsletterForm` zeigt `"Angemeldet — eine Willkommens-E-Mail ist unterwegs."` — es gibt **kein** Double Opt-in, die Anmeldung ist nach API-Aufruf sofort aktiv. Success-Message darf das nicht anders kommunizieren.
+- **News-Eyebrow**: "Täglich kuratiert" (nicht "Täglich aktualisiert"). Footer-Note: "Zusammenfassungen sind KI-generiert" — so lassen, Transparenz ist hier Produktentscheidung.
+- **Workflows-Filter-Aktiv**: `bg-[#111827]` (wie News/Prompts/Tools), nicht `bg-blue-600`.
+- **Collections-Beschreibung**: "Von LexLab zusammengestellte Shortlists... nach Anforderungsprofil gefiltert" — **nicht** "redaktionell zusammengestellte" (wäre Overstatement, Collections sind DB-Filter-Konfigurationen).
