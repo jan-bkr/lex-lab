@@ -27,12 +27,23 @@ export default function Footer() {
             </div>
           </div>
 
-          <div>
-            <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Rechtliches</p>
-            <div className="flex flex-col gap-2">
-              <Link href="/impressum" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Impressum</Link>
-              <Link href="/datenschutz" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Datenschutz</Link>
-              <Link href="/kontakt" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Kontakt</Link>
+          <div className="flex gap-12">
+            <div>
+              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Research</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/state-of-legal-ai" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  State of Legal AI 2026
+                  <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
+                </Link>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Rechtliches</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/impressum" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Impressum</Link>
+                <Link href="/datenschutz" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Datenschutz</Link>
+                <Link href="/kontakt" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Kontakt</Link>
+              </div>
             </div>
           </div>
         </div>

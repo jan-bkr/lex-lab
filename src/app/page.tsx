@@ -201,6 +201,25 @@ export default async function HomePage() {
         <FinderPanel />
       </section>
 
+      {/* STATE OF LEGAL AI — Research Report Callout */}
+      <section className="mb-10">
+        <Link href="/state-of-legal-ai" className="block group">
+          <div className="bg-[#111827] rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-[#1a2234] transition-colors">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">LexLab Research</span>
+                <span className="text-[10px] bg-blue-500 text-white font-bold px-2 py-0.5 rounded-full leading-none">Neu</span>
+              </div>
+              <p className="font-display font-bold text-lg text-white leading-snug">State of Legal AI Germany 2026</p>
+              <p className="text-sm text-gray-400 mt-1 leading-relaxed">Marktanalyse, Marktsegmente, Red Flags und Auswahlframework für den deutschen Rechts- und Steuermarkt.</p>
+            </div>
+            <div className="flex-shrink-0 inline-flex items-center gap-2 bg-white/10 group-hover:bg-white/15 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors">
+              Report lesen <ArrowRight className="w-4 h-4" />
+            </div>
+          </div>
+        </Link>
+      </section>
+
       {/* TOOLS OF THE WEEK */}
       {topTools.length > 0 && (
         <section className="mb-6">

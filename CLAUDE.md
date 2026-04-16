@@ -88,6 +88,7 @@ src/
 │   ├── newsletter/                 # Anmeldung + /abgemeldet-Bestätigung
 │   ├── events/                     # Rechtstermine (DB, Fehler-/Leer-State)
 │   ├── beitraege/                  # Beiträge (Placeholder, kein Inhalt)
+│   ├── state-of-legal-ai/          # Research Hub: "State of Legal AI Germany 2026" (pure Server Component)
 │   ├── sitemap.ts                  # Dynamische Sitemap (Tools, News, Prompts, Workflows)
 │   ├── robots.ts                   # /robots.txt — disallow /admin
 │   ├── impressum/ datenschutz/ kontakt/ beitraege/
@@ -338,6 +339,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [x] **Eigene 404- und Error-Seiten** gebaut (2026-04-16) — `not-found.tsx` + `error.tsx`, brand-konsistent
 - [x] **Tool-Submit-Flow** — Admin-Benachrichtigung via Resend implementiert (2026-04-15)
 - [x] **Tool Finder** — `/tools/finder` gebaut (2026-04-16) — geführter 4-Schritte-Finder (Besucher-Typ, Use Case, Datenschutz, Teamgröße), client-seitiges Scoring gegen Supabase, Top-5-Empfehlungen mit Verdict + Score-Badge. Entry Points: Premium `FinderPanel` auf `/tools` + Startseite.
+- [x] **State of Legal AI Germany 2026** (2026-04-16) — Signature Research Hub unter `/state-of-legal-ai`: pure Server Component, full-bleed dark Hero (bg-[#111827]), sticky Anchor-Nav bei `top-14`, 9 Module (Executive Summary, Market Map, Was zählt, Red Flags, Shortlists, Framework, Vendor Watch, CTA). Entry Points: Homepage-Callout-Banner (dark card zwischen Finder + Tools) + Footer-Sektion „Research" mit Neu-Badge. Bewusst nicht in primäre Navbar aufgenommen. `revalidate: 86400`, lint- und build-clean.
 - [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt). Platzhalter auf Detailseite wurde bereits entfernt — Screenshot wird nur gerendert wenn URL vorhanden.
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
 - [ ] **Prompt-Detailseiten** — `/prompts/[slug]` existiert nicht; Seite noch nicht gebaut
@@ -417,6 +419,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **`vote/route.ts`**: prüft `status = 'approved'` via DB-Lookup vor dem `toggle_tool_vote`-RPC — Votes auf nicht-öffentliche Tools werden mit 404 abgewiesen.
 - **`tools`-Spaltenname `pricing`**: Die DB-Spalte für den Preistyp heißt `pricing` (nicht `pricing_type`). Code in `ToolDetailClient.tsx`, `actions.ts` (`UpdateToolPayload`, `updateTool`) und `EditForm.tsx` verwenden `pricing`. Niemals `pricing_type` schreiben — die Spalte existiert nicht in der DB (Fehlercode `42703`).
 - **Eigene 404- und Error-Seiten**: `src/app/not-found.tsx` (Server Component) und `src/app/error.tsx` (`'use client'`) existieren. Bei Routing-Änderungen nicht vergessen, dass diese globalen Fehlerseiten das Framework-Default ersetzen. `error.tsx` zeigt `error.digest` dem User, aber keinen Stack Trace.
+- **`/state-of-legal-ai`**: Pure Server Component, kein `'use client'`. Hero ist full-bleed dark (`bg-[#111827]`), kein `max-w` auf dem äußeren `<div>`. Sticky Anchor-Nav bei `top-14` (40px Höhe, `z-40` unter Navbar `z-50`). Alle Sections haben `scroll-mt-[100px]` (deckt 56px Navbar + 40px Anchor-Nav ab). Entry Points: Homepage (dark Callout-Card zwischen Finder + Tools-Sektion) + Footer (neue „Research"-Sektion). Nicht in primärer Navbar verlinkt — bewusste Entscheidung zur Nav-Entlastung. Inline Sub-Komponenten: `SectionLabel`, `InsightCard`, `SegmentCard` — nicht auslagern.
 - **Tool Finder** (`/tools/finder`): `FinderClient.tsx` lädt alle approved Tools client-seitig, berechnet pro Tool einen `matchScore` aus 4 Antworten (Besucher-Typ, Use Case, Datenschutz, Teamgröße) und zeigt die Top 5. Entry Points: `FinderPanel` auf `/tools` (compact) und auf der Startseite (full). Besucher-Typen: `anwalt | steuerberater | interdisziplinaer | inhouse` — diese 4 Kategorien sind kanonisch für LexLab, werden ggf. site-weit eingebaut.
 - **`FinderPanel`** (`src/components/FinderPanel.tsx`): Wiederverwendbares Premium-CTA-Panel für den Tool Finder. Props: `compact?: boolean`. Zeigt "Empfohlen"-Badge, Display-Headline, Subtext und blauen CTA-Button. `compact=true` für Tools-Seite (kleinere Schrift/Padding), default für Homepage. Keine `'use client'`-Direktive — reine Server Component mit `<Link>`.
 - **WorkflowDetailClient hat keinen WORKFLOW_STEPS-Hardcode mehr** — alle Workflow-Detailseiten zeigen `WorkflowStepsTeaser` (generische Lock-Icon-Schritte + Newsletter-CTA). Kein slug-spezifischer Content-Hardcode. `WorkflowStepsTeaser` ist als Sub-Komponente inline in `WorkflowDetailClient.tsx` definiert — nicht auslagern.
