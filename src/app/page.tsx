@@ -332,16 +332,27 @@ export default async function HomePage() {
                 </Link>
               </div>
               <div className="flex flex-col gap-2">
-                {upcomingEvents.map(ev => (
-                  <div key={ev.id} className="bg-white border border-gray-100 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${eventTypeBadge[ev.type]}`}>{ev.type}</span>
-                      <span className="text-xs text-gray-400">{format(new Date(ev.date), 'd. MMM', { locale: de })}</span>
-                    </div>
-                    <p className="text-sm font-medium text-gray-800 leading-snug line-clamp-2">{ev.title}</p>
-                    {ev.description && <p className="text-xs text-gray-400 mt-1">{ev.description}</p>}
-                  </div>
-                ))}
+                {upcomingEvents.map(ev => {
+                  const hasUrl = ev.url && ev.url !== '#'
+                  const cardCls = `bg-white border border-gray-100 rounded-xl p-4 block${hasUrl ? ' hover:shadow-md hover:border-gray-200 transition-all duration-200 group' : ''}`
+                  const inner = (
+                    <>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${eventTypeBadge[ev.type] ?? 'bg-gray-100 text-gray-600'}`}>{ev.type}</span>
+                        <span className="text-xs text-gray-400">{format(new Date(ev.date), 'd. MMM', { locale: de })}</span>
+                      </div>
+                      <p className={`text-sm font-medium text-gray-800 leading-snug line-clamp-2${hasUrl ? ' group-hover:text-blue-600 transition-colors' : ''}`}>{ev.title}</p>
+                      {ev.description && <p className="text-xs text-gray-400 mt-1">{ev.description}</p>}
+                    </>
+                  )
+                  return hasUrl ? (
+                    <a key={ev.id} href={ev.url} target="_blank" rel="noopener noreferrer" className={cardCls}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <div key={ev.id} className={cardCls}>{inner}</div>
+                  )
+                })}
               </div>
             </section>
           )}

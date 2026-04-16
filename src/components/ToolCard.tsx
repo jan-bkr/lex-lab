@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Tool } from '@/types'
 import { RechtsgebietTag } from './RechtsgebietTag'
 import { ChevronUp } from 'lucide-react'
@@ -76,7 +77,14 @@ export function ToolCard({ tool }: { tool: Tool }) {
     : 'bg-red-50 text-red-600 border-red-200'
 
   return (
-    <div className="group bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-200 flex flex-col gap-3 h-full">
+    <div className="group relative bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-200 flex flex-col gap-3 h-full">
+      {/* Stretched link — macht die gesamte Karte zum Klickziel für die Detailseite */}
+      <Link
+        href={`/tools/${tool.slug}`}
+        className="absolute inset-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1"
+        aria-label={`${tool.name} — Details ansehen`}
+        tabIndex={0}
+      />
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5">
           {/* Icon placeholder */}
@@ -98,7 +106,10 @@ export function ToolCard({ tool }: { tool: Tool }) {
           </div>
         </div>
         {score != null && (
-          <div className={`flex-shrink-0 flex flex-col items-center justify-center w-10 h-10 rounded-lg border text-xs font-bold leading-none ${scoreCls}`}>
+          <div
+            title="LexLab Score — kuratierte Bewertung aus Kanzlei-Perspektive (DACH-Fokus)"
+            className={`flex-shrink-0 flex flex-col items-center justify-center w-10 h-10 rounded-lg border text-xs font-bold leading-none ${scoreCls}`}
+          >
             <span className="text-[15px] font-display">{score}</span>
             <span className="text-[8px] font-semibold uppercase tracking-wide opacity-70 mt-0.5">Score</span>
           </div>
@@ -113,12 +124,11 @@ export function ToolCard({ tool }: { tool: Tool }) {
         ))}
       </div>
 
-      <div className="flex items-center justify-between pt-1 border-t border-gray-50">
+      <div className="relative z-10 flex items-center justify-between pt-1 border-t border-gray-50">
         <a
           href={tool.url}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
           className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
         >
           Ansehen →
