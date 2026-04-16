@@ -222,11 +222,13 @@ export default function Page() {
 
 **Plattform:** Vercel — automatischer Deploy bei Push auf `main`
 
-**Cron-Job:** `/api/pipeline` täglich 06:00 UTC (konfiguriert in `vercel.json`)
+**Cron-Job:** `/api/pipeline` täglich 06:00 UTC **und 12:00 UTC** (konfiguriert in `vercel.json`)
+- Zwei Läufe pro Tag als Redundanz — Vercel Hobby-Cron feuert gelegentlich nicht zuverlässig
 - Vercel Cron sendet **GET** — Route exportiert sowohl `GET` als auch `POST` (GET = Cron, POST = manueller Trigger)
 - Auth: Vercel-Header `x-vercel-cron: 1` (automatisch) oder `Authorization: Bearer CRON_SECRET` (manuell)
 - Limit: `maxDuration = 60` (Vercel Hobby Plan)
-- Verarbeitet max. 3 Items pro RSS-Quelle, 11 Quellen parallel, Cutoff: 24h
+- Verarbeitet max. 3 Items pro RSS-Quelle, 11 Quellen parallel, Cutoff: **36h** (war 24h — erweitert damit Backup-Lauf keine Artikel verpasst)
+- Duplikate verhindert via `source_url`-Dedup — mehrfache Läufe sind sicher
 
 **SEO:** `sitemap.ts` + `robots.ts` erzeugen `/sitemap.xml` und `/robots.txt` dynamisch beim Build. `/admin` ist disallowed.
 
@@ -261,8 +263,12 @@ npm run build    # Production Build
 npm run start    # Production Server lokal
 npm run lint     # ESLint v9 (Flat Config)
 
-# Pipeline manuell triggern:
+# Pipeline manuell triggern (lokal):
 curl -X POST http://localhost:3000/api/pipeline \
+  -H "Authorization: Bearer <CRON_SECRET>"
+
+# Pipeline manuell triggern (Production — wenn Cron ausgefallen):
+curl -X POST https://www.lex-lab.de/api/pipeline \
   -H "Authorization: Bearer <CRON_SECRET>"
 
 # Bulk-Import Tools (Premium-Profile, Scores, Beschreibungen):
