@@ -116,13 +116,36 @@ const workflowBorder: Record<Rechtsgebiet, string> = {
   'Venture Capital': 'border-l-orange-400',
 }
 
-const jsonLd = {
+const jsonLdWebSite = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'LexLab',
   url: 'https://www.lex-lab.de',
   description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt',
   inLanguage: 'de-DE',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://www.lex-lab.de/tools?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
+const jsonLdOrganization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'LexLab',
+  url: 'https://www.lex-lab.de',
+  description: 'Kuratierte Plattform für KI-Tools, Workflows und Prompts für den deutschen Rechts- und Steuermarkt.',
+  foundingDate: '2026',
+  areaServed: [
+    { '@type': 'Country', name: 'Germany' },
+    { '@type': 'Country', name: 'Austria' },
+    { '@type': 'Country', name: 'Switzerland' },
+  ],
+  knowsAbout: ['Legal Technology', 'Artificial Intelligence', 'German Tax Law', 'M&A', 'Corporate Law'],
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -132,7 +155,7 @@ export default async function HomePage() {
   const [toolsRes, newsRes, eventsRes, workflowsRes, promptRes, allToolsRes] = await Promise.all([
     adminSupabase.from('tools').select('id, name, slug, url, tagline, description, rechtsgebiet, category, votes, is_new, created_at').eq('status', 'approved').order('votes', { ascending: false }).limit(3),
     adminSupabase.from('news_articles').select('id, title, slug, summary, source_url, source_name, category, published_at, ai_generated').neq('source_url', '#').order('published_at', { ascending: false }).limit(4),
-    adminSupabase.from('events').select('id, title, date, type, url, description').gt('date', new Date().toISOString()).order('date', { ascending: true }).limit(3),
+    adminSupabase.from('events').select('id, title, date, type, url, description').gte('date', new Date().toISOString().slice(0, 10)).order('date', { ascending: true }).limit(3),
     adminSupabase.from('workflows').select('id, title, slug, rechtsgebiet, reading_time, excerpt, created_at').eq('published', true).order('created_at', { ascending: false }).limit(3),
     adminSupabase.from('prompts').select('id, title, slug, prompt_text, use_case, rechtsgebiet, example_output, created_at').eq('is_prompt_of_day', true).limit(1),
     adminSupabase.from('tools').select('rechtsgebiet').eq('status', 'approved'),
@@ -163,7 +186,8 @@ export default async function HomePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }} />
 
       {/* HERO */}
       <section className="pt-16 pb-14 text-center">

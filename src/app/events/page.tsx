@@ -105,9 +105,12 @@ export default function EventsPage() {
     fetchEvents()
   }, [])
 
-  const now = new Date()
-  const upcoming = events.filter(e => new Date(e.date) >= now)
-  const past = events.filter(e => new Date(e.date) < now)
+  // Compare date-only strings (YYYY-MM-DD) to avoid UTC/timezone issues
+  // where a date entered as "2026-04-17" would become midnight UTC and appear
+  // past during the same calendar day in CEST (UTC+2).
+  const todayStr = new Date().toISOString().slice(0, 10)
+  const upcoming = events.filter(e => e.date >= todayStr)
+  const past = events.filter(e => e.date < todayStr)
 
   if (loading) {
     return (

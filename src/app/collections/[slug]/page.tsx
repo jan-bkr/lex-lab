@@ -22,8 +22,12 @@ export async function generateMetadata(
   const collection = getCollection(slug)
   if (!collection) return {}
   return {
-    title: `${collection.title} — LexLab Collections`,
+    title: collection.title,
     description: collection.description,
+    openGraph: {
+      title: `${collection.title} — LexLab`,
+      description: collection.description,
+    },
   }
 }
 

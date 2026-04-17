@@ -6,8 +6,12 @@ import NewsContent from './NewsContent'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'Aktuelles — LexLab',
-  description: 'Ausgewählte Meldungen aus dem deutschen Rechts- und Steuermarkt — täglich aus juristischen Fachquellen kuratiert.',
+  title: 'Aktuelle Rechtsnachrichten',
+  description: 'Ausgewählte Meldungen aus dem deutschen Rechts- und Steuermarkt — täglich aus juristischen Fachquellen kuratiert. KI-Zusammenfassungen mit Quellenangabe.',
+  openGraph: {
+    title: 'Aktuelle Rechtsnachrichten — LexLab',
+    description: 'Ausgewählte Meldungen aus dem deutschen Rechts- und Steuermarkt — täglich aus juristischen Fachquellen kuratiert.',
+  },
 }
 
 // ─── DB row → domain mapper ────────────────────────────────────────────────────

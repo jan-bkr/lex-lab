@@ -6,8 +6,12 @@ import PromptsContent from './PromptsContent'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'Prompt-Bibliothek — LexLab',
-  description: 'Kopierfertige KI-Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital — kuratiert für den deutschen Rechtsmarkt.',
+  title: 'Prompt-Bibliothek',
+  description: 'Kopierfertige KI-Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital — kuratiert für Rechtsanwälte und Steuerberater im deutschen Rechtsmarkt.',
+  openGraph: {
+    title: 'Prompt-Bibliothek — LexLab',
+    description: 'Kopierfertige KI-Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital — kuratiert für den deutschen Rechtsmarkt.',
+  },
 }
 
 // ─── Types ─────────────────────────────────────────────────────────────────────

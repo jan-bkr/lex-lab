@@ -100,9 +100,20 @@ export async function POST(req: NextRequest) {
   try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5',
-      max_tokens: 2000,
+      max_tokens: 2500,
       stop_sequences: ['[ENDE]'],
-      system: JURIST_PERSONA + `\n\nDeine Aufgabe jetzt: Erstelle ausschließlich den aufgabenspezifischen Teil eines juristischen Prompts. Deine Rolle und Arbeitsweise sind bereits definiert und werden automatisch vorangestellt — schreibe KEINE Rolleneinleitung, KEIN "Du bist...". Beginne direkt mit der Aufgabenbeschreibung. Der generierte Teil soll: (1) die konkrete juristische Aufgabe klar strukturieren mit nummerierten Prüfungsschritten, (2) relevante Gesetze, Normen und Prüfungspunkte explizit nennen, (3) das gewünschte Ausgabeformat definieren, (4) einen Platzhalter [SACHVERHALT EINFÜGEN] enthalten. Antworte NUR mit dem Aufgabenteil, ohne Erklärungen, ohne Präambel, ohne Markdown-Codeblock. Wichtig: Der generierte Prompt muss vollständig und mit einem sauberen Satz enden. Wenn der Platz nicht reicht für alle Details, kürze frühere Abschnitte — aber das Ende muss immer ein vollständiger, abgeschlossener Satz sein. Niemals mitten im Satz oder mitten in einem Abschnitt aufhören. Beende deinen Output mit [ENDE].`,
+      system: JURIST_PERSONA + `\n\nDeine Aufgabe jetzt: Erstelle einen vollständig einsatzbereiten juristischen Prompt. Die juristische Basis-Persona wird automatisch vorangestellt — schreibe KEINE Rolleneinleitung, KEIN "Du bist...". Beginne direkt mit der Aufgabenbeschreibung.
+
+Der generierte Prompt soll:
+(1) Den konkreten Sachverhalt aus der Nutzereingabe vollständig und direkt aufnehmen — kein Platzhalter, der Sachverhalt wurde bereits eingegeben und muss im Prompt enthalten sein
+(2) Die juristische Aufgabe präzise formulieren mit nummerierten Prüfungsschritten
+(3) Relevante Normen, Gesetze und Prüfungspunkte zum Rechtsgebiet explizit nennen
+(4) Das gewünschte Ausgabeformat und die Detailtiefe klar definieren
+(5) Praxisgerecht strukturiert und direkt in einem KI-System verwendbar sein
+
+Qualitätsstandard: Kein mechanischer Fülltext, kein unnötiges Wiederholen, keine leeren Formeln. Der Prompt soll so klingen, als hätte ihn ein erfahrener Rechtsanwalt selbst formuliert.
+
+Antworte NUR mit dem fertigen Prompt-Text, ohne Erklärungen, ohne Präambel, ohne Markdown-Codeblock. Der Prompt muss mit einem vollständigen, abgeschlossenen Satz enden — niemals mitten in einem Satz aufhören. Beende deinen Output mit [ENDE].`,
       messages: [
         {
           role: 'user',

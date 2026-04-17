@@ -350,6 +350,17 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 ## Erledigte Meilensteine
 
+- [x] **Premium-Qualitäts- und SEO-Sprint** (2026-04-17) — Funktionale Fixes, Metadata-Härtung, Structured Data, Prompt Builder, SEO-Hub-Seiten:
+  - **Event-Datumslogik** (`events/page.tsx`): ISO-Datumsstring-Vergleich `e.date >= todayStr` (todayStr = `new Date().toISOString().slice(0,10)`) statt Timestamp-Vergleich — kein UTC/CEST-Timezone-Fehler mehr. Homepage-Events-Query: `.gte('date', YYYY-MM-DD)`.
+  - **Prompt Builder — Sachverhalt-Integration** (`api/prompts/generate/route.ts`): System-Prompt integriert Sachverhalt direkt, kein `[SACHVERHALT EINFÜGEN]`-Platzhalter. `max_tokens` 2000→2500. Fine Print: "pro IP-Adresse und Tag (24-Stunden-Fenster, kein festes Mitternachts-Reset)".
+  - **Metadata-Doppelbranding behoben**: "— LexLab" aus `title`-Strings entfernt in `tools/page.tsx`, `news/page.tsx`, `prompts/page.tsx`, `collections/page.tsx`, `collections/[slug]/page.tsx`, `beitraege/page.tsx`. OG-Titles behalten "— LexLab" für Social Sharing.
+  - **Homepage JSON-LD**: Zwei Blöcke — `WebSite` (mit `SearchAction potentialAction`) + `Organization` (DACH `areaServed`, `knowsAbout`).
+  - **Tool-Detail Structured Data** (`tools/[slug]/page.tsx`): Emittiert `BreadcrumbList` + `SoftwareApplication` JSON-LD (mit `AggregateRating` wenn `lexlab_score` vorhanden). `ToolDetailClient.tsx` hat semantisches `<nav aria-label="Breadcrumb">`.
+  - **2 SEO-Hub-Seiten**: `src/app/tools/steuerrecht/page.tsx` + `src/app/tools/ma/page.tsx` — Server Components, ISR 1h, rechtsgebiet-gefilterter Tool-Grid, BreadcrumbList JSON-LD, Collections/Finder/Research-CTAs.
+  - **Sitemap**: `/tools/steuerrecht`, `/tools/ma`, `/prompts/builder` ergänzt.
+  - **Prompt Builder UI**: Ergebnis-Block dark (`bg-[#111827]`), Copy-Button dark (`bg-[#111827]`), Qualitätsnote "Juristische Basis-Persona integriert · Sachverhalt direkt aufgenommen · Sofort einsetzbar", Reset → "Neu generieren".
+  - Build clean: 40/40 Seiten, lint clean, tsc clean.
+
 - [x] **Interaktions- & Score-Qualitätssprint** (2026-04-16) — Premium-Konsistenz und glaubwürdigere Produktbewertung:
   - **ToolCard vollständig klickbar**: Stretched-Link-Pattern (`absolute inset-0`) navigiert zur Detailseite. „Ansehen →" und Vote-Button bleiben per `relative z-10` eigenständig. HTML-valide, kein nested `<a>`.
   - **Event-Kacheln Homepage**: Konditionaler `<a>`-Wrapper (nur wenn `ev.url !== '#'`), Hover-State `group-hover:text-blue-600`. Konsistenz mit anderen klickbaren Kacheln der Plattform.
@@ -470,3 +481,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **Event-Kacheln Homepage**: Kacheln werden in `<a target="_blank">` gerendert wenn `ev.url !== '#'`, sonst `<div>`. Hover-State (`group-hover:text-blue-600`) nur wenn URL vorhanden. Nicht als `<Link>` — Events verlinken auf externe Seiten.
 - **LexLab Score — Gewichte**: `src/lib/lexlab-score.ts` — Praxisreife **35%**, Datenschutz **20%**, DACH-Relevanz **25%**, UX **10%**, Preis **10%**. Summe = 100. Nicht auf alte 30/25-Verteilung zurücksetzen — Datenschutz-Defizit soll ein insgesamt starkes Tool nicht unverhältnismäßig bestrafen. Nach Gewichtsänderung: `node scripts/bulk-import-tools.mjs` ausführen, um `lexlab_score` in der DB neu zu berechnen.
 - **LexLabScoreCard Methodik-Note**: Am Ende der Score-Card in `ToolDetailClient.tsx` steht eine einzeilige Transparenznotiz (Perspektive, DACH-Fokus, Gewichtungslogik). Nicht entfernen — sie macht den Score glaubwürdiger statt defensiver.
+- **Metadata-Titel-Muster**: Seiten-`title` darf **kein** "— LexLab" enthalten (führt zu "Page — LexLab | LexLab" durch den Title-Template in `layout.tsx`). Nur `openGraph.title` erhält "— LexLab" für Social-Sharing-Qualität. Dieses Muster gilt für alle neuen Pages.
+- **Event-Datumsvergleich**: Immer `todayStr = new Date().toISOString().slice(0,10)` und `e.date >= todayStr` (String-Vergleich) — niemals `new Date(e.date) >= new Date()` (UTC/CEST-Fehler: date-only strings parsen als UTC-Mitternacht, erscheinen in CEST 2h zu früh als vergangen).
+- **SEO-Hub-Seiten** für Rechtsgebiete: `src/app/tools/steuerrecht/page.tsx` + `src/app/tools/ma/page.tsx` existieren als statische Server Components (ISR 1h). Muster für neue Rechtsgebiets-Hubs: gleiche Datei-Struktur, `.overlaps('rechtsgebiet', ['<Gebiet>'])`, BreadcrumbList JSON-LD, thematische Resource-CTAs. Statische Routen haben in App Router immer Vorrang vor `[slug]`.
+- **`sitemap.ts`**: Erfasst jetzt auch `/tools/steuerrecht`, `/tools/ma`, `/prompts/builder`. Insgesamt 40 Seiten im Build.

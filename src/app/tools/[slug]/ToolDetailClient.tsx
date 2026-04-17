@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronUp, Copy, Check, ArrowLeft, MessageSquare, Grid3X3 } from 'lucide-react'
+import { ChevronUp, Copy, Check, MessageSquare, Grid3X3 } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
 import { Tool, ToolComment, Rechtsgebiet } from '@/types'
@@ -666,14 +666,14 @@ export default function ToolDetailPage({
 
         {/* ── Left column ── */}
         <div className="space-y-4">
-          {/* Back link */}
-          <Link
-            href="/tools"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Alle Tools
-          </Link>
+          {/* Breadcrumb nav */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-gray-400">
+            <Link href="/" className="hover:text-gray-600 transition-colors">LexLab</Link>
+            <span aria-hidden="true">/</span>
+            <Link href="/tools" className="hover:text-gray-600 transition-colors">KI-Tools</Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-gray-500 truncate max-w-[200px]">{tool.name}</span>
+          </nav>
 
           {/* Header */}
           <div className="flex items-start gap-4">

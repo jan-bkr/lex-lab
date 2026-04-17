@@ -4,8 +4,12 @@ import Link from 'next/link'
 import { NewsletterForm } from '@/components/NewsletterForm'
 
 export const metadata: Metadata = {
-  title: 'Beiträge — LexLab',
+  title: 'Beiträge',
   description: 'Praxisberichte, Tool-Reviews und Einblicke aus dem Rechtsalltag mit KI — von Jan Becker, Rechtsanwalt und LexLab-Gründer.',
+  openGraph: {
+    title: 'Beiträge — LexLab',
+    description: 'Praxisberichte, Tool-Reviews und Einblicke aus dem Rechtsalltag mit KI — von Jan Becker, Rechtsanwalt und LexLab-Gründer.',
+  },
 }
 
 // ─── Teaser-Artikel ────────────────────────────────────────────────────────

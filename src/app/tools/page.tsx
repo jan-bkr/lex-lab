@@ -6,8 +6,12 @@ import ToolsContent from './ToolsContent'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'KI-Tools für Juristen — LexLab',
-  description: 'Kuratierte KI-Tools für den deutschen Rechtsmarkt — bewertet nach Datenschutz, Praxisreife und DACH-Eignung.',
+  title: 'KI-Tools für Juristen',
+  description: 'Kuratierte KI-Tools für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital — bewertet nach Praxisreife, Datenschutz und DACH-Eignung.',
+  openGraph: {
+    title: 'KI-Tools für Juristen — LexLab',
+    description: 'Kuratierte KI-Tools für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital — bewertet nach Praxisreife, Datenschutz und DACH-Eignung.',
+  },
 }
 
 // ─── DB row → domain mapper ────────────────────────────────────────────────────

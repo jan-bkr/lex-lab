@@ -6,8 +6,12 @@ import { COLLECTIONS, CollectionDef } from './config'
 export const revalidate = 86400
 
 export const metadata: Metadata = {
-  title: 'Kuratierte Listen — LexLab',
-  description: 'Von LexLab redaktionell zusammengestellte Tool-Shortlists für konkrete Anforderungen im deutschen Rechts- und Steuermarkt.',
+  title: 'Kuratierte Tool-Listen',
+  description: 'Von LexLab zusammengestellte Tool-Shortlists für konkrete Anforderungen im deutschen Rechts- und Steuermarkt — M&A, Steuerrecht, Datenschutz, Inhouse.',
+  openGraph: {
+    title: 'Kuratierte KI-Tool-Listen — LexLab',
+    description: 'Von LexLab zusammengestellte Tool-Shortlists für konkrete Anforderungen im deutschen Rechts- und Steuermarkt.',
+  },
 }
 
 // ─── Theme config ──────────────────────────────────────────────────────────────

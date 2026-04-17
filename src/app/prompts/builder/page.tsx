@@ -367,7 +367,7 @@ export default function BuilderPage() {
                 <Zap className="w-3 h-3" /> Generierung dauert ca. 5–10 Sekunden
               </p>
               <p className="text-center text-xs text-gray-400 mt-1">
-                Täglich 10 kostenlose Builds · Kein Account nötig
+                10 kostenlose Prompts pro Tag · Kein Account nötig
               </p>
             </div>
           </div>
@@ -437,24 +437,27 @@ export default function BuilderPage() {
                   <span className="text-gray-500">{form.detailtiefe.split(' ')[0]}</span>
                 </div>
 
-                {/* Persona indicator */}
-                <p className="text-xs text-gray-400">✦ Enthält juristische Basis-Persona</p>
-
                 {/* Prompt code block */}
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 max-h-96 overflow-y-auto">
-                  <pre className="text-xs text-gray-800 font-mono whitespace-pre-wrap leading-relaxed">
+                <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 max-h-[28rem] overflow-y-auto">
+                  <pre className="text-xs text-gray-200 font-mono whitespace-pre-wrap leading-relaxed">
                     {generatedPrompt}
                   </pre>
                 </div>
+
+                {/* Quality note */}
+                <p className="text-xs text-gray-400 flex items-center gap-1.5">
+                  <span className="text-blue-400">✦</span>
+                  Juristische Basis-Persona integriert · Sachverhalt direkt aufgenommen · Sofort einsetzbar
+                </p>
 
                 {/* Action buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleCopy}
-                    className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-xl transition-colors text-sm"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1a2234] text-white font-semibold px-5 py-3 rounded-xl transition-colors text-sm"
                   >
                     {copied ? (
-                      <><Check className="w-4 h-4" /> Kopiert!</>
+                      <><Check className="w-4 h-4 text-green-400" /> Kopiert!</>
                     ) : (
                       <><Copy className="w-4 h-4" /> Prompt kopieren</>
                     )}
@@ -476,9 +479,9 @@ export default function BuilderPage() {
                 <div className="border-t border-gray-100 pt-4 text-center">
                   <button
                     onClick={handleReset}
-                    className="text-sm text-gray-400 hover:text-blue-600 transition-colors"
+                    className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
                   >
-                    Nicht zufrieden? Neu generieren
+                    Neu generieren
                   </button>
                 </div>
               </div>
@@ -529,7 +532,7 @@ export default function BuilderPage() {
 
             {/* Fine print */}
             <p className="text-xs text-gray-400">
-              Das Limit gilt pro Gerät und Tag. Es wird täglich um Mitternacht zurückgesetzt.
+              Das Limit gilt pro IP-Adresse und Tag (24-Stunden-Fenster, kein festes Mitternachts-Reset).
             </p>
           </div>
         )}
