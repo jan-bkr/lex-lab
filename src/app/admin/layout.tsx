@@ -3,6 +3,24 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AdminNav from '@/components/AdminNav'
 
+function normalizeEmail(email: string | null | undefined): string {
+  return (email ?? '').trim().toLowerCase()
+}
+
+function getAllowedAdminEmails(): string[] {
+  return (process.env.ADMIN_EMAIL ?? '')
+    .split(/[\n,;]+/)
+    .map(normalizeEmail)
+    .filter(Boolean)
+}
+
+function isAllowedAdminEmail(email: string | null | undefined): boolean {
+  const allowedEmails = getAllowedAdminEmails()
+  if (!allowedEmails.length) return true
+
+  return allowedEmails.includes(normalizeEmail(email))
+}
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const headersList = await headers()
   const pathname = headersList.get('x-pathname') ?? ''
@@ -20,9 +38,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!user) redirect('/admin/login')
 
-  // Optional email allowlist — mirrors the check in requireAdminSession() and proxy.ts
-  const allowedEmail = process.env.ADMIN_EMAIL
-  if (allowedEmail && user.email !== allowedEmail) redirect('/admin/login')
+  if (!isAllowedAdminEmail(user.email)) redirect('/admin/login')
 
   return (
     <div className="min-h-screen flex bg-gray-100">

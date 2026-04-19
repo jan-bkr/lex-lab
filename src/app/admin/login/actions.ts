@@ -11,11 +11,18 @@ function normalizeEmail(email: string | null | undefined): string {
   return (email ?? '').trim().toLowerCase()
 }
 
-function isAllowedAdminEmail(email: string | null | undefined): boolean {
-  const allowedEmail = normalizeEmail(process.env.ADMIN_EMAIL)
-  if (!allowedEmail) return true
+function getAllowedAdminEmails(): string[] {
+  return (process.env.ADMIN_EMAIL ?? '')
+    .split(/[,\n;]+/)
+    .map(normalizeEmail)
+    .filter(Boolean)
+}
 
-  return normalizeEmail(email) === allowedEmail
+function isAllowedAdminEmail(email: string | null | undefined): boolean {
+  const allowedEmails = getAllowedAdminEmails()
+  if (!allowedEmails.length) return true
+
+  return allowedEmails.includes(normalizeEmail(email))
 }
 
 function getSafeNextPath(next: FormDataEntryValue | null): string {

@@ -4,6 +4,24 @@ import { adminSupabase } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+function normalizeEmail(email: string | null | undefined): string {
+  return (email ?? '').trim().toLowerCase()
+}
+
+function getAllowedAdminEmails(): string[] {
+  return (process.env.ADMIN_EMAIL ?? '')
+    .split(/[\n,;]+/)
+    .map(normalizeEmail)
+    .filter(Boolean)
+}
+
+function isAllowedAdminEmail(email: string | null | undefined): boolean {
+  const allowedEmails = getAllowedAdminEmails()
+  if (!allowedEmails.length) return true
+
+  return allowedEmails.includes(normalizeEmail(email))
+}
+
 // ─── Auth guard ───────────────────────────────────────────────────────────────
 // Server Actions are direct HTTP endpoints — the admin layout only protects the
 // UI, not the action themselves. Every write action must call this guard first.
@@ -12,9 +30,7 @@ async function requireAdminSession(): Promise<void> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  // Optional email allowlist: set ADMIN_EMAIL in env to restrict access to one account.
-  const allowedEmail = process.env.ADMIN_EMAIL
-  if (allowedEmail && user.email !== allowedEmail) throw new Error('Forbidden')
+  if (!isAllowedAdminEmail(user.email)) throw new Error('Forbidden')
 }
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
