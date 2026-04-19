@@ -14,12 +14,18 @@ function getSupabaseAuthCookiePrefix() {
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', pathname)
 
   // Only gate /admin routes
-  if (!pathname.startsWith('/admin')) return NextResponse.next()
+  if (!pathname.startsWith('/admin')) {
+    return NextResponse.next({ request: { headers: requestHeaders } })
+  }
 
   // Login page is always accessible
-  if (pathname === '/admin/login') return NextResponse.next()
+  if (pathname === '/admin/login') {
+    return NextResponse.next({ request: { headers: requestHeaders } })
+  }
 
   // Proxy should stay fast in Next 16: only do an optimistic cookie check here.
   const authCookiePrefix = getSupabaseAuthCookiePrefix()
@@ -33,7 +39,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  return NextResponse.next()
+  return NextResponse.next({ request: { headers: requestHeaders } })
 }
 
 export const config = {
