@@ -351,6 +351,17 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 ## Erledigte Meilensteine
 
+- [x] **Premium-Schicht-Sprint** (2026-04-19) — Design-System-Konsistenz, Collections als Signature-Format, Tool-Detail-Sidebar-Navigation, Prompt Builder Premium-Qualität:
+  - **`CollectionDef.methodology`**: Neues Pflichtfeld in `src/app/collections/config.ts` — ehrliche, spezifische Filterbeschreibung pro Collection (Kriterien, Score-Schwellen, Sortierreihenfolge). Alle 5 Collections befüllt.
+  - **Collections-Detail-Methodik-Block**: Unter der Tool-Liste auf jeder `/collections/[slug]`-Seite: dezenter `bg-gray-50`-Block mit `text-[10px] uppercase tracking-widest`-Label "Methodik" und Collection-spezifischer Erklärung — macht das "Kuratiert"-Versprechen nachvollziehbar.
+  - **Collections-Detail-Bottom-CTAs**: "Weiter entdecken"-Header + 3er-Grid mit `bg-white border border-gray-100 rounded-xl`-Cards: "Alle Shortlists", "Persönliche Empfehlung", "Alle Tools" — ersetzt asymmetrische flex-Zeile, jetzt strukturiert und hover-konsistent.
+  - **Collections-Listing Hover-Farben**: `group-hover:text-blue-600` → `group-hover:text-[#111827]` auf Kachel-Titel und "Shortlist ansehen"-Footer — konsistent mit der dunklen Design-Sprache der Plattform.
+  - **Tool-Detail `RelatedCollections`-Widget**: Neues Sidebar-Widget in `ToolDetailClient.tsx` — zeigt pro Tool passende Collections basierend auf Rechtsgebiet-Mapping (M&A→ma-due-diligence, GesR→inhouse-stack, StR→steuerrecht-essentials) und `scoreDatenschutz ≥ 7` → datenschutzstark. Erscheint nach dem Share-Widget, gibt null zurück wenn keine Treffer.
+  - **Prompt Builder Dark-CTAs**: "Weiter →" (Step 1) und "Prompt generieren →" (Step 2) von `bg-blue-600`/Gradient auf `bg-[#111827]` — konsistent mit dem Rest der Plattform.
+  - **Prompt Builder Trust-Block**: Vor dem Generate-Button in Step 2: `bg-gray-50`-Box mit drei `✦`-Punkten — zeigt was im generierten Prompt enthalten ist (Persona, Sachverhalt, Detailtiefe dynamisch) → mehr Vertrauen vor dem Klick.
+  - **Prompt Builder Step-3-Nav**: Unter "Neu generieren" zwei Plattform-Links: "Prompt-Bibliothek" + "KI-Tools entdecken" → verbindet Builder-Ergebnis mit dem Rest der Plattform.
+  - Build clean: 40/40 Seiten, lint clean, tsc src/ clean.
+
 - [x] **Reife- und Trust-Sprint** (2026-04-19) — SEO-Wahrheit, Metadata-Vollständigkeit, Trust-Fixes, Pipeline-Qualität, Score-Konsistenz:
   - **Root-Canonical-Bug behoben** (`layout.tsx`): `alternates.canonical` aus Root-Layout entfernt — war kritischer SEO-Defekt (alle Seiten erbten Homepage-Canonical). Jede Page definiert nun ihre eigene canonical.
   - **Homepage explicit `metadata`**: `title: { absolute: 'LexLab — KI-Tools für Juristen' }` + canonical `https://www.lex-lab.de`.
@@ -504,3 +515,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **Event-Datumsvergleich**: Immer `todayStr = new Date().toISOString().slice(0,10)` und `e.date >= todayStr` (String-Vergleich) — niemals `new Date(e.date) >= new Date()` (UTC/CEST-Fehler: date-only strings parsen als UTC-Mitternacht, erscheinen in CEST 2h zu früh als vergangen).
 - **SEO-Hub-Seiten** für Rechtsgebiete: `src/app/tools/steuerrecht/page.tsx` + `src/app/tools/ma/page.tsx` existieren als statische Server Components (ISR 1h). Muster für neue Rechtsgebiets-Hubs: gleiche Datei-Struktur, `.overlaps('rechtsgebiet', ['<Gebiet>'])`, BreadcrumbList JSON-LD, thematische Resource-CTAs. Statische Routen haben in App Router immer Vorrang vor `[slug]`.
 - **`sitemap.ts`**: Erfasst jetzt auch `/tools/steuerrecht`, `/tools/ma`, `/prompts/builder`. Insgesamt 40 Seiten im Build.
+- **`CollectionDef.methodology`**: Pflichtfeld in `src/app/collections/config.ts`. Muss bei neuen Collections gesetzt werden — erklärt die Filterbasis in Kurzform (Rechtsgebiet, Score-Schwellen, Sortierung, Bewertungsperspektive).
+- **`RelatedCollections`-Widget (ToolDetailClient)**: Sidebar-Widget zeigt passende Collections basierend auf `RECHTSGEBIET_COLLECTIONS`-Mapping + `scoreDatenschutz ≥ 7` → datenschutzstark. Gibt `null` zurück wenn kein Treffer. Bei neuen Collections: Mapping in `RECHTSGEBIET_COLLECTIONS` ergänzen wenn sinnvoll.
+- **CTA-Farbe Prompt Builder**: Step 1 + Step 2 Primär-Buttons verwenden `bg-[#111827]` (nicht blue) — konsistent mit der dunklen Design-Sprache der Plattform. Nicht zurücksetzen.
+- **Collections-Detail Bottom-CTAs**: 3er-Grid "Weiter entdecken" mit weißen Card-Links (nicht flex-Zeile). Muster für neue Collection-Seiten verwenden.
+- **Hover-Farbe Design-Regel**: Titel-Hover auf Cards und Listen: `group-hover:text-[#111827]` (nicht `group-hover:text-blue-600`). Blue bleibt für aktive States (Votes, Filter-Pills) reserviert.

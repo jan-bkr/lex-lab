@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronUp, Copy, Check, MessageSquare, Grid3X3 } from 'lucide-react'
+import { ChevronUp, Copy, Check, MessageSquare, Grid3X3, ArrowRight } from 'lucide-react'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { createClient } from '@/lib/supabase/client'
 import { Tool, ToolComment, Rechtsgebiet } from '@/types'
@@ -173,6 +173,58 @@ function SimilarToolsList({ tools }: { tools: Pick<Tool, 'id' | 'name' | 'slug' 
               )}
             </div>
             <span className="text-gray-300 group-hover:text-blue-400 transition-colors text-sm">→</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Related collections ──────────────────────────────────────────────────────
+
+const RECHTSGEBIET_COLLECTIONS: Partial<Record<string, { title: string; slug: string }>> = {
+  'M&A': { title: 'M&A Due Diligence', slug: 'ma-due-diligence' },
+  'Gesellschaftsrecht': { title: 'Inhouse-Stack', slug: 'inhouse-stack' },
+  'Steuerrecht': { title: 'Steuerrecht Essentials', slug: 'steuerrecht-essentials' },
+}
+
+function RelatedCollections({
+  rechtsgebiet,
+  scoreDatenschutz,
+}: {
+  rechtsgebiet: string[]
+  scoreDatenschutz: number | null
+}) {
+  const seen = new Set<string>()
+  const links: { title: string; slug: string }[] = []
+
+  for (const rg of rechtsgebiet) {
+    const c = RECHTSGEBIET_COLLECTIONS[rg]
+    if (c && !seen.has(c.slug)) {
+      links.push(c)
+      seen.add(c.slug)
+    }
+  }
+
+  if (scoreDatenschutz !== null && scoreDatenschutz >= 7 && !seen.has('datenschutzstark')) {
+    links.push({ title: 'Datenschutzstarke Tools', slug: 'datenschutzstark' })
+    seen.add('datenschutzstark')
+  }
+
+  if (links.length === 0) return null
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-xl p-4">
+      <p className="text-xs text-gray-400 mb-2.5">In diesen Shortlists</p>
+      <div className="space-y-1.5">
+        {links.slice(0, 2).map(c => (
+          <Link
+            key={c.slug}
+            href={`/collections/${c.slug}`}
+            className="flex items-center justify-between gap-2 text-sm text-gray-600 hover:text-[#111827] transition-colors group"
+          >
+            <span className="group-hover:underline underline-offset-2 truncate">{c.title}</span>
+            <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#111827] flex-shrink-0 transition-colors" />
           </Link>
         ))}
       </div>
@@ -853,6 +905,12 @@ export default function ToolDetailPage({
               )}
             </button>
           </div>
+
+          {/* Related Collections */}
+          <RelatedCollections
+            rechtsgebiet={tool.rechtsgebiet}
+            scoreDatenschutz={tool.scoreDatenschutz ?? null}
+          />
         </div>
       </div>
 

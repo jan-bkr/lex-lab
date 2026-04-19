@@ -116,7 +116,7 @@ export default function CollectionsPage() {
                 </div>
 
                 {/* Title */}
-                <h2 className="font-display font-semibold text-lg text-gray-900 leading-snug mb-2 group-hover:text-blue-600 transition-colors">
+                <h2 className="font-display font-semibold text-lg text-gray-900 leading-snug mb-2 group-hover:text-[#111827] transition-colors">
                   {collection.title}
                 </h2>
 
@@ -134,7 +134,7 @@ export default function CollectionsPage() {
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <span className="text-[11px] text-gray-400">Kuratiert von LexLab</span>
-                  <span className="text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors flex items-center gap-1">
+                  <span className="text-sm font-medium text-gray-500 group-hover:text-[#111827] transition-colors flex items-center gap-1">
                     Shortlist ansehen <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>

@@ -287,7 +287,7 @@ export default function BuilderPage() {
             <button
               onClick={() => setStep(2)}
               disabled={form.rechtsgebiet.length === 0 || !form.aufgabe}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
+              className="w-full bg-[#111827] hover:bg-[#1a2234] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
             >
               Weiter →
             </button>
@@ -354,12 +354,31 @@ export default function BuilderPage() {
               </select>
             </div>
 
+            {/* Trust block */}
+            <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
+              <p className="text-xs font-semibold text-gray-600 mb-2">Im generierten Prompt enthalten:</p>
+              <div className="space-y-1">
+                <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                  <span className="text-blue-400 flex-shrink-0">✦</span>
+                  Juristische Basis-Persona mit DACH-Fokus
+                </p>
+                <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                  <span className="text-blue-400 flex-shrink-0">✦</span>
+                  Dein Sachverhalt direkt integriert
+                </p>
+                <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                  <span className="text-blue-400 flex-shrink-0">✦</span>
+                  Detailtiefe: {form.detailtiefe.split(' (')[0]}
+                </p>
+              </div>
+            </div>
+
             {/* Generate button */}
             <div>
               <button
                 onClick={handleGenerate}
                 disabled={!form.sachverhalt.trim()}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-200 disabled:to-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-semibold px-6 py-3.5 rounded-xl transition-all text-sm shadow-sm"
+                className="w-full bg-[#111827] hover:bg-[#1a2234] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-semibold px-6 py-3.5 rounded-xl transition-colors text-sm"
               >
                 Prompt generieren →
               </button>
@@ -475,14 +494,23 @@ export default function BuilderPage() {
                 {/* Remaining counter */}
                 <RemainingCounter remaining={remaining} />
 
-                {/* Divider + reset */}
-                <div className="border-t border-gray-100 pt-4 text-center">
+                {/* Divider + reset + platform nav */}
+                <div className="border-t border-gray-100 pt-4 space-y-3 text-center">
                   <button
                     onClick={handleReset}
                     className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
                   >
                     Neu generieren
                   </button>
+                  <div className="flex items-center justify-center gap-4 text-xs text-gray-400">
+                    <Link href="/prompts" className="hover:text-[#111827] transition-colors">
+                      Prompt-Bibliothek
+                    </Link>
+                    <span className="text-gray-200">·</span>
+                    <Link href="/tools" className="hover:text-[#111827] transition-colors">
+                      KI-Tools entdecken
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}

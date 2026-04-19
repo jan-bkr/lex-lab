@@ -225,28 +225,40 @@ export default async function CollectionDetailPage(
         )}
       </section>
 
-      {/* ─── Bottom CTAs ─── */}
-      <section className="border-t border-gray-100 pt-8 pb-16 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between max-w-3xl">
-        <div>
-          <p className="text-sm text-gray-500 mb-1">
-            Nicht das Richtige dabei?
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/collections" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              Alle Listen <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-            <span className="text-gray-200">·</span>
-            <Link href="/tools/finder" className="text-sm text-gray-500 hover:text-gray-800 transition-colors flex items-center gap-1">
-              Tool Finder starten <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+      {/* ─── Methodology ─── */}
+      <section className="mb-8 max-w-3xl">
+        <div className="bg-gray-50 border border-gray-100 rounded-xl px-5 py-4">
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Methodik</p>
+          <p className="text-sm text-gray-500 leading-relaxed">{collection.methodology}</p>
         </div>
-        <Link
-          href="/tools"
-          className="flex-shrink-0 inline-flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-900 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          Alle Tools durchsuchen →
-        </Link>
+      </section>
+
+      {/* ─── Bottom CTAs ─── */}
+      <section className="border-t border-gray-100 pt-8 pb-16 max-w-3xl">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Weiter entdecken</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link
+            href="/collections"
+            className="flex items-center justify-between gap-2 bg-white border border-gray-100 hover:border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 hover:text-[#111827] transition-all group"
+          >
+            <span className="font-medium">Alle Shortlists</span>
+            <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#111827] transition-colors flex-shrink-0" />
+          </Link>
+          <Link
+            href="/tools/finder"
+            className="flex items-center justify-between gap-2 bg-white border border-gray-100 hover:border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 hover:text-[#111827] transition-all group"
+          >
+            <span className="font-medium">Persönliche Empfehlung</span>
+            <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#111827] transition-colors flex-shrink-0" />
+          </Link>
+          <Link
+            href="/tools"
+            className="flex items-center justify-between gap-2 bg-white border border-gray-100 hover:border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 hover:text-[#111827] transition-all group"
+          >
+            <span className="font-medium">Alle Tools</span>
+            <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#111827] transition-colors flex-shrink-0" />
+          </Link>
+        </div>
       </section>
 
     </div>
