@@ -8,7 +8,7 @@ import {
   toggleWorkflowPublished,
   deleteWorkflow,
   type AdminWorkflow,
-} from '../actions'
+} from '../../actions'
 
 const RECHTSGEBIETE = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
 

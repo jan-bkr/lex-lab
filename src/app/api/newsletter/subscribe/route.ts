@@ -1,6 +1,6 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
-import { makeToken } from '@/app/api/newsletter/unsubscribe/route'
+import { makeToken } from '@/lib/newsletter-token'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getHashedIp } from '@/lib/ip'
 

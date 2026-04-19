@@ -1,18 +1,11 @@
-import { createHmac, timingSafeEqual } from 'crypto'
+import { timingSafeEqual } from 'crypto'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { makeToken } from '@/lib/newsletter-token'
 import { NextRequest } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-function makeToken(email: string): string {
-  const secret = process.env.NEWSLETTER_HMAC_SECRET
-  if (!secret) {
-    throw new Error('NEWSLETTER_HMAC_SECRET is not set')
-  }
-  return createHmac('sha256', secret)
-    .update(email.toLowerCase())
-    .digest('hex')
-}
+export { makeToken }
 
 function verifyToken(email: string, token: string): boolean {
   try {
@@ -55,6 +48,3 @@ export async function GET(req: NextRequest): Promise<Response> {
   console.log(`[newsletter/unsubscribe] Removed: ${email}`)
   return Response.redirect(new URL('/newsletter/abgemeldet?status=ok', req.url))
 }
-
-/** Exported so subscribe/route.ts can use it to generate links */
-export { makeToken }

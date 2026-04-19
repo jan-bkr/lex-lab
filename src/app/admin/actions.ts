@@ -3,24 +3,7 @@
 import { adminSupabase } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-
-function normalizeEmail(email: string | null | undefined): string {
-  return (email ?? '').trim().toLowerCase()
-}
-
-function getAllowedAdminEmails(): string[] {
-  return (process.env.ADMIN_EMAIL ?? '')
-    .split(/[\n,;]+/)
-    .map(normalizeEmail)
-    .filter(Boolean)
-}
-
-function isAllowedAdminEmail(email: string | null | undefined): boolean {
-  const allowedEmails = getAllowedAdminEmails()
-  if (!allowedEmails.length) return true
-
-  return allowedEmails.includes(normalizeEmail(email))
-}
+import type { NewsletterIssue } from '@/types'
 
 // ─── Auth guard ───────────────────────────────────────────────────────────────
 // Server Actions are direct HTTP endpoints — the admin layout only protects the
@@ -30,7 +13,9 @@ async function requireAdminSession(): Promise<void> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  if (!isAllowedAdminEmail(user.email)) throw new Error('Forbidden')
+  // Optional email allowlist: set ADMIN_EMAIL in env to restrict access to one account.
+  const allowedEmail = process.env.ADMIN_EMAIL
+  if (allowedEmail && user.email !== allowedEmail) throw new Error('Forbidden')
 }
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
@@ -515,6 +500,174 @@ export async function fetchAllSubscribers(): Promise<AdminSubscriber[]> {
 export async function deleteSubscriber(id: string): Promise<void> {
   await requireAdminSession()
   const { error } = await adminSupabase.from('newsletter_subscribers').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/newsletter')
+}
+
+// ─── Newsletter issues ────────────────────────────────────────────────────────
+
+export interface AdminNewsletterIssue {
+  id: string
+  title: string
+  preheader: string
+  issue_date: string
+  editors_note_auto: string
+  editors_note_manual: string | null
+  editors_note_mode: 'auto' | 'manual'
+  top_developments: unknown
+  tool_watch: unknown
+  radar_signals: unknown
+  lexlab_pick: unknown
+  status: 'draft' | 'ready' | 'sent'
+  sent_at: string | null
+  recipient_count: number | null
+  created_at: string
+}
+
+export async function fetchNewsletterIssues(): Promise<AdminNewsletterIssue[]> {
+  await requireAdminSession()
+  const { data, error } = await adminSupabase
+    .from('newsletter_issues')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(20)
+  if (error) throw new Error(error.message)
+  return (data ?? []) as AdminNewsletterIssue[]
+}
+
+export async function generateNewsletterIssue(): Promise<{ id: string }> {
+  await requireAdminSession()
+  const { generateNewsletterContent } = await import('@/lib/newsletter-generator')
+  const content = await generateNewsletterContent()
+  const issueDate = new Date().toISOString().slice(0, 10)
+  const { data, error } = await adminSupabase
+    .from('newsletter_issues')
+    .insert({
+      title:               content.title,
+      preheader:           content.preheader,
+      issue_date:          issueDate,
+      editors_note_auto:   content.editorsNote,
+      editors_note_manual: null,
+      editors_note_mode:   'auto',
+      top_developments:    content.topDevelopments,
+      tool_watch:          content.toolWatch,
+      radar_signals:       content.radarSignals,
+      lexlab_pick:         content.lexlabPick,
+      status:              'draft',
+    })
+    .select('id')
+    .single()
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/newsletter')
+  return { id: (data as { id: string }).id }
+}
+
+export async function updateIssueEditorsNote(
+  id: string,
+  manual: string,
+  mode: 'auto' | 'manual'
+): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase
+    .from('newsletter_issues')
+    .update({
+      editors_note_manual: manual.trim() || null,
+      editors_note_mode:   mode,
+    })
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/newsletter')
+}
+
+export async function sendNewsletterIssue(issueId: string): Promise<{ sent: number }> {
+  await requireAdminSession()
+  if (!process.env.NEWSLETTER_HMAC_SECRET) throw new Error('NEWSLETTER_HMAC_SECRET nicht gesetzt')
+  if (!process.env.RESEND_API_KEY)         throw new Error('RESEND_API_KEY nicht gesetzt')
+
+  const { data: row, error: issueErr } = await adminSupabase
+    .from('newsletter_issues')
+    .select('*')
+    .eq('id', issueId)
+    .single()
+  if (issueErr) throw new Error(issueErr.message)
+  if (!row)     throw new Error('Ausgabe nicht gefunden')
+  if ((row as AdminNewsletterIssue).status === 'sent') throw new Error('Diese Ausgabe wurde bereits versendet')
+
+  const { data: subs, error: subErr } = await adminSupabase
+    .from('newsletter_subscribers')
+    .select('email')
+    .eq('confirmed', true)
+  if (subErr) throw new Error(subErr.message)
+  if (!subs?.length) throw new Error('Keine bestätigten Abonnenten vorhanden')
+
+  const issueRow = row as AdminNewsletterIssue
+  const issue: NewsletterIssue = {
+    id:                issueRow.id,
+    title:             issueRow.title,
+    preheader:         issueRow.preheader,
+    issueDate:         issueRow.issue_date,
+    editorsNoteAuto:   issueRow.editors_note_auto,
+    editorsNoteManual: issueRow.editors_note_manual,
+    editorsNoteMode:   issueRow.editors_note_mode,
+    // JSONB columns are untyped at the DB boundary — cast to domain types
+    topDevelopments:   (issueRow.top_developments ?? []) as NewsletterIssue['topDevelopments'],
+    toolWatch:         (issueRow.tool_watch ?? null) as NewsletterIssue['toolWatch'],
+    radarSignals:      (issueRow.radar_signals ?? []) as NewsletterIssue['radarSignals'],
+    lexlabPick:        (issueRow.lexlab_pick ?? null) as NewsletterIssue['lexlabPick'],
+    status:            issueRow.status,
+    sentAt:            issueRow.sent_at,
+    recipientCount:    issueRow.recipient_count,
+    createdAt:         issueRow.created_at,
+  }
+
+  const { buildNewsletterHtml } = await import('@/lib/newsletter-template')
+  const { makeToken }           = await import('@/lib/newsletter-token')
+  const { Resend }              = await import('resend')
+  const resend = new Resend(process.env.RESEND_API_KEY)
+
+  const BATCH = 50
+  let sentCount = 0
+
+  for (let i = 0; i < subs.length; i += BATCH) {
+    const batch = subs.slice(i, i + BATCH)
+    const emails = batch.map((sub: { email: string }) => {
+      const token    = makeToken(sub.email)
+      const unsubUrl = `https://www.lex-lab.de/api/newsletter/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
+      return {
+        from:    'lex-lab.de <newsletter@lex-lab.de>',
+        to:      sub.email,
+        subject: issue.title,
+        html:    buildNewsletterHtml(issue, unsubUrl),
+      }
+    })
+
+    const { error: batchErr } = await resend.batch.send(emails)
+    if (batchErr) {
+      const msg = typeof batchErr === 'object' && 'message' in batchErr
+        ? (batchErr as { message: string }).message
+        : String(batchErr)
+      throw new Error(`Versand-Fehler (Batch ${i / BATCH + 1}): ${msg}`)
+    }
+    sentCount += batch.length
+  }
+
+  const { error: updateErr } = await adminSupabase
+    .from('newsletter_issues')
+    .update({ status: 'sent', sent_at: new Date().toISOString(), recipient_count: sentCount })
+    .eq('id', issueId)
+  if (updateErr) console.error('[newsletter/send] update error:', updateErr.message)
+
+  revalidatePath('/admin/newsletter')
+  return { sent: sentCount }
+}
+
+export async function deleteNewsletterIssue(id: string): Promise<void> {
+  await requireAdminSession()
+  const { error } = await adminSupabase
+    .from('newsletter_issues')
+    .delete()
+    .eq('id', id)
+    .neq('status', 'sent')
   if (error) throw new Error(error.message)
   revalidatePath('/admin/newsletter')
 }

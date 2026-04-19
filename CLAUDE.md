@@ -14,6 +14,7 @@
 | E-Mail | Resend | ^6.10.0 |
 | KI (Pipeline) | Claude Haiku via raw `fetch` | `claude-haiku-4-5-20251001` |
 | KI (Prompt Builder) | Claude Haiku via `@anthropic-ai/sdk` | `claude-haiku-4-5` |
+| KI (Newsletter) | Claude Haiku via `@anthropic-ai/sdk` | `claude-haiku-4-5-20251001` |
 | Analytics | @vercel/analytics + @vercel/speed-insights | ^2 |
 | RSS | rss-parser | ^3.13.0 |
 | Rate Limiting | @upstash/ratelimit + @upstash/redis | ^2 / ^1 |
@@ -55,19 +56,24 @@ src/
 ├── app/                            # Next.js App Router
 │   ├── layout.tsx                  # Root Layout: DM Serif + DM Sans, Analytics, Navbar, Footer
 │   ├── page.tsx                    # Startseite (Server Component, revalidate=3600)
-│   ├── admin/                      # Admin-Bereich (Auth via Supabase in Layout, kein Middleware!)
+│   ├── admin/                      # Admin-Bereich: Login öffentlich, Seiten in (protected) geschützt
 │   │   ├── actions.ts              # Server Actions für alle Admin-CRUD-Operationen
-│   │   ├── layout.tsx              # Auth-Guard (Supabase getUser) + AdminNav
-│   │   ├── tools/                  # Tool-Verwaltung + Edit-Formular
-│   │   │   └── [id]/edit/
-│   │   │       ├── page.tsx        # Server Component — lädt Tool per fetchToolById(id)
-│   │   │       └── EditForm.tsx    # Client Component — vollständiges Edit-Formular
-│   │   ├── news/                   # News-Verwaltung
-│   │   ├── comments/               # Kommentar-Moderation
-│   │   ├── prompts/                # Prompt-Verwaltung
-│   │   ├── workflows/              # Workflow-Verwaltung (Client, optimistic updates)
-│   │   ├── events/                 # Termin-Verwaltung (Client, vergangene Termine gedimmt)
-│   │   └── newsletter/             # Newsletter-Abonnenten (Client, Tabellen-View)
+│   │   ├── layout.tsx              # Schlanker Wrapper ohne Auth-Logik
+│   │   ├── login/
+│   │   │   ├── page.tsx            # Client-Loginformular (Suspense + useSearchParams)
+│   │   │   └── actions.ts          # Server Action Login via Supabase + sicherer next-Redirect
+│   │   └── (protected)/
+│   │       ├── layout.tsx          # Definitiver Auth-Guard (supabase.auth.getUser) + AdminNav
+│   │       ├── page.tsx            # Dashboard
+│   │       ├── tools/              # Tool-Verwaltung
+│   │       ├── news/               # News-Verwaltung
+│   │       ├── comments/           # Kommentar-Moderation
+│   │       ├── prompts/            # Prompt-Verwaltung
+│   │       ├── workflows/          # Workflow-Verwaltung
+│   │       ├── events/             # Termin-Verwaltung
+│   │       └── newsletter/
+│   │           ├── page.tsx        # Issues + Abonnenten-Tabelle
+│   │           └── IssuesClient.tsx # Client-UI für Draft/Send/Delete
 │   ├── api/                        # Route Handlers (alle POST-only, außer vote-status + pipeline)
 │   │   ├── pipeline/               # RSS→Claude→Supabase-Cron (GET+POST, maxDuration=60)
 │   │   ├── tools/submit/           # Tool-Einreichung (POST, Rate Limit: 5/Tag pro IP, schreibt via adminSupabase)
@@ -124,7 +130,7 @@ src/
 │   └── useAnalytics.ts
 ├── types/
 │   └── index.ts                    # Tool, Workflow, Prompt, NewsArticle, Event, ToolComment
-└── proxy.ts                        # Supabase Realtime Proxy
+└── proxy.ts                        # Next.js-16-Proxy für Admin-Auth (optimistischer Cookie-Check)
 
 scripts/
 └── bulk-import-tools.mjs           # Premium-Profile für 42 Tools (Node.js, direkt gegen Supabase)
@@ -258,7 +264,7 @@ export default function Page() {
 | `IP_HASH_SECRET` | Server only | HMAC-Key für IP-Pseudonymisierung (`getHashedIp()`) — ohne diesen Key: SHA-256-Fallback + Prod-Warning |
 | `UPSTASH_REDIS_REST_URL` | Server only | Upstash Redis — Rate Limiting (Vote, Comments, Prompts, Newsletter, Kontakt, Tool-Submit) |
 | `UPSTASH_REDIS_REST_TOKEN` | Server only | Upstash Redis — Rate Limiting |
-| `ADMIN_EMAIL` | Server only | Optional: E-Mail-Allowlist für Admin-Zugriff — `requireAdminSession()` prüft `user.email === ADMIN_EMAIL` wenn gesetzt |
+| `ADMIN_EMAIL` | Server only | Optional: E-Mail-Allowlist für Admin-Zugriff — geprüft in Login-Action, Protected-Layout und `requireAdminSession()` |
 
 ---
 
@@ -293,7 +299,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 1. **Next.js 16: `params` ist ein `Promise`** — `const { slug } = await params` in allen Pages und `generateMetadata`. Vergessen → TypeScript-Fehler zur Laufzeit.
 
-2. **Keine `middleware.ts`** — Admin-Auth läuft ausschließlich im `src/app/admin/layout.tsx` via `supabase.auth.getUser()`. Kein Next.js Middleware-File vorhanden.
+2. **Keine `middleware.ts`, aber `src/proxy.ts`** — Next.js 16 nennt Middleware jetzt `proxy`. `src/proxy.ts` macht für `/admin/*` nur einen schnellen Cookie-Check und setzt den `next`-Redirect; die definitive Session-Prüfung läuft in `src/app/admin/(protected)/layout.tsx`. `src/app/admin/layout.tsx` selbst ist nur ein pass-through Wrapper.
 
 3. **Drei Supabase-Clients — nie falsch mischen:**
    - `client.ts` → Browser (anon key, RLS aktiv) — nur in `'use client'`-Komponenten
@@ -330,13 +336,15 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 13. **JSON-LD Schema.org** auf der Startseite via `<script dangerouslySetInnerHTML>`. Bei neuen Seiten ggf. ergänzen.
 
-14. **Vercel-Deploy-Verzögerung** — Nach `git push` startet das Vercel-Deployment automatisch, aber mit ~30–60s Verzögerung. Status prüfen mit `npx vercel ls`. Kein manueller Trigger nötig solange GitHub-Integration aktiv ist.
+14. **Vercel-Deploy-Verzögerung** — Nach `git push` startet das Vercel-Deployment automatisch, aber mit ~30–60s Verzögerung. Status prüfen mit `npx vercel ls`. Bei Login/Auth-Änderungen den Live-HTML-Output von `/admin/login` prüfen, nicht nur den GitHub-Push-Status.
 
 15. **IP-Pseudonymisierung via `getHashedIp()`** — Alle 6 öffentlichen Route Handlers nutzen `src/lib/ip.ts` statt roher IPs. HMAC-SHA256 mit `IP_HASH_SECRET`, auf 16-char hex gekürzt (Plausible/Fathom-Pattern). Deterministisch (Rate Limiting funktioniert), nicht umkehrbar. Ohne Secret: SHA-256-Fallback + Prod-Warning. Niemals rohe IPs im Rate-Limiting-Code schreiben.
 
 16. **`tool_comments` INSERT via `adminSupabase`** — Die Route `/api/tools/[id]/comments` (POST) verwendet `adminSupabase` direkt für den INSERT, nicht den anon Client. Begründung: Der Route Handler erzwingt selbst alle Sicherheitsprüfungen (same-origin, rate limit, Validierung, `status: 'pending'` hardcoded) — RLS ist daher nicht nötig. Die Migration `20260415000000_tool_comments_rls.sql` ist obsolet für diesen Use Case.
 
 17. **`tool_comments` hat `tool_slug` NOT NULL** — Die Tabelle hat eine `tool_slug`-Spalte mit NOT NULL-Constraint. Bei jedem INSERT muss zuerst der Slug via `adminSupabase.from('tools').select('slug').eq('id', toolId).maybeSingle()` geladen und als `tool_slug` übergeben werden. Fehlt das Feld, schlägt der INSERT mit Fehlercode `23502` fehl.
+
+18. **Admin-Login läuft als Server Action** — `src/app/admin/login/page.tsx` rendert ein `<form action={formAction}>` mit `useActionState`, `useFormStatus` und verstecktem `next`-Input. Die eigentliche Anmeldung passiert in `src/app/admin/login/actions.ts` via `supabase.auth.signInWithPassword()`, optionaler `ADMIN_EMAIL`-Allowlist und `redirect(nextPath)`. Nicht wieder auf clientseitiges `window.location.href` oder Browser-Supabase-Login zurückbauen.
 
 ---
 
@@ -350,6 +358,19 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [ ] **Collections: Admin-UI** — Collections-Inhalte sind statisch in `config.ts` definiert. Kein Admin-Flow für Neuanlage.
 
 ## Erledigte Meilensteine
+
+- [x] **Newsletter-Produktmodul — LexLab Weekly Brief** (2026-04-19) — Vollständiger Newsletter-Stack aufgebaut:
+  - **`newsletter_issues` Tabelle** (`supabase/migrations/20260419000000_newsletter_issues.sql`): `title`, `preheader`, `issue_date`, `editors_note_auto`, `editors_note_manual`, `editors_note_mode` (`auto`/`manual`), JSONB-Felder für `top_developments`, `tool_watch`, `radar_signals`, `lexlab_pick`, `status` (`draft`/`ready`/`sent`), `sent_at`, `recipient_count`. RLS enabled, no public policies — nur service role.
+  - **`src/lib/newsletter-token.ts`**: `makeToken(email)` als zentrales HMAC-SHA256-Utility. Importiert von `unsubscribe/route.ts` (re-export für Abwärtskompatibilität), `subscribe/route.ts` und `admin/actions.ts`. Kein Code-Duplikat mehr.
+  - **`src/lib/newsletter-generator.ts`**: Claude Haiku (`claude-haiku-4-5-20251001`) generiert vollständige Ausgabe aus DB-Daten (last 7 days news + top 5 tools by `lexlab_score`). Output: `title`, `preheader`, `editorsNote`, `topDevelopments` (3), `toolWatch`, `radarSignals` (2), `lexlabPick`. Strukturiertes JSON-Output mit Fallback-Validation.
+  - **`src/lib/newsletter-template.ts`**: `buildNewsletterHtml(issue, unsubscribeUrl)` — table-based Premium-HTML-E-Mail mit inline styles. Sektionen: Header (LexLab Weekly Brief + Datum), Einschätzung (Editor's Note, kursiv), Entwicklungen (nummeriert), Tool Watch, Marktbeobachtung, LexLab Pick (grau hinterlegt), Footer. Responsive via `@media` query (mobile ≤620px). `resolveEditorsNote()` wählt auto/manual-Note automatisch.
+  - **`src/app/api/newsletter/generate-issue/route.ts`**: POST-Endpunkt, Auth via `CRON_SECRET` oder `x-vercel-cron: 1`. Generiert Draft-Ausgabe via Claude, schreibt in DB, gibt `{ issueId }` zurück.
+  - **`src/app/admin/(protected)/newsletter/IssuesClient.tsx`**: Admin-UI — "Neue Ausgabe generieren"-Button mit Loading-Spinner (Claude ~10-20s), Issue-Liste mit Status-Badges, Detail-Expand mit Editor's Note-Anzeige + manuellem Override (Checkbox → Textarea → Speichern), Versand-Button mit `window.confirm`, Delete-Button für Entwürfe.
+  - **`src/app/admin/(protected)/newsletter/page.tsx`**: Umgebaut auf zwei Sektionen: `IssuesClient` (oben) + Abonnenten-Tabelle (unten).
+  - **`src/app/newsletter/page.tsx`**: Neue Copy für "LexLab Weekly Brief" — ruhig, editorial, vier Struktur-Zeilen (Entwicklungen / Tool Watch / Marktbeobachtung / LexLab Pick), klares Formular-Panel.
+  - **Admin-Actions** (in `actions.ts`): `fetchNewsletterIssues()`, `generateNewsletterIssue()` (ruft Generator auf + schreibt Draft), `updateIssueEditorsNote(id, manual, mode)`, `sendNewsletterIssue(id)` (Resend batch.send in 50er-Batches, pro Subscriber personalisierter Unsub-Link), `deleteNewsletterIssue(id)` (nur non-sent).
+  - **Versandflow**: Admin UI → `sendNewsletterIssue()` Server Action → Resend `batch.send()` → `status = 'sent'` + `recipient_count`. Kein automatischer Versand — immer manuell ausgelöst.
+  - Build clean: 40/40 Seiten, lint clean, tsc clean.
 
 - [x] **Premium-Schicht-Sprint** (2026-04-19) — Design-System-Konsistenz, Collections als Signature-Format, Tool-Detail-Sidebar-Navigation, Prompt Builder Premium-Qualität:
   - **`CollectionDef.methodology`**: Neues Pflichtfeld in `src/app/collections/config.ts` — ehrliche, spezifische Filterbeschreibung pro Collection (Kriterien, Score-Schwellen, Sortierreihenfolge). Alle 5 Collections befüllt.
@@ -462,10 +483,10 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - Stack: Next.js 16 App Router + Supabase + Tailwind v4 + TypeScript strict + Claude Haiku
 - Package Manager: **npm** · Dev starten: `npm run dev`
 - Produktions-URL: `https://www.lex-lab.de`
-- Admin-Bereich: `/admin/login` (Supabase Email/Password Auth, Credentials in `.env.local`)
+- Admin-Bereich: `/admin/login` (Supabase Email/Password Auth via Server Action + `next`-Redirect, Credentials in `.env.local`)
 - DB-Operationen: Server Actions in `src/app/admin/actions.ts` oder direkt in Route Handlers mit `adminSupabase`
 - Typen: `src/types/index.ts` (Frontend-Domain-Types) + Inline-Interfaces in `actions.ts` (Admin-Payload-Types)
-- Kein Prettier, kein `tailwind.config.js`, keine `middleware.ts` — alles bewusst weggelassen
+- Kein Prettier, kein `tailwind.config.js`, keine `middleware.ts` — aber `src/proxy.ts` ist vorhanden und bewusst Teil des Admin-Auth-Flows
 - Git: direkte Commits auf `main`, automatischer Vercel-Deploy
 - Breaking Change: `params` in Pages ist `Promise` → immer `await params` schreiben
 - Rate Limiting: zentrales Modul `src/lib/rate-limit.ts` — `checkRateLimit(key, identifier)` gibt `{ allowed, remaining }` zurück. Kein inline Map-Code in Routen schreiben.
@@ -479,7 +500,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **`tools` anon INSERT**: nach Migration `000003` ist die einzige gültige Schreib-Route `/api/tools/submit` via `adminSupabase`. Kein anon-Client darf mehr direkt in `tools` schreiben.
 - **`newsletter_subscribers` anon SELECT**: nach Migration `000004` ist kein Read-Access für anon/authenticated mehr möglich. Alle Zugriffe ausschließlich via `adminSupabase` (service role bypasses RLS).
 - Security Headers: `next.config.ts` setzt `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security` für alle Routen
-- `ADMIN_EMAIL` env var: in Vercel gesetzt und aktiv — `proxy.ts`, `admin/layout.tsx` und `requireAdminSession()` erzwingen alle drei dieselbe Prüfung ✅
+- `ADMIN_EMAIL` env var: in Vercel gesetzt und aktiv — `src/app/admin/login/actions.ts`, `src/app/admin/(protected)/layout.tsx` und `requireAdminSession()` erzwingen dieselbe Allowlist ✅
 - `CONTACT_EMAIL` env var: optionaler Override für das Kontaktformular-Empfänger-Ziel in `/api/kontakt/route.ts`. Fallback: `janiklas.dropbox@web.de`. In Vercel setzen um E-Mail-Ziel zu ändern ohne Code-Deploy.
 - **Server-Wrapper-Muster für Client-Pages**: Pages, die `'use client'` brauchen (Events, Workflows, Kontakt, Prompts Builder), exportieren keine Metadata-Tags direkt. Stattdessen: Server-Wrapper `page.tsx` (ohne `'use client'`) exportiert `metadata` und rendert `<NameClient />`. Client-Logik liegt in `NameClient.tsx`. Dieses Muster immer einhalten bei neuen Client-Pages.
 - **Root-Layout-Canonical ist absichtlich entfernt** — das `alternates.canonical` im Root-Layout `layout.tsx` war ein SEO-Bug (alle Seiten erbten den Homepage-Canonical). Jede Page definiert ihren eigenen Canonical. Nie wieder einen Canonical ins Root-Layout schreiben.
@@ -520,3 +541,10 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **CTA-Farbe Prompt Builder**: Step 1 + Step 2 Primär-Buttons verwenden `bg-[#111827]` (nicht blue) — konsistent mit der dunklen Design-Sprache der Plattform. Nicht zurücksetzen.
 - **Collections-Detail Bottom-CTAs**: 3er-Grid "Weiter entdecken" mit weißen Card-Links (nicht flex-Zeile). Muster für neue Collection-Seiten verwenden.
 - **Hover-Farbe Design-Regel**: Titel-Hover auf Cards und Listen: `group-hover:text-[#111827]` (nicht `group-hover:text-blue-600`). Blue bleibt für aktive States (Votes, Filter-Pills) reserviert.
+- **Newsletter Weekly Brief — Modul-Überblick**: Vollständiges Issue-basiertes Newsletter-Modul vorhanden. Tabelle `newsletter_issues` in Supabase (muss manuell via SQL-Editor angelegt werden: `supabase/migrations/20260419000000_newsletter_issues.sql`). Drei Kern-Libs: `newsletter-token.ts` (HMAC), `newsletter-generator.ts` (Claude→JSON), `newsletter-template.ts` (HTML-Email). Admin-Flow: `/admin/newsletter` → "Neue Ausgabe generieren" → Draft erscheint → ggf. Editor's Note überschreiben → "Versenden".
+- **`newsletter-token.ts`**: Enthält `makeToken(email)` als einzige Quelle für Newsletter-HMAC-Token. `unsubscribe/route.ts` re-exportiert es als `export { makeToken }` für Abwärtskompatibilität. `subscribe/route.ts` importiert direkt aus `@/lib/newsletter-token`. Nie wieder aus der Route-Datei importieren — immer aus `@/lib/newsletter-token`.
+- **Newsletter-Versandlogik**: `sendNewsletterIssue(issueId)` Server Action in `actions.ts` — Resend `batch.send()` in 50er-Batches, pro Subscriber personalisierter Unsubscribe-Link via `makeToken`. Status wechselt auf `sent`, `sent_at` und `recipient_count` werden gesetzt. Kein automatischer Versand — Admin-Aktion.
+- **Newsletter Editor's Note — auto/manual-Weiche**: `editors_note_mode: 'auto' | 'manual'` und `editors_note_manual: TEXT NULL` in DB. `buildNewsletterHtml()` ruft `resolveEditorsNote()` auf — wählt `editors_note_manual` wenn Mode `'manual'` und nicht leer, sonst `editors_note_auto`. Admin UI zeigt Checkbox zum Aktivieren des manuellen Modus + Textarea + Speichern-Button.
+- **`newsletter_issues` RLS**: Tabelle hat RLS enabled, aber **keine** public policies — alle Zugriffe ausschließlich via `adminSupabase` (service role). Migration muss manuell im Supabase SQL Editor ausgeführt werden.
+- **`generate-issue` API-Route**: POST `/api/newsletter/generate-issue` — Auth via `CRON_SECRET` (Bearer) oder `x-vercel-cron: 1`. Kann für zukünftige Automatisierung per Vercel Cron konfiguriert werden. Aktuell: Admin triggert manuell via UI.
+- **Newsletter-E-Mail-Template**: `buildNewsletterHtml(issue, unsubUrl)` aus `src/lib/newsletter-template.ts` — table-based HTML, alle Styles inline, responsive via `@media` für mobile ≤620px. Sections: Header, Einschätzung (Editor's Note kursiv), Entwicklungen (nummeriert), Tool Watch (optional), Marktbeobachtung (optional), LexLab Pick (grau, optional), Footer. Schriftarten: Georgia für Headings/Note, Arial für Body — keine externen Fonts.

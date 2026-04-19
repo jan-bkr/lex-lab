@@ -1,59 +1,64 @@
 import type { Metadata } from 'next'
 import { NewsletterForm } from '@/components/NewsletterForm'
-import { Mail, Zap, BookOpen, Newspaper } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Newsletter',
-  description: 'Die besten KI-Tools, Workflows und News für den deutschen Rechtsmarkt — kuratiert von LexLab. Kostenlos, kein Spam.',
+  title: 'Weekly Brief',
+  description: 'Der wöchentliche Brief für Juristen, Steuerberater und Inhouse-Teams. KI-Tools, Marktbeobachtungen und kurierte Einschätzungen aus dem deutschen Rechtsmarkt.',
   alternates: { canonical: 'https://www.lex-lab.de/newsletter' },
   openGraph: {
-    title: 'LexLab Newsletter',
-    description: 'KI-Tools, Workflows und News für den deutschen Rechtsmarkt — kuratiert von LexLab.',
+    title: 'LexLab Weekly Brief — Newsletter',
+    description: 'Wöchentlich kuratiert: KI-Tools, Entwicklungen und Einschätzungen für den deutschen Rechtsmarkt.',
   },
 }
 
 export default function NewsletterPage() {
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-16">
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50 border border-blue-100 rounded-2xl mb-6">
-          <Mail className="w-7 h-7 text-blue-600" />
-        </div>
-        <h1 className="font-display text-3xl sm:text-4xl text-gray-900 mb-4 leading-tight">
-          KI-News für Juristen.<br />Kuratiert für den Rechtsmarkt.
+    <div className="max-w-xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+
+      {/* Header */}
+      <div className="mb-10">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">LexLab</p>
+        <h1 className="font-display text-3xl sm:text-4xl text-gray-900 leading-tight mb-4">
+          Weekly Brief
         </h1>
-        <p className="text-gray-500 text-base leading-relaxed max-w-md mx-auto">
-          Kein Spam. Keine Werbung. Nur die relevantesten Tools, Workflows und
-          Rechtsentwicklungen aus dem deutschen Rechtsmarkt.
+        <p className="text-gray-500 text-base leading-relaxed">
+          Einmal pro Woche: drei kuratierte Entwicklungen, ein Tool im Fokus,
+          Marktbeobachtungen und eine persönliche Einschätzung —
+          alles aus dem deutschen Rechts- und Steuermarkt.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-        <div className="bg-white border border-gray-100 rounded-xl p-4 text-center">
-          <Zap className="w-5 h-5 text-blue-500 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-gray-800">Meist empfohlene Tools</p>
-          <p className="text-xs text-gray-400 mt-0.5">Kuratiert & kommentiert</p>
-        </div>
-        <div className="bg-white border border-gray-100 rounded-xl p-4 text-center">
-          <BookOpen className="w-5 h-5 text-purple-500 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-gray-800">Neue Workflows & Prompts</p>
-          <p className="text-xs text-gray-400 mt-0.5">Sofort einsetzbar</p>
-        </div>
-        <div className="bg-white border border-gray-100 rounded-xl p-4 text-center">
-          <Newspaper className="w-5 h-5 text-emerald-500 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-gray-800">Rechtsprechung & News</p>
-          <p className="text-xs text-gray-400 mt-0.5">Was Juristen wissen müssen</p>
-        </div>
+      {/* What to expect */}
+      <div className="border-t border-gray-100 pt-8 mb-10 space-y-4">
+        {[
+          { label: 'Entwicklungen',      desc: 'Drei kuratierte News — eingeordnet, nicht nur aufgelistet.' },
+          { label: 'Tool Watch',          desc: 'Ein KI-Tool im Detail — warum es jetzt relevant ist.' },
+          { label: 'Marktbeobachtung',    desc: 'Signale und Trends, die Juristen kennen sollten.' },
+          { label: 'LexLab Pick',         desc: 'Eine persönliche Empfehlung aus dem Tool-Verzeichnis.' },
+        ].map(({ label, desc }) => (
+          <div key={label} className="flex gap-4">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-300 mt-0.5 w-32 shrink-0">
+              {label}
+            </span>
+            <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl p-8">
+      {/* Form */}
+      <div className="bg-white border border-gray-100 rounded-2xl p-7 sm:p-8">
+        <p className="text-sm font-semibold text-gray-800 mb-1">Kostenlos abonnieren</p>
+        <p className="text-xs text-gray-400 mb-5">
+          Kein Spam. Kein Daily-Noise. Einmal pro Woche, wenn es sich lohnt.
+        </p>
         <NewsletterForm variant="page" />
-        <p className="text-xs text-gray-400 mt-4 text-center">
+        <p className="text-xs text-gray-400 mt-4">
           Mit der Anmeldung akzeptierst du unsere{' '}
           <a href="/datenschutz" className="underline hover:text-gray-600">Datenschutzerklärung</a>.
           Jederzeit abmeldbar.
         </p>
       </div>
+
     </div>
   )
 }

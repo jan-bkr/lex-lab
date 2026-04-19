@@ -82,3 +82,48 @@ export interface Event {
   url: string
   description: string
 }
+
+// ─── Newsletter ────────────────────────────────────────────────────────────────
+
+export interface NewsletterDevelopment {
+  title: string
+  summary: string
+  sourceUrl?: string
+  category?: string
+}
+
+export interface NewsletterToolWatch {
+  toolSlug: string
+  toolName: string
+  why: string
+}
+
+export interface NewsletterRadarSignal {
+  title: string
+  context: string
+}
+
+export interface NewsletterPick {
+  type: 'tool' | 'prompt'
+  slug: string
+  name: string
+  why: string
+}
+
+export interface NewsletterIssue {
+  id: string
+  title: string
+  preheader: string
+  issueDate: string
+  editorsNoteAuto: string
+  editorsNoteManual: string | null
+  editorsNoteMode: 'auto' | 'manual'
+  topDevelopments: NewsletterDevelopment[]
+  toolWatch: NewsletterToolWatch | null
+  radarSignals: NewsletterRadarSignal[]
+  lexlabPick: NewsletterPick | null
+  status: 'draft' | 'ready' | 'sent'
+  sentAt: string | null
+  recipientCount: number | null
+  createdAt: string
+}

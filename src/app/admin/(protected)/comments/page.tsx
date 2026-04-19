@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from 'react'
 import Link from 'next/link'
 import { Check, X, Clock, ExternalLink } from 'lucide-react'
-import { fetchComments, approveComment, rejectComment, type AdminComment } from '../actions'
+import { fetchComments, approveComment, rejectComment, type AdminComment } from '../../actions'
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('de-DE', {

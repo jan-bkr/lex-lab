@@ -83,7 +83,19 @@
       "Bash(npx eslint:*)",
       "Bash(node_modules/.bin/next lint:*)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(node_modules/.bin/eslint \"src/app/admin/actions.ts\" \"src/app/admin/tools/[id]/edit/EditForm.tsx\")"
+      "Bash(node_modules/.bin/eslint \"src/app/admin/actions.ts\" \"src/app/admin/tools/[id]/edit/EditForm.tsx\")",
+      "Bash(openssl rand:*)",
+      "Bash(echo \"PID: $!\" sleep 5 curl -s http://localhost:3000/api/tools/test/comments)",
+      "Bash(curl -s http://localhost:3000/api/tools/test/comments)",
+      "Bash(curl -v http://localhost:3000/api/tools/test/comments)",
+      "Bash(npx next:*)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(jobs -l)",
+      "Bash(grep -v \"^$\")",
+      "Bash(grep -E \"mjs|ts$\")",
+      "Bash(grep -E \"\\\\.sql$|\\\\.txt$\")",
+      "Bash(xargs sed *)",
+      "Bash(npm --prefix /Users/janb/Desktop/lex-lab run build)"
     ]
   }
 }

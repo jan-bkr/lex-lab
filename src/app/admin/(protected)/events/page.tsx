@@ -7,7 +7,7 @@ import {
   addEvent,
   deleteEvent,
   type AdminEvent,
-} from '../actions'
+} from '../../actions'
 
 const EVENT_TYPES = ['BFH', 'BGH', 'Gesetz', 'Konferenz']
 

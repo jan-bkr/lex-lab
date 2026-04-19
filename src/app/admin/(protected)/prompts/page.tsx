@@ -9,7 +9,7 @@ import {
   setPromptOfDay,
   clearPromptOfDay,
   type AdminPrompt,
-} from '../actions'
+} from '../../actions'
 
 const RECHTSGEBIETE = [
   'Steuerrecht',

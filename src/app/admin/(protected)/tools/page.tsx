@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from 'react'
 import Link from 'next/link'
 import { ExternalLink, Check, X, Clock, Pencil } from 'lucide-react'
-import { fetchTools, approveTool, rejectTool, type AdminTool } from '../actions'
+import { fetchTools, approveTool, rejectTool, type AdminTool } from '../../actions'
 
 const TABS = ['Ausstehend', 'Genehmigt'] as const
 type Tab = (typeof TABS)[number]

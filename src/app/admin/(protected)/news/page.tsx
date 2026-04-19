@@ -7,7 +7,7 @@ import {
   deleteNewsArticle,
   addNewsArticle,
   type AdminNewsArticle,
-} from '../actions'
+} from '../../actions'
 
 const SOURCE_STYLES: Record<string, string> = {
   BFH: 'bg-emerald-50 text-emerald-700 border-emerald-200',
