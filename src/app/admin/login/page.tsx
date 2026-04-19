@@ -1,33 +1,29 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useActionState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useFormStatus } from 'react-dom'
 import { FlaskConical, AlertCircle } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { loginAdmin } from './actions'
 
-export default function AdminLoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+const INITIAL_STATE = { error: '' }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+function SubmitButton() {
+  const { pending } = useFormStatus()
 
-    const supabase = createClient()
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
+    >
+      {pending ? 'Wird angemeldet…' : 'Anmelden'}
+    </button>
+  )
+}
 
-    if (authError) {
-      setError('Ungültige E-Mail-Adresse oder Passwort.')
-      setLoading(false)
-    } else {
-      router.push('/admin')
-      router.refresh()
-    }
-  }
+function AdminLoginForm({ nextPath }: { nextPath: string }) {
+  const [state, formAction] = useActionState(loginAdmin, INITIAL_STATE)
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center px-4">
@@ -46,13 +42,14 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
+        <form action={formAction} className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
+          <input type="hidden" name="next" value={nextPath} />
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">E-Mail</label>
             <input
               type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              name="email"
               required
               autoFocus
               autoComplete="email"
@@ -64,30 +61,38 @@ export default function AdminLoginPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Passwort</label>
             <input
               type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              name="password"
               required
               autoComplete="current-password"
               className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
-          {error && (
+          {state.error && (
             <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
               <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-              {error}
+              {state.error}
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
-          >
-            {loading ? 'Wird angemeldet…' : 'Anmelden'}
-          </button>
+          <SubmitButton />
         </form>
       </div>
     </div>
+  )
+}
+
+function AdminLoginPageInner() {
+  const searchParams = useSearchParams()
+  const nextPath = searchParams.get('next') ?? '/admin'
+
+  return <AdminLoginForm nextPath={nextPath} />
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<AdminLoginForm nextPath="/admin" />}>
+      <AdminLoginPageInner />
+    </Suspense>
   )
 }

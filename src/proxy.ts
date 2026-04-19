@@ -1,56 +1,39 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+
+function getSupabaseAuthCookiePrefix() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!supabaseUrl) return null
+
+  try {
+    const projectRef = new URL(supabaseUrl).hostname.split('.')[0]
+    return `sb-${projectRef}-auth-token`
+  } catch {
+    return null
+  }
+}
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
-  // Inject current pathname so layouts can read it without the router
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-pathname', pathname)
-
-  let response = NextResponse.next({ request: { headers: requestHeaders } })
-
   // Only gate /admin routes
-  if (!pathname.startsWith('/admin')) return response
+  if (!pathname.startsWith('/admin')) return NextResponse.next()
 
   // Login page is always accessible
-  if (pathname === '/admin/login') return response
+  if (pathname === '/admin/login') return NextResponse.next()
 
-  // Verify session via Supabase SSR (refreshes tokens in cookies too)
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          response = NextResponse.next({ request: { headers: requestHeaders } })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
+  // Proxy should stay fast in Next 16: only do an optimistic cookie check here.
+  const authCookiePrefix = getSupabaseAuthCookiePrefix()
+  const hasSessionCookie = authCookiePrefix
+    ? request.cookies.getAll().some(cookie => cookie.name.startsWith(authCookiePrefix))
+    : false
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return NextResponse.redirect(new URL('/admin/login', request.url))
+  if (!hasSessionCookie) {
+    const loginUrl = new URL('/admin/login', request.url)
+    loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`)
+    return NextResponse.redirect(loginUrl)
   }
 
-  // Optional email allowlist — mirrors the check in requireAdminSession()
-  const allowedEmail = process.env.ADMIN_EMAIL
-  if (allowedEmail && user.email !== allowedEmail) {
-    return NextResponse.redirect(new URL('/admin/login', request.url))
-  }
-
-  return response
+  return NextResponse.next()
 }
 
 export const config = {
