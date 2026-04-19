@@ -15,14 +15,15 @@ const env = Object.fromEntries(
 const SUPABASE_URL = env['NEXT_PUBLIC_SUPABASE_URL']
 const SERVICE_KEY  = env['SUPABASE_SERVICE_ROLE_KEY']
 
-// ─── Score-Berechnung (Gewichte: Praxisreife 30%, DS 25%, DACH 25%, UX 10%, Preis 10%) ─────
+// ─── Score-Berechnung (Gewichte: Praxisreife 35%, DS 20%, DACH 25%, UX 10%, Preis 10%) ─────
+// Muss mit src/lib/lexlab-score.ts synchron bleiben!
 function lexlabScore(p, d, dach, ux, pr) {
   const scores = [
-    { v: p,    w: 30 },
-    { v: d,    w: 25 },
-    { v: dach, w: 25 },
-    { v: ux,   w: 10 },
-    { v: pr,   w: 10 },
+    { v: p,    w: 35 },  // Praxisreife
+    { v: d,    w: 20 },  // Datenschutz
+    { v: dach, w: 25 },  // DACH-Relevanz
+    { v: ux,   w: 10 },  // UX
+    { v: pr,   w: 10 },  // Preis
   ]
   let total = 0, totalWeight = 0
   for (const { v, w } of scores) {

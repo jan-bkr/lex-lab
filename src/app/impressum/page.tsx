@@ -1,5 +1,12 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Impressum',
+  description: 'Impressum und rechtliche Angaben zu LexLab — Angaben gemäß § 5 DDG.',
+  robots: { index: false, follow: true },
+}
 
 export default function ImpressumPage() {
   return (

@@ -157,6 +157,20 @@ async function processSource(
       continue
     }
 
+    // Quality check: skip summaries that are too short or look like AI refusals
+    if (!summary || summary.length < 60) {
+      console.log(`[pipeline] ${source.name} — skip (summary too short): "${title}"`)
+      result.skipped++
+      continue
+    }
+    const summaryLower = summary.toLowerCase()
+    const refusalPatterns = ['ich kann', 'i cannot', 'as an ai', 'tut mir leid', 'i apologize', 'es tut mir leid']
+    if (refusalPatterns.some(p => summaryLower.startsWith(p))) {
+      console.log(`[pipeline] ${source.name} — skip (summary looks like refusal): "${title}"`)
+      result.skipped++
+      continue
+    }
+
     // Insert
     const publishedAt = pubDate?.toISOString() ?? new Date().toISOString()
     const { error: insertError } = await adminSupabase.from('news_articles').insert({

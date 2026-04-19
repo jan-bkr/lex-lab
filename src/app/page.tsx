@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase, Grid3X3, Newspaper, Mail } from 'lucide-react'
 import { ToolCard } from '@/components/ToolCard'
@@ -11,6 +12,16 @@ import { de } from 'date-fns/locale'
 import { Rechtsgebiet, Tool, Workflow, Prompt, NewsArticle, Event } from '@/types'
 
 export const revalidate = 3600
+
+export const metadata: Metadata = {
+  title: { absolute: 'LexLab — KI-Tools für Juristen' },
+  description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
+  alternates: { canonical: 'https://www.lex-lab.de' },
+  openGraph: {
+    title: 'LexLab — KI-Tools für Juristen',
+    description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt — kuratiert und bewertet für Kanzleien, Steuerberater und Inhouse-Teams.',
+  },
+}
 
 // ─── DB row → domain type mappers ─────────────────────────────────────────────
 
@@ -385,7 +396,7 @@ export default async function HomePage() {
 
       {/* NEWSLETTER CTA */}
       <section className="bg-white border border-gray-100 rounded-2xl p-8 mb-16 text-center">
-        <h2 className="font-display font-bold text-2xl text-gray-900 mb-2 flex items-center justify-center gap-2"><Mail className="w-5 h-5 text-gray-400" /> Wöchentlich die besten KI-Tools für Juristen</h2>
+        <h2 className="font-display font-bold text-2xl text-gray-900 mb-2 flex items-center justify-center gap-2"><Mail className="w-5 h-5 text-gray-400" /> KI-Tools, Workflows und News für Juristen</h2>
         <p className="text-gray-500 text-sm mb-6">Kein Spam. Jederzeit abmeldbar. Kostenlos.</p>
         <NewsletterForm />
         <p className="text-xs text-gray-400 mt-3">

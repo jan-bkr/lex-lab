@@ -13,8 +13,9 @@ import { NewsletterForm } from '@/components/NewsletterForm'
 export const revalidate = 86400
 
 export const metadata: Metadata = {
-  title: 'State of Legal AI Germany 2026 — LexLab Research',
+  title: 'State of Legal AI Germany 2026',
   description: 'Strukturierte Marktanalyse: KI-Tools im deutschen Rechts- und Steuermarkt. Marktsegmente, Red Flags, Shortlists und Auswahlframework für Kanzleien, Steuerberater und Inhouse-Teams.',
+  alternates: { canonical: 'https://www.lex-lab.de/state-of-legal-ai' },
   openGraph: {
     title: 'State of Legal AI Germany 2026 — LexLab Research',
     description: 'Marktanalyse für KI-Tools im deutschen Rechts- und Steuermarkt — Marktsegmente, Red Flags, Auswahlframework.',

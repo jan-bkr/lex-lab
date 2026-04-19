@@ -4,7 +4,12 @@ import { Mail, Zap, BookOpen, Newspaper } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Newsletter',
-  description: 'Wöchentlich die besten KI-Tools, Workflows und News für den deutschen Rechtsmarkt. Kostenlos, kein Spam.',
+  description: 'Die besten KI-Tools, Workflows und News für den deutschen Rechtsmarkt — kuratiert von LexLab. Kostenlos, kein Spam.',
+  alternates: { canonical: 'https://www.lex-lab.de/newsletter' },
+  openGraph: {
+    title: 'LexLab Newsletter',
+    description: 'KI-Tools, Workflows und News für den deutschen Rechtsmarkt — kuratiert von LexLab.',
+  },
 }
 
 export default function NewsletterPage() {
@@ -15,7 +20,7 @@ export default function NewsletterPage() {
           <Mail className="w-7 h-7 text-blue-600" />
         </div>
         <h1 className="font-display text-3xl sm:text-4xl text-gray-900 mb-4 leading-tight">
-          KI-News für Juristen.<br />Wöchentlich kuratiert.
+          KI-News für Juristen.<br />Kuratiert für den Rechtsmarkt.
         </h1>
         <p className="text-gray-500 text-base leading-relaxed max-w-md mx-auto">
           Kein Spam. Keine Werbung. Nur die relevantesten Tools, Workflows und

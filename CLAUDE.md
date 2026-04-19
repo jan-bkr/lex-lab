@@ -86,18 +86,19 @@ src/
 │   ├── prompts/                    # Prompt-Bibliothek + Builder
 │   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → PromptsContent
 │   │   ├── PromptsContent.tsx      # Client Component — Filter + Modal (initialPrompts prop)
-│   │   └── builder/                # /prompts/builder — interaktiver Prompt-Generator
+│   │   └── builder/                # /prompts/builder — Server page.tsx + BuilderClient.tsx (Client)
 │   ├── news/                       # News-Feed
 │   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → NewsContent
 │   │   └── NewsContent.tsx         # Client Component — Kategorie-Filter (initialArticles prop)
-│   ├── workflows/                  # Workflow-Guides (DB, Fehler-/Leer-State)
+│   ├── workflows/                  # Workflow-Guides — Server page.tsx + WorkflowsClient.tsx (Client)
 │   ├── newsletter/                 # Anmeldung + /abgemeldet-Bestätigung
-│   ├── events/                     # Rechtstermine (DB, Fehler-/Leer-State)
+│   ├── events/                     # Rechtstermine — Server page.tsx + EventsClient.tsx (Client)
 │   ├── beitraege/                  # Beiträge (Placeholder, kein Inhalt)
 │   ├── state-of-legal-ai/          # Research Hub: "State of Legal AI Germany 2026" (pure Server Component)
 │   ├── sitemap.ts                  # Dynamische Sitemap (Tools, News, Prompts, Workflows)
 │   ├── robots.ts                   # /robots.txt — disallow /admin
-│   ├── impressum/ datenschutz/ kontakt/ beitraege/
+│   ├── kontakt/                    # Kontaktformular — Server page.tsx + KontaktClient.tsx (Client)
+│   ├── impressum/ datenschutz/ beitraege/
 │   └── globals.css
 ├── components/                     # Shared UI-Komponenten
 │   ├── Navbar.tsx · Footer.tsx
@@ -350,6 +351,21 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 ## Erledigte Meilensteine
 
+- [x] **Reife- und Trust-Sprint** (2026-04-19) — SEO-Wahrheit, Metadata-Vollständigkeit, Trust-Fixes, Pipeline-Qualität, Score-Konsistenz:
+  - **Root-Canonical-Bug behoben** (`layout.tsx`): `alternates.canonical` aus Root-Layout entfernt — war kritischer SEO-Defekt (alle Seiten erbten Homepage-Canonical). Jede Page definiert nun ihre eigene canonical.
+  - **Homepage explicit `metadata`**: `title: { absolute: 'LexLab — KI-Tools für Juristen' }` + canonical `https://www.lex-lab.de`.
+  - **Server-Wrapper-Pattern** für alle Client-Component-Pages: `workflows/page.tsx`, `events/page.tsx`, `kontakt/page.tsx`, `prompts/builder/page.tsx` — jeweils Server-Wrapper mit metadata-Export + `*Client.tsx` für Client-Logik.
+  - **Metadata für alle Seiten**: Impressum + Datenschutz erhalten metadata mit `robots: noindex`. Events, Kontakt, Workflows, Prompt Builder haben jetzt eigene titles + canonicals + OG-tags.
+  - **Double-Branding behoben**: Tool Finder (`Tool Finder | LexLab`), State of Legal AI (Titel ohne `— LexLab Research`), Radar (`LexLab Radar | LexLab`).
+  - **Sitemap**: `/beitraege` (0.6) + `/kontakt` (0.4) ergänzt.
+  - **Radar**: OG-title „Marktintelligenz" → „Marktbeobachtung" (weniger Overstatement).
+  - **Newsletter-Overclaim**: „Wöchentlich kuratiert" → „Kuratiert für den Rechtsmarkt" (Seite + Homepage-CTA).
+  - **Pipeline-Qualitätsprüfung**: Summaries <60 Zeichen oder mit AI-Refusal-Patterns werden übersprungen (nicht in DB geschrieben).
+  - **`CONTACT_EMAIL` env var**: `/api/kontakt/route.ts` liest Empfänger-E-Mail aus Env-Var statt hartcodiert. Fallback: `janiklas.dropbox@web.de`.
+  - **Score-Gewichte synchronisiert**: `scripts/bulk-import-tools.mjs` verwendete 30/25 — auf 35/20 korrigiert (sync mit `src/lib/lexlab-score.ts`). **Nachschritt: `node scripts/bulk-import-tools.mjs` ausführen.**
+  - **Workflows/[slug] OG-Format**: `| LexLab` → `— LexLab` (konsistent mit anderen dynamischen Seiten).
+  - Build clean: 40/40 Seiten, lint clean, tsc clean.
+
 - [x] **Premium-Qualitäts- und SEO-Sprint** (2026-04-17) — Funktionale Fixes, Metadata-Härtung, Structured Data, Prompt Builder, SEO-Hub-Seiten:
   - **Event-Datumslogik** (`events/page.tsx`): ISO-Datumsstring-Vergleich `e.date >= todayStr` (todayStr = `new Date().toISOString().slice(0,10)`) statt Timestamp-Vergleich — kein UTC/CEST-Timezone-Fehler mehr. Homepage-Events-Query: `.gte('date', YYYY-MM-DD)`.
   - **Prompt Builder — Sachverhalt-Integration** (`api/prompts/generate/route.ts`): System-Prompt integriert Sachverhalt direkt, kein `[SACHVERHALT EINFÜGEN]`-Platzhalter. `max_tokens` 2000→2500. Fine Print: "pro IP-Adresse und Tag (24-Stunden-Fenster, kein festes Mitternachts-Reset)".
@@ -453,6 +469,9 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **`newsletter_subscribers` anon SELECT**: nach Migration `000004` ist kein Read-Access für anon/authenticated mehr möglich. Alle Zugriffe ausschließlich via `adminSupabase` (service role bypasses RLS).
 - Security Headers: `next.config.ts` setzt `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security` für alle Routen
 - `ADMIN_EMAIL` env var: in Vercel gesetzt und aktiv — `proxy.ts`, `admin/layout.tsx` und `requireAdminSession()` erzwingen alle drei dieselbe Prüfung ✅
+- `CONTACT_EMAIL` env var: optionaler Override für das Kontaktformular-Empfänger-Ziel in `/api/kontakt/route.ts`. Fallback: `janiklas.dropbox@web.de`. In Vercel setzen um E-Mail-Ziel zu ändern ohne Code-Deploy.
+- **Server-Wrapper-Muster für Client-Pages**: Pages, die `'use client'` brauchen (Events, Workflows, Kontakt, Prompts Builder), exportieren keine Metadata-Tags direkt. Stattdessen: Server-Wrapper `page.tsx` (ohne `'use client'`) exportiert `metadata` und rendert `<NameClient />`. Client-Logik liegt in `NameClient.tsx`. Dieses Muster immer einhalten bei neuen Client-Pages.
+- **Root-Layout-Canonical ist absichtlich entfernt** — das `alternates.canonical` im Root-Layout `layout.tsx` war ein SEO-Bug (alle Seiten erbten den Homepage-Canonical). Jede Page definiert ihren eigenen Canonical. Nie wieder einen Canonical ins Root-Layout schreiben.
 - **Öffentliche Supabase-Selects**: niemals `select('*')` in öffentlichen Queries verwenden — gilt für alle Tabellen, alle Client-Komponenten und die Homepage. Explizite Spaltenliste ist Pflicht. Für `tools` zusätzlich: `submitted_by` ist via column-level REVOKE für `anon` gesperrt (nur noch INSERT/UPDATE/REFERENCES).
 - **`ToolDetailClient.tsx`** lädt das Tool per `.eq('slug', slug).maybeSingle()` (kein fetch-all mehr). Ähnliche Tools kommen aus einer separaten `.overlaps('rechtsgebiet', ...)` Abfrage mit minimalen Spalten. `SimilarToolsList` akzeptiert `Pick<Tool, 'id' | 'name' | 'slug' | 'rechtsgebiet'>[]`.
 - **`vote/route.ts`**: prüft `status = 'approved'` via DB-Lookup vor dem `toggle_tool_vote`-RPC — Votes auf nicht-öffentliche Tools werden mit 404 abgewiesen.

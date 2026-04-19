@@ -1,5 +1,12 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Datenschutzerklärung',
+  description: 'Datenschutzerklärung von LexLab — Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO.',
+  robots: { index: false, follow: true },
+}
 
 export default function DatenschutzPage() {
   return (

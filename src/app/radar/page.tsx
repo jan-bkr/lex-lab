@@ -8,8 +8,13 @@ import { NewsletterForm } from '@/components/NewsletterForm'
 export const revalidate = 86400
 
 export const metadata: Metadata = {
-  title: 'LexLab Radar — Marktintelligenz für Legal AI',
-  description: 'Neue Tools, Preisänderungen, Features und regulatorische Entwicklungen für KI im deutschen Rechts- und Steuermarkt.',
+  title: 'LexLab Radar',
+  description: 'Neue Tools, Preisänderungen und regulatorische Entwicklungen im deutschen Legal-AI-Markt — kuratiert und kommentiert von LexLab.',
+  alternates: { canonical: 'https://www.lex-lab.de/radar' },
+  openGraph: {
+    title: 'LexLab Radar — Marktbeobachtung für Legal AI',
+    description: 'Neue Tools, Preisänderungen und regulatorische Entwicklungen im deutschen Legal-AI-Markt — kuratiert und kommentiert von LexLab.',
+  },
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────

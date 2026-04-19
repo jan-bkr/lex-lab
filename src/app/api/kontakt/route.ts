@@ -74,6 +74,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const resend = new Resend(apiKey)
+  const contactEmail = process.env.CONTACT_EMAIL ?? 'janiklas.dropbox@web.de'
   const safeName = escapeHtml(name)
   const safeEmail = escapeHtml(email)
   const safeSubject = escapeHtml(subject)
@@ -83,7 +84,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const { data, error } = await resend.emails.send({
       from: 'lex-lab.de <kontakt@lex-lab.de>',
-      to: 'janiklas.dropbox@web.de',
+      to: contactEmail,
       replyTo: email,
       subject: `[lex-lab.de Kontakt] ${subject} — ${name}`,
       html: `

@@ -42,9 +42,6 @@ export const metadata: Metadata = {
     title: 'LexLab — KI-Tools für Juristen',
     description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt.',
   },
-  alternates: {
-    canonical: 'https://www.lex-lab.de',
-  },
   verification: {
     google: 'BZAgD_Ti6XbDu2S8ZW_H3nWMJUWGBK2xS3yDOES3PmU',
   },
