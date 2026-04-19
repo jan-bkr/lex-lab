@@ -7,6 +7,17 @@ export interface AdminLoginState {
   error: string
 }
 
+function normalizeEmail(email: string | null | undefined): string {
+  return (email ?? '').trim().toLowerCase()
+}
+
+function isAllowedAdminEmail(email: string | null | undefined): boolean {
+  const allowedEmail = normalizeEmail(process.env.ADMIN_EMAIL)
+  if (!allowedEmail) return true
+
+  return normalizeEmail(email) === allowedEmail
+}
+
 function getSafeNextPath(next: FormDataEntryValue | null): string {
   const value = typeof next === 'string' ? next : '/admin'
 
@@ -21,7 +32,7 @@ export async function loginAdmin(
   _prevState: AdminLoginState,
   formData: FormData
 ): Promise<AdminLoginState> {
-  const email = String(formData.get('email') ?? '').trim()
+  const email = normalizeEmail(String(formData.get('email') ?? ''))
   const password = String(formData.get('password') ?? '')
   const nextPath = getSafeNextPath(formData.get('next'))
 
@@ -30,18 +41,16 @@ export async function loginAdmin(
   }
 
   const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
     return { error: 'Ungültige E-Mail-Adresse oder Passwort.' }
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const allowedEmail = process.env.ADMIN_EMAIL
-  if (!user || (allowedEmail && user.email !== allowedEmail)) {
+  if (!user || !isAllowedAdminEmail(user.email)) {
     await supabase.auth.signOut()
     return { error: 'Dieses Konto hat keinen Admin-Zugriff.' }
   }
