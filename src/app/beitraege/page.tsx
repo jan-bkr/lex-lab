@@ -121,6 +121,47 @@ export default function BeitraegePage() {
         </p>
       </div>
 
+      {/* ─── LexLab-Prinzipien ─── */}
+      <section id="prinzipien" className="pt-12 pb-12 border-t border-gray-100">
+        <div className="mb-7">
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+            Wie LexLab bewertet
+          </span>
+        </div>
+        <div className="space-y-7">
+          {[
+            {
+              title: 'DACH-Fokus',
+              body: 'Alle Bewertungen beziehen sich auf den deutschen, österreichischen und schweizerischen Rechts- und Steuermarkt. International prominente Tools, die für den DACH-Kanzleialltag nicht praxistauglich sind, werden entsprechend eingeordnet.',
+            },
+            {
+              title: 'Praxis vor Technologie',
+              body: 'Jedes Tool wird aus dem Kanzleialltag heraus bewertet — nicht aus der Sicht eines Technologieredakteurs. Was zählt: Funktioniert es in der Praxis? Für wen? In welchem konkreten Anwendungsfall?',
+            },
+            {
+              title: 'Datenschutz als Bewertungskriterium',
+              body: 'DSGVO-Konformität, EU-Serverstandorte und Datenverarbeitungsverträge sind eigenständige Faktoren im LexLab Score — keine Fußnoten.',
+            },
+            {
+              title: 'Keine bezahlten Listings',
+              body: 'LexLab akzeptiert keine Sponsored Posts, bezahlten Platzierungen oder Affiliate-Provisionen. Alle Einschätzungen basieren auf eigener Evaluation und sind unabhängig.',
+            },
+            {
+              title: 'Orientierung statt Vollständigkeit',
+              body: 'Kuration bedeutet auch: Nein sagen. LexLab zeigt nicht alle KI-Tools, sondern die relevantesten — gefiltert nach Praxisreife, DACH-Relevanz und Datenschutzstandard.',
+            },
+          ].map(({ title, body }) => (
+            <div key={title} className="flex gap-5">
+              <div className="w-px flex-shrink-0 bg-gray-150 self-stretch" style={{ backgroundColor: '#e5e7eb' }} />
+              <div>
+                <p className="text-sm font-semibold text-gray-900 mb-1.5">{title}</p>
+                <p className="text-sm text-gray-500 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ─── Founder / Editor Block ─── */}
       <section className="pt-12 border-t border-gray-100">
         <div className="mb-8">

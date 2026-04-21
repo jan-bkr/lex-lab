@@ -94,6 +94,18 @@ export default function CollectionsPage() {
         </div>
       </section>
 
+      {/* ─── Methodik-Note ─── */}
+      <section className="py-5">
+        <div className="bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 max-w-2xl">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5">
+            Wie diese Listen entstehen
+          </p>
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Jede Shortlist filtert das kuratierte Verzeichnis nach festgelegten Kriterien — Rechtsgebiet, Mindest-Score und Datenschutzanforderungen. Kein manuelles Ranking, keine Sympathieentscheidungen. Die Filterbasis ist transparent und reproduzierbar.
+          </p>
+        </div>
+      </section>
+
       {/* ─── Collections grid ─── */}
       <section className="py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -141,6 +153,29 @@ export default function CollectionsPage() {
               </Link>
             )
           })}
+        </div>
+      </section>
+
+      {/* ─── Nach Rechtsgebiet ─── */}
+      <section className="py-8 border-t border-gray-100">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">
+          Nach Rechtsgebiet entdecken
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: 'Steuerrecht', href: '/tools/steuerrecht' },
+            { label: 'M&A', href: '/tools/ma' },
+            { label: 'Gesellschaftsrecht', href: '/tools?rechtsgebiet=Gesellschaftsrecht' },
+            { label: 'Venture Capital', href: '/tools?rechtsgebiet=Venture Capital' },
+          ].map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
+              className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:border-gray-300 rounded-lg px-3 py-1.5 transition-colors"
+            >
+              {label} <ArrowRight className="w-3 h-3 text-gray-400" />
+            </Link>
+          ))}
         </div>
       </section>
 

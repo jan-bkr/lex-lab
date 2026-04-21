@@ -51,7 +51,7 @@ function ToolsInner({ initialTools }: { initialTools: Tool[] }) {
         <div>
           <h1 className="font-display text-3xl text-gray-900">Alle Tools</h1>
           <p className="text-gray-500 mt-1 text-sm leading-relaxed max-w-xl">
-            KI-Tools für den deutschen Rechtsmarkt — kuratiert und bewertet von der Community
+            KI-Tools für den deutschen Rechtsmarkt — bewertet nach Praxisreife, DACH-Relevanz und Datenschutz.
           </p>
         </div>
         <Link

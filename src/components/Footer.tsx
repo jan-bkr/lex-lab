@@ -49,6 +49,12 @@ export default function Footer() {
                   State of Legal AI 2026
                   <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
                 </Link>
+                <Link href="/beitraege" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Beiträge &amp; Einblicke
+                </Link>
+                <Link href="/beitraege#prinzipien" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Wie LexLab bewertet
+                </Link>
               </div>
             </div>
             <div>

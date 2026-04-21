@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, Activity, TrendingUp, AlertTriangle, Zap, Package, BarChart2, Mail } from 'lucide-react'
+import { ArrowRight, Activity, TrendingUp, AlertTriangle, Zap, Package, BarChart2, Mail, Layers } from 'lucide-react'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { NewsletterForm } from '@/components/NewsletterForm'
@@ -270,6 +270,27 @@ export default function RadarPage() {
         </div>
       </section>
 
+      {/* ─── Methodik-Note ─── */}
+      <div className="pt-6 pb-2 max-w-3xl">
+        <div className="bg-gray-50 border border-gray-100 rounded-lg px-4 py-3">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+            Wie Radar-Signale ausgewählt werden
+          </p>
+          <div className="flex flex-wrap gap-x-6 gap-y-1.5">
+            {[
+              'DACH-Praxisrelevanz',
+              'Konkrete Handlungsrelevanz für Kanzleien und Steuerberater',
+              'Einordnung statt Nachricht — jedes Signal mit LexLab-Einschätzung',
+            ].map(item => (
+              <span key={item} className="text-xs text-gray-500 flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-gray-300 flex-shrink-0" />
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="py-10 max-w-3xl">
 
         {/* ─── Neue Signale ─── */}
@@ -306,7 +327,7 @@ export default function RadarPage() {
       </div>
 
       {/* ─── Bottom CTAs ─── */}
-      <div className="border-t border-gray-100 pt-10 pb-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="border-t border-gray-100 pt-10 pb-16 grid grid-cols-1 sm:grid-cols-3 gap-4">
 
         {/* State of Legal AI */}
         <Link
@@ -324,6 +345,26 @@ export default function RadarPage() {
           </p>
           <div className="inline-flex items-center gap-1 text-sm text-blue-400 group-hover:text-blue-300 transition-colors mt-auto">
             Report lesen <ArrowRight className="w-3.5 h-3.5" />
+          </div>
+        </Link>
+
+        {/* Kuratierte Listen */}
+        <Link
+          href="/collections"
+          className="group flex flex-col gap-3 bg-white border border-gray-100 hover:border-gray-200 hover:shadow-sm rounded-xl p-5 transition-all"
+        >
+          <div className="flex items-center gap-2">
+            <Layers className="w-3.5 h-3.5 text-gray-400" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Tool-Shortlists</span>
+          </div>
+          <p className="font-display font-semibold text-gray-900 text-base leading-snug">
+            Kuratierte Listen nach Anforderung
+          </p>
+          <p className="text-sm text-gray-500 leading-relaxed">
+            M&A Due Diligence, Datenschutzstark, Steuerrecht und mehr — gefiltert nach Score und Praxisreife.
+          </p>
+          <div className="inline-flex items-center gap-1 text-sm text-gray-600 group-hover:text-gray-900 transition-colors mt-auto font-medium">
+            Listen ansehen <ArrowRight className="w-3.5 h-3.5" />
           </div>
         </Link>
 
