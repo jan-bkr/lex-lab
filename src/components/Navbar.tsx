@@ -14,12 +14,12 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { href: '/tools', label: 'Tools' },
-  { href: '/workflows', label: 'Workflows', soon: true },
+  { href: '/tools/compare', label: 'Vergleiche', isNew: true },
   { href: '/prompts', label: 'Prompts' },
   { href: '/prompts/builder', label: '✦ Builder', highlight: true },
-  { href: '/beitraege', label: 'Beiträge', soon: true },
   { href: '/news', label: 'News' },
-  { href: '/radar', label: 'Radar', isNew: true },
+  { href: '/radar', label: 'Radar' },
+  { href: '/research', label: 'Research' },
 ]
 
 export default function Navbar() {

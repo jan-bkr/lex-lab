@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Briefcase, Building2, TrendingUp, ArrowLeft, Loader2, Copy, Check, Zap, Lock } from 'lucide-react'
 import Link from 'next/link'
 import { NewsletterForm } from '@/components/NewsletterForm'
@@ -213,6 +213,20 @@ export default function BuilderPage() {
     setGeneratedPrompt('')
     setError('')
   }
+
+  // Suggest relevant collection based on selected Rechtsgebiet
+  const suggestedCollection = useMemo(() => {
+    if (form.rechtsgebiet.includes('M&A') || form.rechtsgebiet.includes('Gesellschaftsrecht')) {
+      return { href: '/collections/ma-due-diligence', label: 'M&A Shortlist' }
+    }
+    if (form.rechtsgebiet.includes('Steuerrecht')) {
+      return { href: '/collections/steuerrecht-essentials', label: 'Steuerrecht-Tools' }
+    }
+    if (form.rechtsgebiet.includes('Venture Capital')) {
+      return { href: '/collections/inhouse-stack', label: 'Inhouse-Stack' }
+    }
+    return { href: '/collections', label: 'Tool-Shortlists' }
+  }, [form.rechtsgebiet])
 
   // ── Render ──
 
@@ -507,8 +521,12 @@ export default function BuilderPage() {
                       Prompt-Bibliothek
                     </Link>
                     <span className="text-gray-200">·</span>
-                    <Link href="/tools" className="hover:text-[#111827] transition-colors">
-                      KI-Tools entdecken
+                    <Link href={suggestedCollection.href} className="hover:text-[#111827] transition-colors">
+                      {suggestedCollection.label}
+                    </Link>
+                    <span className="text-gray-200">·</span>
+                    <Link href="/method" className="hover:text-[#111827] transition-colors">
+                      Method
                     </Link>
                   </div>
                 </div>

@@ -32,28 +32,26 @@ export default function Footer() {
               <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Entdecken</p>
               <div className="flex flex-col gap-2">
                 <Link href="/tools/finder" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Tool Finder</Link>
-                <Link href="/radar" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  Radar
+                <Link href="/tools/compare" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Vergleiche
                   <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
                 </Link>
-                <Link href="/collections" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  Kuratierte Listen
-                  <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
-                </Link>
+                <Link href="/collections" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Kuratierte Listen</Link>
+                <Link href="/radar" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Radar</Link>
               </div>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Research</p>
               <div className="flex flex-col gap-2">
-                <Link href="/state-of-legal-ai" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                <Link href="/research" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Research Hub</Link>
+                <Link href="/state-of-legal-ai" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   State of Legal AI 2026
-                  <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
                 </Link>
                 <Link href="/beitraege" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Beiträge &amp; Einblicke
                 </Link>
-                <Link href="/beitraege#prinzipien" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  Wie LexLab bewertet
+                <Link href="/method" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  LexLab Method
                 </Link>
               </div>
             </div>

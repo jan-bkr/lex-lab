@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowRight, ArrowLeft, Layers } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Layers, Check, X } from 'lucide-react'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { COLLECTIONS, getCollection, CollectionDef } from '../config'
 
@@ -28,6 +28,7 @@ export async function generateMetadata(
       title: `${collection.title} — LexLab`,
       description: collection.description,
     },
+    alternates: { canonical: `https://www.lex-lab.de/collections/${slug}` },
   }
 }
 
@@ -87,7 +88,7 @@ async function fetchCollectionTools(filter: CollectionDef['filter']): Promise<To
   return (data ?? []) as ToolRow[]
 }
 
-// ─── Theme config (colors for the collection header) ─────────────────────────
+// ─── Theme config ─────────────────────────────────────────────────────────────
 
 const headerTheme: Record<CollectionDef['theme'], { bg: string; border: string; eyebrowColor: string }> = {
   purple: { bg: 'bg-purple-50',  border: 'border-purple-100', eyebrowColor: 'text-purple-600' },
@@ -124,7 +125,7 @@ export default async function CollectionDetailPage(
       </div>
 
       {/* ─── Collection header ─── */}
-      <section className={`mt-5 mb-10 rounded-2xl border p-6 sm:p-8 ${theme.bg} ${theme.border}`}>
+      <section className={`mt-5 mb-8 rounded-2xl border p-6 sm:p-8 ${theme.bg} ${theme.border}`}>
         <div className="inline-flex items-center gap-2 mb-3">
           <Layers className="w-3.5 h-3.5 text-gray-400" />
           <span className={`text-xs font-semibold uppercase tracking-widest ${theme.eyebrowColor}`}>
@@ -144,6 +145,32 @@ export default async function CollectionDetailPage(
           </div>
           <span className="text-gray-200 hidden sm:block">·</span>
           <span className="text-xs text-gray-400">Kuratiert von LexLab · {tools.length} Tool{tools.length !== 1 ? 's' : ''}</span>
+        </div>
+      </section>
+
+      {/* ─── Context + For whom ─── */}
+      <section className="mb-8 max-w-3xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Context */}
+          <div className="bg-white border border-gray-100 rounded-xl px-5 py-4">
+            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Kontext</p>
+            <p className="text-sm text-gray-600 leading-relaxed">{collection.context}</p>
+          </div>
+          {/* For whom */}
+          <div className="bg-white border border-gray-100 rounded-xl px-5 py-4">
+            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Für wen</p>
+            <p className="text-sm text-gray-600 leading-relaxed">{collection.forWhom}</p>
+            <div className="mt-4 space-y-2">
+              <div className="flex items-start gap-2">
+                <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-gray-500 leading-relaxed">{collection.whenUseful}</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <X className="w-3.5 h-3.5 text-gray-300 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-gray-400 leading-relaxed">{collection.whenNot}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -229,7 +256,12 @@ export default async function CollectionDetailPage(
       <section className="mb-8 max-w-3xl">
         <div className="bg-gray-50 border border-gray-100 rounded-xl px-5 py-4">
           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Methodik</p>
-          <p className="text-sm text-gray-500 leading-relaxed">{collection.methodology}</p>
+          <p className="text-sm text-gray-500 leading-relaxed">
+            {collection.methodology}{' '}
+            <Link href="/method#score" className="text-gray-400 hover:text-gray-600 underline underline-offset-2 transition-colors">
+              Wie der LexLab Score berechnet wird →
+            </Link>
+          </p>
         </div>
       </section>
 
