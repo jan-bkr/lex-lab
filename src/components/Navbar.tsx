@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
+import LexLabLogo from '@/components/LexLabLogo'
 
 interface NavLink {
   href: string
@@ -33,15 +34,9 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="28" height="28" rx="7" fill="#111827"/>
-              <text x="5" y="13" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="white" letterSpacing="-0.5">lex</text>
-              <text x="5" y="23" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#2563EB" letterSpacing="-0.5">lab</text>
-            </svg>
-            <span className="font-display font-bold text-[15px] tracking-tight text-gray-900">
-              lex-lab<span className="font-normal text-gray-400">.de</span>
-            </span>
+          <Link href="/" className="flex items-center gap-1 group">
+            <LexLabLogo size="sm" />
+            <span className="text-[13px] text-gray-400 font-medium" style={{ fontFamily: 'var(--font-space-grotesk), system-ui, sans-serif' }}>.de</span>
           </Link>
 
           {/* Desktop nav */}

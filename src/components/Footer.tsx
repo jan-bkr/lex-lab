@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import LexLabLogo from '@/components/LexLabLogo'
 
 export default function Footer() {
   const pathname = usePathname()
@@ -11,20 +12,14 @@ export default function Footer() {
 
         {/* Top row: Logo + Description + Links */}
         <div className="flex flex-col md:flex-row justify-between gap-8 pb-10 border-b border-gray-100">
-          <div className="flex items-start gap-4 max-w-md">
-            <svg width="44" height="44" viewBox="0 0 28 28" fill="none" className="flex-shrink-0">
-              <rect width="28" height="28" rx="7" fill="#111827"/>
-              <text x="5" y="13" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="white" letterSpacing="-0.5">lex</text>
-              <text x="5" y="23" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#2563EB" letterSpacing="-0.5">lab</text>
-            </svg>
-            <div>
-              <span className="font-display font-bold text-xl text-gray-900">
-                lex-lab<span className="font-normal text-gray-400">.de</span>
-              </span>
-              <p className="text-sm text-gray-500 leading-relaxed mt-1">
-                Die kuratierte Plattform für KI-Tools, Workflows und Prompts im deutschen Rechts- und Steuermarkt.
-              </p>
+          <div className="max-w-md">
+            <div className="flex items-center gap-1 mb-2">
+              <LexLabLogo size="lg" />
+              <span className="text-[14px] text-gray-400 font-medium" style={{ fontFamily: 'var(--font-space-grotesk), system-ui, sans-serif' }}>.de</span>
             </div>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Die kuratierte Plattform für KI-Tools, Workflows und Prompts im deutschen Rechts- und Steuermarkt.
+            </p>
           </div>
 
           <div className="flex gap-10 sm:gap-12 flex-wrap">

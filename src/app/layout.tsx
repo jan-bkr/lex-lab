@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { DM_Serif_Display, DM_Sans } from 'next/font/google'
+import { DM_Serif_Display, DM_Sans, Spectral, Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -17,6 +17,19 @@ const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-dm-sans',
   weight: ['300', '400', '500', '600'],
+})
+
+const spectral = Spectral({
+  subsets: ['latin'],
+  variable: '--font-spectral',
+  weight: ['300', '400', '500'],
+  style: ['normal', 'italic'],
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  weight: ['400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -58,7 +71,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de" className={`${dmSerifDisplay.variable} ${dmSans.variable}`}>
+    <html lang="de" className={`${dmSerifDisplay.variable} ${dmSans.variable} ${spectral.variable} ${spaceGrotesk.variable}`}>
       <body className="bg-[#F7F7F5] text-[#111827] antialiased">
         <Navbar />
         <main>{children}</main>
