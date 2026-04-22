@@ -118,6 +118,12 @@ const MODULES = [
     title: 'Prompt Builder',
     desc: 'Professionelle juristische Prompts mit integrierter JURIST_PERSONA — für Gutachten, Vertragsanalysen, Due Diligence und mehr.',
   },
+  {
+    href: '/setups',
+    symbol: '⬡',
+    title: 'Setups',
+    desc: 'Fünf kuratierte Real-World-Arbeitsarchitekturen: Claude Team, ergänzende Tools, Connector-Logik und klare menschliche Prüfpflichten — für Steuerrecht, M&A, Inhouse und mehr.',
+  },
 ]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
