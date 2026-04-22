@@ -118,6 +118,12 @@ const MODULES = [
     title: 'Prompt Builder',
     desc: 'Professionelle juristische Prompts mit integrierter JURIST_PERSONA — für Gutachten, Vertragsanalysen, Due Diligence und mehr.',
   },
+  {
+    href: '/setups',
+    symbol: '⊞',
+    title: 'Working Setups',
+    desc: 'Kuratierte Arbeitsarchitekturen: wie Teams Modelle, Tools, Quellen und Review-Layer sinnvoll kombinieren — mit klaren Grenzen und Entscheidungslogik.',
+  },
 ]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────

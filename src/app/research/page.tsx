@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, TrendingUp, BarChart2, Newspaper, BookOpen } from 'lucide-react'
+import { ArrowRight, TrendingUp, BarChart2, Newspaper, BookOpen, Layers } from 'lucide-react'
 
 export const revalidate = 86400
 
@@ -51,6 +51,15 @@ const MODULES = [
     title: 'Beiträge & Einblicke',
     desc: 'Einordnungen, Perspektiven und Hintergrundberichte vom LexLab-Team — über KI im Rechtsmarkt, Plattform-Entwicklung und Methodologie.',
     meta: 'Von Jan Becker, Rechtsanwalt',
+    featured: false,
+  },
+  {
+    href: '/setups',
+    badge: 'Neu',
+    icon: Layers,
+    title: 'Working Setups',
+    desc: 'Kuratierte Arbeitsarchitekturen: wie professionelle Teams Modelle, Tools, Quellen und Review-Layer in der Praxis sinnvoll kombinieren.',
+    meta: 'Praxisnahe Setup-Blueprints',
     featured: false,
   },
 ]

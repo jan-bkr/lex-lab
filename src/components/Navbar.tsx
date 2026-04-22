@@ -19,6 +19,7 @@ const navLinks: NavLink[] = [
   { href: '/prompts', label: 'Prompts' },
   { href: '/prompts/builder', label: '✦ Builder', highlight: true },
   { href: '/workflows', label: 'Workflows' },
+  { href: '/setups', label: 'Setups', isNew: true },
   { href: '/news', label: 'News' },
   { href: '/radar', label: 'Radar' },
   { href: '/research', label: 'Research' },

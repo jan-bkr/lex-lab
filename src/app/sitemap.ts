@@ -22,6 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/collections/inhouse-stack`,          lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/collections/einsteiger-stack`,       lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/state-of-legal-ai`,  lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/setups`,             lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/workflows`,          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/prompts`,            lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/prompts/builder`,    lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
