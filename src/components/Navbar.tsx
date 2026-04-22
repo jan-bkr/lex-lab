@@ -23,6 +23,10 @@ const navLinks: NavLink[] = [
   { href: '/research', label: 'Research' },
 ]
 
+// Spotlight glow from the logo side — matches design file "spotlight" variant
+const HEADER_BG = 'radial-gradient(ellipse 60% 120% at 8% 50%, rgba(59,123,255,0.20) 0%, rgba(10,14,20,0) 60%), linear-gradient(180deg, #0E1422 0%, #0A0E14 100%)'
+const BORDER_B = '1px solid rgba(59,123,255,0.22)'
+
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
@@ -30,13 +34,16 @@ export default function Navbar() {
   if (pathname?.startsWith('/admin')) return null
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+    <header
+      className="sticky top-0 z-50 backdrop-blur-md"
+      style={{ background: HEADER_BG, borderBottom: BORDER_B }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
+
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1 group">
-            <LexLabLogo size="sm" />
-            <span className="text-[13px] text-gray-400 font-medium" style={{ fontFamily: 'var(--font-space-grotesk), system-ui, sans-serif' }}>.de</span>
+          <Link href="/" className="flex items-center group">
+            <LexLabLogo size="sm" dark animate />
           </Link>
 
           {/* Desktop nav */}
@@ -47,18 +54,21 @@ export default function Navbar() {
                 href={link.href}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-all duration-150 font-medium ${
                   link.highlight
-                    ? 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
-                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'text-blue-400 hover:text-blue-300 hover:bg-white/5'
+                    : 'hover:bg-white/5'
                 }`}
+                style={link.highlight ? undefined : { color: 'rgba(244,241,234,0.55)' }}
+                onMouseEnter={e => { if (!link.highlight) (e.currentTarget as HTMLAnchorElement).style.color = '#F4F1EA' }}
+                onMouseLeave={e => { if (!link.highlight) (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(244,241,234,0.55)' }}
               >
                 {link.label}
                 {link.soon && (
-                  <span className="text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 leading-none">
+                  <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded px-1 py-0.5 leading-none">
                     bald
                   </span>
                 )}
                 {link.isNew && (
-                  <span className="text-[9px] font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded px-1 py-0.5 leading-none">
+                  <span className="text-[9px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/30 rounded px-1 py-0.5 leading-none">
                     neu
                   </span>
                 )}
@@ -70,20 +80,36 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/newsletter"
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium transition-colors"
+              style={{ color: 'rgba(244,241,234,0.5)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#F4F1EA' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(244,241,234,0.5)' }}
             >
               Newsletter
             </Link>
             <Link
               href="/tools/submit"
-              className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3.5 py-1.5 rounded-lg transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-medium px-3.5 py-1.5 rounded-lg transition-all duration-150"
+              style={{
+                color: '#F4F1EA',
+                border: '1px solid rgba(59,123,255,0.45)',
+                background: 'rgba(59,123,255,0.10)',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(59,123,255,0.20)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(59,123,255,0.10)' }}
             >
               Tool einreichen
             </Link>
           </div>
 
           {/* Mobile toggle */}
-          <button onClick={() => setOpen(!open)} className="md:hidden p-2 rounded-lg hover:bg-gray-100">
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden p-2 rounded-lg transition-colors"
+            style={{ color: 'rgba(244,241,234,0.7)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.07)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+          >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
@@ -91,22 +117,26 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 pb-4 pt-2">
+        <div
+          className="md:hidden px-4 pb-4 pt-2"
+          style={{ background: '#0A0E14', borderTop: '1px solid rgba(244,241,234,0.08)' }}
+        >
           {navLinks.map(link => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="inline-flex items-center gap-2 py-2.5 text-sm text-gray-600 hover:text-gray-900 font-medium"
+              className="inline-flex items-center gap-2 py-2.5 text-sm font-medium transition-colors"
+              style={{ color: link.highlight ? '#60A5FA' : 'rgba(244,241,234,0.6)' }}
             >
               {link.label}
               {link.soon && (
-                <span className="text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 leading-none">
+                <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded px-1 py-0.5 leading-none">
                   bald
                 </span>
               )}
               {link.isNew && (
-                <span className="text-[9px] font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded px-1 py-0.5 leading-none">
+                <span className="text-[9px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/30 rounded px-1 py-0.5 leading-none">
                   neu
                 </span>
               )}
@@ -115,7 +145,12 @@ export default function Navbar() {
           <Link
             href="/tools/submit"
             onClick={() => setOpen(false)}
-            className="mt-3 block text-center bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg"
+            className="mt-3 block text-center text-sm font-medium px-4 py-2 rounded-lg transition-all"
+            style={{
+              color: '#F4F1EA',
+              border: '1px solid rgba(59,123,255,0.45)',
+              background: 'rgba(59,123,255,0.10)',
+            }}
           >
             Tool einreichen
           </Link>

@@ -13,9 +13,8 @@ export default function Footer() {
         {/* Top row: Logo + Description + Links */}
         <div className="flex flex-col md:flex-row justify-between gap-8 pb-10 border-b border-gray-100">
           <div className="max-w-md">
-            <div className="flex items-center gap-1 mb-2">
+            <div className="mb-2">
               <LexLabLogo size="lg" />
-              <span className="text-[14px] text-gray-400 font-medium" style={{ fontFamily: 'var(--font-space-grotesk), system-ui, sans-serif' }}>.de</span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed">
               Die kuratierte Plattform für KI-Tools, Workflows und Prompts im deutschen Rechts- und Steuermarkt.

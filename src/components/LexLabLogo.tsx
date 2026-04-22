@@ -1,16 +1,21 @@
 // Logo: > lex|lab_ — chevron + Spectral italic + Space Grotesk bold + blinking cursor
 // Animation runs via @keyframes lexlab-blink defined in globals.css
+// dark=true  → cream "lex" + blue "lab" + blue chevron (for dark navbar)
+// dark=false → ink  "lex" + blue "lab" + blue chevron (for white footer/pages)
 
 const BLUE = '#3B7BFF'
 const INK = '#0A0E14'
+const PAPER = '#F4F1EA'
 
 interface Props {
   size?: 'sm' | 'lg'
+  dark?: boolean
   animate?: boolean
 }
 
-export default function LexLabLogo({ size = 'sm', animate = true }: Props) {
+export default function LexLabLogo({ size = 'sm', dark = false, animate = true }: Props) {
   const sm = size === 'sm'
+  const lexColor = dark ? PAPER : INK
 
   const fontSize = sm ? 17 : 22
   const chevW = sm ? 9 : 12
@@ -33,7 +38,7 @@ export default function LexLabLogo({ size = 'sm', animate = true }: Props) {
         <polyline
           points="8,12 28,30 8,48"
           fill="none"
-          stroke={INK}
+          stroke={BLUE}
           strokeWidth={sm ? 5.5 : 5}
           strokeLinecap="square"
           strokeLinejoin="miter"
@@ -45,7 +50,7 @@ export default function LexLabLogo({ size = 'sm', animate = true }: Props) {
           fontFamily: 'var(--font-spectral), Georgia, serif',
           fontStyle: 'italic',
           fontWeight: 300,
-          color: INK,
+          color: lexColor,
         }}>
           lex
         </span>
