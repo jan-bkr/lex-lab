@@ -18,6 +18,7 @@ const navLinks: NavLink[] = [
   { href: '/tools/compare', label: 'Vergleiche', isNew: true },
   { href: '/prompts', label: 'Prompts' },
   { href: '/prompts/builder', label: '✦ Builder', highlight: true },
+  { href: '/workflows', label: 'Workflows' },
   { href: '/news', label: 'News' },
   { href: '/radar', label: 'Radar' },
   { href: '/research', label: 'Research' },
