@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { EDITORIAL_ARTICLES } from '@/app/beitraege/articles'
 
 const BASE = 'https://www.lex-lab.de'
 
@@ -65,5 +66,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  return [...static_routes, ...tool_routes, ...workflow_routes]
+  const [{ data: prompts }, { data: news }] = await Promise.all([
+    adminSupabase.from('prompts').select('slug, created_at'),
+    adminSupabase.from('news_articles').select('slug, published_at').not('slug', 'is', null),
+  ])
+
+  const prompt_routes: MetadataRoute.Sitemap = (prompts ?? []).map(prompt => ({
+    url: `${BASE}/prompts/${prompt.slug}`,
+    lastModified: new Date(prompt.created_at),
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }))
+
+  const news_routes: MetadataRoute.Sitemap = (news ?? [])
+    .filter(article => article.slug)
+    .map(article => ({
+      url: `${BASE}/news/${article.slug}`,
+      lastModified: new Date(article.published_at),
+      changeFrequency: 'never' as const,
+      priority: 0.6,
+    }))
+
+  const editorial_routes: MetadataRoute.Sitemap = EDITORIAL_ARTICLES.map(article => ({
+    url: `${BASE}/beitraege/${article.slug}`,
+    lastModified: new Date(article.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }))
+
+  return [...static_routes, ...tool_routes, ...workflow_routes, ...prompt_routes, ...news_routes, ...editorial_routes]
 }

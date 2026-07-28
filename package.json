@@ -8,8 +8,13 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "overrides": {
+    "postcss": "8.5.24",
+    "sharp": "0.35.3",
+    "ws": "8.21.1"
+  },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.88.0",
+    "@anthropic-ai/sdk": "^0.115.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "@upstash/ratelimit": "^2.0.8",
@@ -18,10 +23,10 @@
     "@vercel/speed-insights": "^2.0.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^1.8.0",
-    "next": "16.2.3",
+    "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "resend": "^6.10.0",
+    "resend": "^6.18.1",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
@@ -30,7 +35,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "16.2.12",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -4,16 +4,16 @@
 
 | Bereich | Technologie | Version |
 |---|---|---|
-| Framework | Next.js (App Router) | 16.2.3 |
+| Framework | Next.js (App Router) | 16.2.12 |
 | UI | React | 19.2.4 |
 | Styling | Tailwind CSS v4 | ^4 |
 | Icons | lucide-react | ^1.8.0 |
 | Fonts | DM Serif Display + DM Sans (via `next/font/google`) | — |
 | Datenbank | Supabase (Postgres + Auth + RLS) | @supabase/supabase-js ^2 |
 | Auth (Server) | @supabase/ssr | ^0.10.2 |
-| E-Mail | Resend | ^6.10.0 |
+| E-Mail | Resend | ^6.18.1 |
 | KI (Pipeline) | Claude Haiku via raw `fetch` | `claude-haiku-4-5-20251001` |
-| KI (Prompt Builder) | Claude Haiku via `@anthropic-ai/sdk` | `claude-haiku-4-5` |
+| KI (Prompt Builder) | Claude Haiku via `@anthropic-ai/sdk` ^0.115.0 | `claude-haiku-4-5` |
 | KI (Newsletter) | Claude Haiku via `@anthropic-ai/sdk` | `claude-haiku-4-5-20251001` |
 | Analytics | @vercel/analytics + @vercel/speed-insights | ^2 |
 | RSS | rss-parser | ^3.13.0 |
@@ -352,8 +352,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 - [ ] **Screenshot-Upload** — `screenshot_url` im Schema, aber kein Upload-Flow (Storage-Bucket fehlt). Screenshot wird nur gerendert wenn URL vorhanden.
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
-- [ ] **Prompt-Detailseiten** — `/prompts/[slug]` existiert nicht; Seite noch nicht gebaut
-- [ ] **News-Detailseiten** — `/news/[slug]` existiert nicht; Seite noch nicht gebaut
+- [x] **Prompt-Detailseiten** — `/prompts/[slug]` mit kopierfertigem Prompt, Claude-Deep-Link, SEO und Sicherheitscheckliste
+- [x] **News-Detailseiten** — `/news/[slug]` mit Quellenlink, Transparenzhinweis, Related News, SEO und NewsArticle-JSON-LD
 - [ ] **Radar: DB-backed Signals** — aktuell statische Seed-Daten. Für echten Redaktionsbetrieb: `radar_signals`-Tabelle + Admin-UI aufbauen.
 - [ ] **Collections: Admin-UI** — Collections-Inhalte sind statisch in `config.ts` definiert. Kein Admin-Flow für Neuanlage.
 

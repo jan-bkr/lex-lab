@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Star, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
-import { PromptModal } from '@/components/PromptModal'
 import { Prompt, Rechtsgebiet } from '@/types'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
@@ -15,15 +14,13 @@ interface PromptWithDay extends Prompt {
 
 function PromptCard({
   prompt,
-  onClick,
 }: {
   prompt: PromptWithDay
-  onClick: () => void
 }) {
   return (
-    <div
-      onClick={onClick}
-      className="bg-white border border-gray-100 rounded-xl p-5 flex flex-col gap-3 hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer group"
+    <Link
+      href={`/prompts/${prompt.slug}`}
+      className="bg-white border border-gray-100 rounded-xl p-5 flex flex-col gap-3 hover:shadow-md hover:border-gray-200 transition-all duration-200 group"
     >
       {/* Top row: badge + tags */}
       <div className="flex items-start justify-between gap-2">
@@ -52,13 +49,12 @@ function PromptCard({
 
       {/* CTA hint */}
       <p className="text-xs text-blue-600 font-medium mt-auto">Prompt ansehen →</p>
-    </div>
+    </Link>
   )
 }
 
 export default function PromptsContent({ initialPrompts }: { initialPrompts: PromptWithDay[] }) {
   const [activeFilter,   setActiveFilter]   = useState<Rechtsgebiet | 'Alle'>('Alle')
-  const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDay | null>(null)
 
   const filtered = initialPrompts.filter(
     p => activeFilter === 'Alle' || p.rechtsgebiet.includes(activeFilter)
@@ -120,13 +116,9 @@ export default function PromptsContent({ initialPrompts }: { initialPrompts: Pro
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(p => (
-            <PromptCard key={p.id} prompt={p} onClick={() => setSelectedPrompt(p)} />
+            <PromptCard key={p.id} prompt={p} />
           ))}
         </div>
-      )}
-
-      {selectedPrompt && (
-        <PromptModal prompt={selectedPrompt} onClose={() => setSelectedPrompt(null)} />
       )}
     </div>
   )

@@ -339,7 +339,7 @@ export default async function HomePage() {
               </div>
               <div className="bg-white border border-gray-100 rounded-xl divide-y divide-gray-50 overflow-hidden">
                 {recentNews.map(article => (
-                  <a key={article.id} href={article.sourceUrl} target="_blank" rel="noopener noreferrer"
+                  <Link key={article.id} href={`/news/${article.slug}`}
                     className="flex items-start gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors group">
                     <span className={`flex-shrink-0 text-[10px] font-bold border rounded-md px-1.5 py-0.5 mt-0.5 ${sourceBadgeStyle[article.sourceName] ?? 'bg-gray-50 text-gray-600 border-gray-200'}`}>
                       {article.sourceName}
@@ -350,7 +350,7 @@ export default async function HomePage() {
                         {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: de })}
                       </p>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </section>

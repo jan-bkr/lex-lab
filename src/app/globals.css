@@ -3,6 +3,23 @@
 body { font-family: var(--font-dm-sans, 'DM Sans', sans-serif); }
 h1,h2,h3,h4,h5,h6,.font-display { font-family: var(--font-display, 'Instrument Serif', serif); }
 html { scroll-behavior: smooth; }
+*:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  transform: translateY(-180%);
+  border-radius: 0.75rem;
+  background: #fff;
+  color: #111827;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+  transition: transform 150ms ease;
+}
+.skip-link:focus { transform: translateY(0); }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #F7F7F5; }
 ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
@@ -10,3 +27,11 @@ html { scroll-behavior: smooth; }
 @keyframes lexlab-blink { 50% { opacity: 0; } }
 .animate-fade-up { animation: fadeUp 0.5s ease forwards; }
 .prompt-fade { -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%); mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

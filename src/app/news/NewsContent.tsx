@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { NewsArticle } from '@/types'
 
 const CATEGORIES = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Legal Tech', 'Regulierung', 'Venture Capital']
@@ -93,7 +94,6 @@ export default function NewsContent({ initialArticles }: { initialArticles: News
       ) : (
         <div className="space-y-3">
           {filtered.map(article => {
-            const hasUrl     = Boolean(article.sourceUrl) && article.sourceUrl !== '#' && article.sourceUrl.startsWith('http')
             const sourceCls  = SOURCE_STYLES[article.sourceName]  ?? 'bg-gray-100 text-gray-600 border-gray-200'
             const catCls     = CATEGORY_STYLES[article.category]  ?? 'bg-gray-100 text-gray-500 border-gray-200'
 
@@ -130,16 +130,14 @@ export default function NewsContent({ initialArticles }: { initialArticles: News
               </>
             )
 
-            return hasUrl ? (
-              <a
+            return article.slug ? (
+              <Link
                 key={article.id}
-                href={article.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/news/${article.slug}`}
                 className="group block bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md hover:border-gray-200 transition-all duration-150 cursor-pointer"
               >
                 {cardContent}
-              </a>
+              </Link>
             ) : (
               <div
                 key={article.id}

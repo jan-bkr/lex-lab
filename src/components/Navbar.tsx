@@ -48,11 +48,12 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1" aria-label="Hauptnavigation">
             {navLinks.map(link => (
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={pathname === link.href || (link.href !== '/' && pathname?.startsWith(`${link.href}/`)) ? 'page' : undefined}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-all duration-150 font-medium ${
                   link.highlight
                     ? 'text-blue-400 hover:text-blue-300 hover:bg-white/5'
@@ -105,8 +106,12 @@ export default function Navbar() {
 
           {/* Mobile toggle */}
           <button
+            type="button"
             onClick={() => setOpen(!open)}
             className="md:hidden p-2 rounded-lg transition-colors"
+            aria-label={open ? 'Navigation schließen' : 'Navigation öffnen'}
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
             style={{ color: 'rgba(244,241,234,0.7)' }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.07)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
@@ -119,13 +124,17 @@ export default function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div
+          id="mobile-navigation"
           className="md:hidden px-4 pb-4 pt-2"
+          role="navigation"
+          aria-label="Mobile Navigation"
           style={{ background: '#0A0E14', borderTop: '1px solid rgba(244,241,234,0.08)' }}
         >
           {navLinks.map(link => (
             <Link
               key={link.href}
               href={link.href}
+              aria-current={pathname === link.href || pathname?.startsWith(`${link.href}/`) ? 'page' : undefined}
               onClick={() => setOpen(false)}
               className="inline-flex items-center gap-2 py-2.5 text-sm font-medium transition-colors"
               style={{ color: link.highlight ? '#60A5FA' : 'rgba(244,241,234,0.6)' }}
@@ -143,6 +152,14 @@ export default function Navbar() {
               )}
             </Link>
           ))}
+          <Link
+            href="/newsletter"
+            onClick={() => setOpen(false)}
+            className="block py-2.5 text-sm font-medium"
+            style={{ color: 'rgba(244,241,234,0.6)' }}
+          >
+            Newsletter
+          </Link>
           <Link
             href="/tools/submit"
             onClick={() => setOpen(false)}

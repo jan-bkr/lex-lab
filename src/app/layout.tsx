@@ -49,11 +49,13 @@ export const metadata: Metadata = {
     siteName: 'LexLab',
     title: 'LexLab — KI-Tools für Juristen',
     description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'LexLab — KI für den deutschen Rechtsmarkt' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'LexLab — KI-Tools für Juristen',
     description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt.',
+    images: ['/og.png'],
   },
   verification: {
     google: 'BZAgD_Ti6XbDu2S8ZW_H3nWMJUWGBK2xS3yDOES3PmU',
@@ -73,8 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="de" className={`${dmSerifDisplay.variable} ${dmSans.variable} ${spectral.variable} ${spaceGrotesk.variable}`}>
       <body className="bg-[#F7F7F5] text-[#111827] antialiased">
+        <a href="#main-content" className="skip-link">Zum Inhalt springen</a>
         <Navbar />
-        <main>{children}</main>
+        <main id="main-content" tabIndex={-1}>{children}</main>
         <Footer />
         <Analytics />
         <SpeedInsights />

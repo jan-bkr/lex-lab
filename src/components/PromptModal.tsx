@@ -39,10 +39,14 @@ export function PromptModal({ prompt, onClose }: Props) {
     <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={onClose}
+      role="presentation"
     >
       <div
         className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`prompt-title-${prompt.id}`}
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 p-8 pb-5">
@@ -55,13 +59,15 @@ export function PromptModal({ prompt, onClose }: Props) {
                 <span className="text-xs text-gray-400">{prompt.useCase}</span>
               )}
             </div>
-            <h2 className="font-display font-bold text-2xl text-gray-900 leading-tight">
+            <h2 id={`prompt-title-${prompt.id}`} className="font-display font-bold text-2xl text-gray-900 leading-tight">
               {prompt.title}
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+            aria-label="Prompt schließen"
           >
             <X className="w-4 h-4" />
           </button>
