@@ -41,6 +41,9 @@ export default function Footer() {
                 <Link href="/state-of-legal-ai" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   State of Legal AI 2026
                 </Link>
+                <Link href="/research/legal-model-benchmark" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Legal Model Benchmark
+                </Link>
                 <Link href="/beitraege" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Beiträge &amp; Einblicke
                 </Link>

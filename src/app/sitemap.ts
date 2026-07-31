@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/prompts/builder`,    lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/method`,             lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/research`,           lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE}/research/legal-model-benchmark`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
     { url: `${BASE}/tools/compare`,      lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/tools/compare/harvey-vs-luminance`,   lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/tools/compare/copilot-vs-harvey`,     lastModified: now, changeFrequency: 'monthly', priority: 0.7 },

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, TrendingUp, BarChart2, Newspaper, BookOpen } from 'lucide-react'
+import { ArrowRight, TrendingUp, BarChart2, Newspaper, BookOpen, Scale } from 'lucide-react'
 
 export const revalidate = 86400
 
@@ -25,6 +25,15 @@ const MODULES = [
     desc: 'Marktanalyse, Marktsegmente, Red Flags und Auswahlframework für den deutschen Rechts- und Steuermarkt. Ca. 12 Minuten Lesezeit.',
     meta: 'LexLab Research · Edition 2026',
     featured: true,
+  },
+  {
+    href: '/research/legal-model-benchmark',
+    badge: '24h Sync',
+    icon: Scale,
+    title: 'Legal AI Model Benchmark',
+    desc: 'Aktueller Modellvergleich für juristische Aufgaben — Zuverlässigkeit, Nutzbarkeit, Kosten und Mandatsdaten-Check.',
+    meta: 'Neue Tests automatisch',
+    featured: false,
   },
   {
     href: '/radar',
@@ -124,7 +133,7 @@ export default function ResearchPage() {
 
       {/* ─── Other modules ─── */}
       <section className="mb-16 max-w-3xl">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {MODULES.filter(m => !m.featured).map(m => (
             <Link
               key={m.href}
