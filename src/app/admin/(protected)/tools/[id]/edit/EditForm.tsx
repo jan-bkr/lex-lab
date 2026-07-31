@@ -20,8 +20,8 @@ const SCORE_LABELS: Record<string, string> = {
   score_preis:       'Preis-Leistung',
 }
 const SCORE_WEIGHTS: Record<string, number> = {
-  score_praxisreife: 30,
-  score_datenschutz: 25,
+  score_praxisreife: 35,
+  score_datenschutz: 20,
   score_dach:        25,
   score_ux:          10,
   score_preis:       10,

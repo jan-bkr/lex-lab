@@ -1,7 +1,10 @@
 /**
- * Bulk-Import: Premium-Profile für alle 42 Tools
- * Ausführen: node scripts/bulk-import-tools.mjs
- * Danach: Datei löschen (enthält keine Secrets — nutzt .env.local)
+ * Redaktioneller Tool-Katalog: Profile und Scores aktualisieren, neue Tools anlegen.
+ * Vorschau:  node scripts/bulk-import-tools.mjs --dry-run
+ * Anwenden:  node scripts/bulk-import-tools.mjs
+ *
+ * Bestehende Datensätze werden anhand des Slugs aktualisiert. Neue, redaktionell
+ * vollständig beschriebene Tools werden als approved angelegt.
  */
 
 import { readFileSync } from 'fs'
@@ -14,6 +17,7 @@ const env = Object.fromEntries(
 )
 const SUPABASE_URL = env['NEXT_PUBLIC_SUPABASE_URL']
 const SERVICE_KEY  = env['SUPABASE_SERVICE_ROLE_KEY']
+const REVIEW_DATE  = '2026-07-31'
 
 // ─── Score-Berechnung (Gewichte: Praxisreife 35%, DS 20%, DACH 25%, UX 10%, Preis 10%) ─────
 // Muss mit src/lib/lexlab-score.ts synchron bleiben!
@@ -186,13 +190,22 @@ const TOOLS = [
   },
   {
     slug: 'harvey-ai',
+    name: 'Harvey',
     url: 'https://www.harvey.ai',
+    tagline: 'Enterprise Legal AI für komplexe Wissens- und Transaktionsarbeit',
+    description: 'Globale Legal-AI-Plattform für Recherche, Drafting, Dokumentenanalyse, agentische Workflows und die Arbeit mit großen Mandats- und Deal-Datenbeständen.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
     category: ['Rechtsrecherche', 'Document Drafting', 'Due Diligence', 'Vertragsanalyse'],
-    long_description: 'Harvey AI ist eine spezialisierte KI-Plattform für Rechtsanwälte und Inhouse-Juristen, die auf großen Sprachmodellen aufbaut und speziell für juristische Aufgaben fine-getuned wurde. Harvey ermöglicht juristische Recherche, Vertragsanalyse, Due-Diligence-Automatisierung und das Erstellen rechtlicher Dokumente auf einem deutlich spezialisierten Niveau gegenüber allgemeinen KI-Tools. Die Plattform wird von mehreren Magic-Circle- und Global-100-Kanzleien genutzt und hat bedeutende Risikokapital-Investitionen erhalten.',
-    best_for: ['Große und mittelgroße Kanzleien mit hohem Dokumenten- und Transaktionsvolumen', 'Due-Diligence-Automatisierung bei M&A-Transaktionen', 'Juristische Recherche und Fallanalyse auf Großkanzlei-Niveau', 'Vertragsanalyse und Risikobewertung in großen Dokumentenkorpora'],
-    not_for: ['Kleine Kanzleien (Preisgestaltung auf Enterprise ausgerichtet)', 'Deutsches Recht als Schwerpunkt (primär Common-Law-orientiert, deutsches Recht im Aufbau)', 'Steuerberater und Wirtschaftsprüfer (juristisch-anwaltlicher Fokus)'],
-    verdict: 'Harvey AI ist eines der ambitioniertesten Legal-KI-Projekte und hat echtes Potenzial für große DACH-Kanzleien, insbesondere im internationalen M&A-Bereich. Die Abdeckung deutschen Rechts war 2024/2025 noch im Aufbau. Für internationale Transaktionen unter deutschem und englischem Recht wird Harvey zunehmend attraktiver.',
-    score_praxisreife: 7, score_datenschutz: 6, score_dach: 4, score_ux: 8, score_preis: 4,
+    pricing: 'enterprise',
+    pricing_url: 'https://www.harvey.ai',
+    is_new: false,
+    featured: true,
+    long_description: 'Harvey hat sich von einem spezialisierten Chat-Assistenten zu einer breiten Enterprise-Plattform für juristische Wissensarbeit entwickelt. Die Lösung unterstützt Recherche, Drafting, Dokumentenanalyse, große Vault-Datenbestände und agentische Workflows und wird international von zahlreichen Großkanzleien und Rechtsabteilungen eingesetzt. Integrationen in Microsoft- und DMS-Umgebungen sowie Deal-Plattformen machen Harvey besonders für transaktionsintensive Teams relevant. Für deutsche Primär- und Premium-Rechtsquellen bleibt die Content-Tiefe jedoch stärker vom konkreten Daten- und Integrationssetup abhängig als bei lokalen Fachverlagslösungen.',
+    best_for: ['Große und mittelgroße Kanzleien mit internationaler Mandatsarbeit', 'Due Diligence, Vertragsanalyse und Drafting in komplexen Transaktionen', 'Enterprise-Rollouts mit DMS-, Microsoft- und Deal-Plattform-Integration'],
+    not_for: ['Solo- und Kleinkanzleien mit begrenztem Budget', 'Ausschließlich deutsche Rechtsrecherche mit Premium-Kommentarbedarf', 'Teams ohne Ressourcen für Governance, Einführung und Qualitätssicherung'],
+    verdict: 'Die bisherige LexLab-Bewertung von 59 Punkten unterschätzte Harveys heutige Produktreife deutlich. Harvey gehört global zur Spitzengruppe; Abzüge bleiben wegen Enterprise-Preis, US-Herkunft und gegenüber lokalen Angeboten geringerer deutscher Quellenverankerung.',
+    last_reviewed_at: '2026-07-31',
+    score_praxisreife: 9, score_datenschutz: 8, score_dach: 7, score_ux: 9, score_preis: 3,
   },
   {
     slug: 'imanage-claude',
@@ -276,13 +289,22 @@ const TOOLS = [
   },
   {
     slug: 'lexis-plus',
+    name: 'Lexis+ mit Protégé',
     url: 'https://www.lexisnexis.com/en-us/products/lexis-plus.page',
+    tagline: 'Legal-AI-Plattform auf Basis der LexisNexis-Rechtsinhalte',
+    description: 'Internationale Plattform für quellenbasierte Rechtsrecherche, Drafting, Analyse und agentische Workflows mit LexisNexis-Inhalten und Organisationswissen.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
     category: ['Rechtsdatenbank', 'Rechtsrecherche'],
-    long_description: 'Lexis+ ist die KI-erweiterte Rechtsdatenbankplattform von LexisNexis, die umfangreiche Fallrechtsdatenbanken, Gesetzestexte, Zeitschriften und Kommentare mit KI-gestützter Suchfunktion verbindet. Die Plattform bietet Features wie Briefs Analysis, Contract Analytics und einen KI-Assistenten für juristische Recherche. In Deutschland existiert mit Lexis 360 eine lokalisierte Variante mit deutschem Rechtsmaterial. Die Integration von generativer KI wurde mit dem Feature Lexis+ AI deutlich ausgebaut.',
+    pricing: 'enterprise',
+    pricing_url: 'https://www.lexisnexis.com/en-us/products/lexis-plus.page',
+    is_new: false,
+    featured: false,
+    long_description: 'Lexis+ mit Protégé ist die aktuelle Legal-AI-Plattform von LexisNexis für Recherche, Analyse, Drafting und mehrstufige juristische Arbeitsabläufe. Das System verbindet generative KI mit den umfangreichen LexisNexis-Rechtsinhalten und kann Organisationswissen einbeziehen. 2026 wurde Protégé als zentrale Plattformschicht von Lexis+ deutlich ausgebaut. Im DACH-Markt bleibt die inhaltliche Relevanz stark vom jeweiligen Länderprodukt und Lizenzbestand abhängig; für internationales und Common-Law-Geschäft ist die Quellenbasis besonders stark.',
     best_for: ['Umfangreiche internationale Rechtsrecherche (US, UK, EU-Recht)', 'Vergleichende Analyse von Fallrechtsprechung über Jurisdiktionen hinweg', 'Großkanzleien mit internationalem Mandatsschwerpunkt'],
     not_for: ['Alleinige Abdeckung deutschen Rechts (dafür besser juris oder beck-online)', 'Kleine Kanzleien mit begrenztem Budget (hohe Lizenzkosten)', 'Steuerberater mit Fokus auf nationales deutsches Steuerrecht'],
-    verdict: 'Lexis+ ist international führend, spielt im deutschen Rechtsmarkt aber eine Nebenrolle hinter juris und beck-online. Die KI-Funktionen sind beeindruckend, jedoch primär auf Common-Law-Systeme ausgerichtet. Für DACH-Kanzleien mit internationalem Transaktionsgeschäft sinnvoll als Ergänzung, nicht als primäre Rechercheplattform.',
-    score_praxisreife: 6, score_datenschutz: 6, score_dach: 4, score_ux: 7, score_preis: 4,
+    verdict: 'Protégé hebt Lexis+ funktional klar über den Stand der bisherigen LexLab-Bewertung. Für internationale Kanzleien ist es ein Spitzenprodukt; als primäre deutsche Recherchelösung bleibt es hinter lokal verankerten Content-Angeboten.',
+    last_reviewed_at: '2026-07-31',
+    score_praxisreife: 9, score_datenschutz: 7, score_dach: 4, score_ux: 8, score_preis: 3,
   },
   {
     slug: 'luminance',
@@ -292,7 +314,8 @@ const TOOLS = [
     best_for: ['M&A Due Diligence mit großen Dokumentenvolumina (Datenraumanalyse)', 'Großkanzleien und Rechtsabteilungen mit regelmäßigen Transaktionsmandaten', 'Vertragsstandardisierung und Abweichungsanalyse in internationalen Projekten'],
     not_for: ['Kleinere Kanzleien ohne regelmäßige M&A-Mandate (zu kostenintensiv)', 'Einzelne Vertragsprüfungen ohne strukturierten Workflow-Bedarf', 'Deutsches Steuerrecht oder spezifische nationale Rechtsfragen'],
     verdict: 'Luminance gehört zur ersten Liga der Legal-Tech-Plattformen und ist auch in DACH bei mehreren Großkanzleien im Einsatz. Die DSGVO-Konformität ist dokumentiert, Serveroptionen in Europa verfügbar. Das Tool überzeugt durch technische Reife und breiten Einsatz, ist jedoch für mittelgroße Kanzleien preislich oft schwer darstellbar.',
-    score_praxisreife: 8, score_datenschutz: 7, score_dach: 6, score_ux: 7, score_preis: 4,
+    last_reviewed_at: '2026-07-31',
+    score_praxisreife: 9, score_datenschutz: 8, score_dach: 6, score_ux: 8, score_preis: 4,
   },
   {
     slug: 'midpage',
@@ -328,11 +351,12 @@ const TOOLS = [
     slug: 'nwb-neo',
     url: 'https://www.nwb.de/neo',
     category: ['Steuerrecht', 'Rechtsdatenbank', 'Steuerrecherche'],
-    long_description: 'NWB Neo ist die KI-gestützte Erweiterung der NWB-Datenbank, einer der führenden Steuerrechtsdatenbanken im deutschsprachigen Raum. Das Tool integriert generative KI direkt in den bewährten NWB-Recherchekontext und ermöglicht natürlichsprachige Abfragen zu Steuerrecht, Kommentaren, BMF-Schreiben und Rechtsprechung. Alle Quellen sind offiziell lizenziert und mit Fundstellen belegt, was die Verlässlichkeit erheblich steigert. NWB Neo richtet sich explizit an Steuerberater, Wirtschaftsprüfer und steuerrechtlich tätige Anwälte in Deutschland.',
+    long_description: 'NWB NEO ist seit Ende 2025 eine eigenständige KI-Arbeitsplattform für Steuerberater, Steuerjuristen, Wirtschaftsprüfer und Steuerabteilungen. Gemeinsam mit PwC-Prozessexpertise führt sie von der strukturierten Sachverhaltsaufnahme über die Recherche bis zu steuerlichen Memoranden und Protokollen. Die Ergebnisse greifen auf geprüfte NWB-Inhalte zurück, verlinken Quellen und lassen sich nach fachlicher Prüfung nach Word exportieren. Daneben bleibt NWB KIRA als Recherche-Chat in den klassischen Datenbankpaketen verfügbar.',
     best_for: ['Steuerberater und Wirtschaftsprüfer für tägliche steuerrechtliche Recherche', 'Belegbare KI-Antworten mit NWB-Quellenverweis (Kommentare, BMF-Schreiben)', 'Schnelle Orientierung in komplexen steuerrechtlichen Sachverhalten (UStG, EStG, KStG)'],
     not_for: ['Gesellschafts- oder Zivilrecht ohne steuerrechtlichen Bezug', 'Internationale Steuerrechtsfragen jenseits des DACH-Raums', 'Vollständige Substitution manueller Steuerrechtsprüfung'],
-    verdict: 'NWB Neo ist eines der wenigen KI-Tools, das von Grund auf für den deutschen Steuerrechtsmarkt entwickelt wurde und dabei auf eine etablierte, rechtlich verlässliche Datenbasis zurückgreift. Als deutsches Unternehmen mit deutschen Servern ist NWB datenschutzseitig deutlich unkomplizierter als US-Anbieter — ein klarer Vorteil im Kanzleialltag.',
-    score_praxisreife: 8, score_datenschutz: 8, score_dach: 10, score_ux: 7, score_preis: 7,
+    verdict: 'NWB NEO hat sich von der Recherche-Erweiterung zu einer geführten Tax-Work-Plattform entwickelt und gehört damit in die DACH-Spitzengruppe. Der hohe Einstiegspreis und das Credit-Modell begrenzen die Wirtschaftlichkeit für kleine Kanzleien, die fachliche und prozessuale Passung ist jedoch außergewöhnlich stark.',
+    last_reviewed_at: '2026-07-31',
+    score_praxisreife: 9, score_datenschutz: 9, score_dach: 10, score_ux: 8, score_preis: 5,
   },
   {
     slug: 'perplexity-legal',
@@ -454,13 +478,247 @@ const TOOLS = [
     verdict: 'Zapier ist für Kanzleien mit einfachen Automatisierungsbedürfnissen ein sehr zugängliches Tool. Das Hauptproblem für den deutschen Rechtsmarkt ist die DSGVO: Die Cloud-only-Infrastruktur und US-Server machen den Einsatz mit echten Mandantendaten rechtlich riskant. Für sensible Rechtsdaten ist die selbst gehostete Alternative n8n vorzuziehen.',
     score_praxisreife: 5, score_datenschutz: 4, score_dach: 4, score_ux: 9, score_preis: 6,
   },
+  {
+    slug: 'noxtua',
+    name: 'Noxtua',
+    url: 'https://www.noxtua.com',
+    tagline: 'Souveräne europäische Rechts-KI für vertrauliche Mandatsarbeit',
+    description: 'Legal-AI-Plattform für Recherche, Analyse und Drafting auf souveräner europäischer Infrastruktur — mit besonderem Fokus auf Berufsgeheimnis und Datenschutz.',
+    rechtsgebiet: ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Legal AI Workspace', 'Rechtsrecherche', 'Dokumentenanalyse', 'Document Drafting'],
+    pricing: 'enterprise',
+    pricing_url: 'https://www.noxtua.com',
+    is_new: true,
+    featured: true,
+    long_description: 'Noxtua ist eine in Europa entwickelte Legal-AI-Plattform für juristische Recherche, Dokumentenanalyse und Texterstellung. Der Anbieter betreibt Modell, Datenverarbeitung und Produktoberfläche auf souveräner europäischer Infrastruktur und adressiert ausdrücklich die Anforderungen aus DSGVO, Berufsgeheimnis und § 203 StGB. Nutzerdaten werden nach Anbieterangaben nicht zum Training verwendet; Verschlüsselung, Zugriffsprotokollierung und europäische Hosting-Partner gehören zum Sicherheitskonzept. Damit ist Noxtua vor allem für Kanzleien und Rechtsabteilungen interessant, die leistungsfähige generative KI ohne US-Hyperscaler-Abhängigkeit einsetzen wollen.',
+    best_for: ['Kanzleien mit hohen Anforderungen an Berufsgeheimnis und europäische Datensouveränität', 'Recherche, Analyse und Drafting mit vertraulichen Mandatsunterlagen', 'DACH-Teams, die eine breit einsetzbare Legal-AI-Plattform suchen'],
+    not_for: ['Teams mit Bedarf an transparenten Self-Service-Preisen', 'Solo-Anwälte, die nur gelegentlich generische Texte erstellen', 'Organisationen, die zwingend Inhalte einer bestimmten Rechtsdatenbank benötigen'],
+    verdict: 'Noxtua gehört 2026 zur Spitzengruppe der europäischen Legal-AI-Anbieter. Besonders stark sind Datensouveränität und DACH-Compliance; die konkrete fachliche Quellenabdeckung hängt jedoch vom gebuchten Produkt- und Content-Setup ab.',
+    score_praxisreife: 8, score_datenschutz: 10, score_dach: 10, score_ux: 8, score_preis: 5,
+  },
+  {
+    slug: 'beck-noxtua',
+    name: 'Beck-Noxtua',
+    url: 'https://www.beck-noxtua.de',
+    tagline: 'Legal AI mit beck-online-Inhalten und souveräner EU-Infrastruktur',
+    description: 'Gemeinsamer Legal-AI-Workspace von C.H.BECK und Noxtua für deutsche Rechtsrecherche, Dokumentenanalyse und Drafting mit belegten beck-online-Quellen.',
+    rechtsgebiet: ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Rechtsrecherche', 'Rechtsdatenbank', 'Dokumentenanalyse', 'Document Drafting'],
+    pricing: 'enterprise',
+    pricing_url: 'https://www.beck-noxtua.de',
+    is_new: true,
+    featured: true,
+    long_description: 'Beck-Noxtua verbindet Noxtuas souveräne Legal-AI-Technologie mit den juristischen Fachinhalten von beck-online. Die Plattform unterstützt Recherche, Dokumentenanalyse, Matrix-Reviews und Drafting im Workspace sowie in Microsoft Word und verlinkt Ergebnisse auf überprüfbare Fundstellen. Das Hosting erfolgt nach Anbieterangaben ausschließlich auf europäischer Infrastruktur; die Lösung adressiert DSGVO, BRAO und § 203 StGB. Für den deutschen Rechtsmarkt ist die Kombination aus etablierter Fachliteratur, aktueller Rechtsprechung und einem spezialisierten KI-System besonders relevant.',
+    best_for: ['Deutsche Kanzleien mit bestehender beck-online-Arbeitspraxis', 'Quellenbasierte Rechtsrecherche und Entwurfserstellung', 'Vertrauliche Dokumentenanalysen mit hohen Compliance-Anforderungen'],
+    not_for: ['Teams ohne Bedarf an deutschen Premium-Rechtsinhalten', 'Sehr preissensitive Solo-Kanzleien', 'Internationale Recherche mit Schwerpunkt auf Common-Law-Jurisdiktionen'],
+    verdict: 'Beck-Noxtua setzt für deutsche quellenbasierte Legal AI einen neuen Referenzpunkt. Die Kombination aus beck-online und souveräner Infrastruktur ist außergewöhnlich stark; Preis und Zugang bleiben typische Enterprise-Hürden.',
+    score_praxisreife: 8, score_datenschutz: 10, score_dach: 10, score_ux: 8, score_preis: 4,
+  },
+  {
+    slug: 'libra',
+    name: 'Libra',
+    url: 'https://libratech.ai/de/',
+    tagline: 'All-in-one Legal AI für Recherche, Review und Drafting',
+    description: 'Deutscher Legal-AI-Workspace mit Quellen aus Rechtsprechung, Handelsregister und juristischen Fachverlagen sowie Integrationen für Word, Outlook und SharePoint.',
+    rechtsgebiet: ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Legal AI Workspace', 'Rechtsrecherche', 'Vertragsanalyse', 'Document Drafting'],
+    pricing: 'paid',
+    pricing_url: 'https://libratech.ai/de/',
+    is_new: true,
+    featured: true,
+    long_description: 'Libra ist ein in Berlin entwickelter Legal-AI-Workspace für Recherche, Review, Drafting und die Analyse großer Dokumentenmengen. Die Plattform verbindet deutsche Gesetze und Rechtsprechung mit Handelsregisterdaten und lizenzierten Inhalten unter anderem von Wolters Kluwer und Otto Schmidt. Word-, Outlook-, SharePoint- und Kleos-Integrationen bringen die Funktionen in bestehende Arbeitsabläufe. Libra gehört seit Ende 2025 zu Wolters Kluwer und wird nach Anbieterangaben im EWR gehostet, ist ISO-27001-zertifiziert und auf berufsrechtlich vertrauliche Nutzung ausgerichtet.',
+    best_for: ['Deutsche Kanzleien und Rechtsabteilungen mit breitem Recherche- und Drafting-Bedarf', 'Teams, die Legal AI direkt in Word, Outlook oder SharePoint nutzen möchten', 'Quellenbasierte Recherche mit deutschen Fachinhalten'],
+    not_for: ['Teams, die ausschließlich lokale On-Premise-Verarbeitung verlangen', 'Nutzer ohne Bedarf an einem umfassenden Workspace', 'Organisationen, die nur eine einzelne, eng begrenzte Automatisierung suchen'],
+    verdict: 'Libra ist 2026 einer der vollständigsten DACH-Legal-AI-Workspaces. Quellenabdeckung, Integrationen und Sicherheitsniveau sind stark; welche Premium-Inhalte verfügbar sind, hängt teilweise von zusätzlichen Lizenzen ab.',
+    score_praxisreife: 9, score_datenschutz: 9, score_dach: 10, score_ux: 9, score_preis: 7,
+  },
+  {
+    slug: 'legora',
+    name: 'Legora',
+    url: 'https://legora.com',
+    tagline: 'Kollaborativer Legal-AI-Workspace für Kanzleien und Inhouse-Teams',
+    description: 'Enterprise-Plattform für Recherche, Review, Drafting, agentische Workflows und Zusammenarbeit mit Word-, Outlook- und DMS-Integrationen.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Legal AI Workspace', 'Vertragsanalyse', 'Due Diligence', 'Document Drafting'],
+    pricing: 'enterprise',
+    pricing_url: 'https://legora.com',
+    is_new: true,
+    featured: true,
+    long_description: 'Legora ist eine schwedische Enterprise-Plattform für juristische Recherche, Dokumentenprüfung, Drafting und kollaborative Workflows. Zum Produkt gehören ein Word- und Outlook-Add-in, tabellarische Reviews, Workflows, Portale und agentische Funktionen. Die Plattform kann interne Dokumente und öffentliche Rechtsinformationen verbinden und richtet sich vor allem an größere Kanzleien und Rechtsabteilungen. Legora arbeitet unter der DSGVO und weist unter anderem ISO-27001-, ISO-42001- und SOC-2-Nachweise aus.',
+    best_for: ['Große und mittelgroße Kanzleien mit internationaler Mandatsarbeit', 'M&A- und Vertrags-Teams mit hohem Review-Volumen', 'Organisationen, die Legal AI kollaborativ und in bestehende Systeme integriert ausrollen'],
+    not_for: ['Solo-Kanzleien und sehr kleine Teams mit begrenztem Budget', 'Rein deutsche Rechtsrecherche ohne gesicherte lokale Content-Abdeckung', 'Teams, die einen sofort buchbaren Self-Service-Tarif erwarten'],
+    verdict: 'Legora zählt funktional zur internationalen Spitzengruppe und überzeugt bei Zusammenarbeit, Review und Workflow-Integration. Für DACH ist die Plattform gut einsetzbar, erreicht bei deutschen Premium-Rechtsquellen aber nicht automatisch die Tiefe lokaler Content-Allianzen.',
+    score_praxisreife: 9, score_datenschutz: 8, score_dach: 7, score_ux: 9, score_preis: 4,
+  },
+  {
+    slug: 'pandektes',
+    name: 'Pandektes',
+    url: 'https://pandektes.com',
+    tagline: 'KI-Rechtsrecherche über EU- und nationale Rechtsquellen',
+    description: 'Europäische Rechercheplattform mit täglich aktualisierten und validierten Rechtsquellen, länderübergreifender Analyse sowie API- und Own-Data-Funktionen.',
+    rechtsgebiet: ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Rechtsrecherche', 'Rechtsdatenbank', 'EU-Recht', 'Wissensmanagement'],
+    pricing: 'paid',
+    pricing_url: 'https://pandektes.com',
+    is_new: true,
+    featured: true,
+    long_description: 'Pandektes ist eine in Kopenhagen entwickelte KI-Plattform für europäische Rechtsrecherche. Sie bündelt öffentliche und proprietäre Rechtsprechung, konsolidierte Gesetzgebung und EU-Rechtsquellen und aktualisiert den Bestand nach Anbieterangaben täglich. Die Recherche berücksichtigt juristische Hierarchien und verlinkt Antworten auf überprüfbare Quellen; zusätzlich lassen sich interne Materialien einbinden und Daten über eine API nutzen. Die besondere Stärke liegt in grenzüberschreitenden EU-Fragen und im Vergleich nationaler Auslegungspraxis.',
+    best_for: ['EU-rechtliche und grenzüberschreitende Rechtsrecherche', 'Kanzleien und Rechtsabteilungen mit mehreren europäischen Jurisdiktionen', 'Teams, die öffentliche Quellen und internes Wissen gemeinsam durchsuchen wollen'],
+    not_for: ['Recherche, die zwingend deutsche Premium-Kommentare voraussetzt', 'Reines Vertragsdrafting ohne Recherchebedarf', 'Teams, die ausschließlich ein deutsches Fachverlagsprodukt suchen'],
+    verdict: 'Pandektes ist eine der spannendsten europäischen Rechercheplattformen und besonders stark bei EU-weiten Fragestellungen. Für deutsche Standardrecherche ist die Quellenbreite attraktiv, ersetzt aber nicht in jedem Mandat etablierte deutsche Premium-Literatur.',
+    score_praxisreife: 8, score_datenschutz: 9, score_dach: 7, score_ux: 8, score_preis: 6,
+  },
+  {
+    slug: 'jupus',
+    name: 'JUPUS',
+    url: 'https://www.jupus.de',
+    tagline: 'KI-Sekretariat von Mandatsannahme bis Aktenvorbereitung',
+    description: 'Deutsche Kanzlei-KI für Telefon, Chat, digitale Mandatsannahme, Dokumentenaufnahme, Aktenanlage und erste juristische Arbeitsentwürfe.',
+    rechtsgebiet: ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Mandatsannahme', 'Telefon-KI', 'Kanzleiautomatisierung', 'Dokumentenanalyse'],
+    pricing: 'paid',
+    pricing_url: 'https://www.jupus.de',
+    is_new: true,
+    featured: false,
+    long_description: 'JUPUS positioniert sich als KI-Sekretariat für deutsche Anwaltskanzleien. Die Plattform verbindet Telefon- und Website-KI mit strukturierter Mandatsaufnahme, Dokumentenerfassung, Interessenkollisionsprüfung, Mandatierung und Aktenanlage. Damit adressiert sie weniger die Großkanzlei-Recherche als den operativen Engpass kleiner und mittlerer Kanzleien zwischen Erstkontakt und bearbeitbarer Akte. Der Anbieter weist die Lösung als DSGVO- und berufsrechtskonform aus und entwickelt Funktionen speziell für deutsche Kanzleiabläufe.',
+    best_for: ['Kleine und mittlere Kanzleien mit hohem Anfrage- und Telefonaufkommen', 'Standardisierte digitale Mandatsannahme und Vorqualifizierung', 'Entlastung von Sekretariat und Sachbearbeitung'],
+    not_for: ['Großkanzleien auf der Suche nach einer globalen Research-Plattform', 'Komplexe M&A-Due-Diligence oder Massendokumentenreviews', 'Teams, die nur einen allgemeinen Chat-Assistenten benötigen'],
+    verdict: 'JUPUS ist kein Harvey-Klon, sondern löst ein sehr konkretes DACH-Kanzleiproblem. Für kleinere Kanzleien kann die operative Entlastung wertvoller sein als zusätzliche Drafting-Funktionen; für komplexe Wissensarbeit braucht es ergänzende Systeme.',
+    score_praxisreife: 8, score_datenschutz: 9, score_dach: 10, score_ux: 8, score_preis: 7,
+  },
+  {
+    slug: 'deepjudge',
+    name: 'DeepJudge',
+    url: 'https://www.deepjudge.ai',
+    tagline: 'KI-Suche und Workflows über das interne Kanzleiwissen',
+    description: 'Enterprise Knowledge Search für DMS, Mandate und Dokumente mit Berechtigungsübernahme, Hybrid-/On-Premise-Optionen und juristischen KI-Workflows.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Wissensmanagement', 'Enterprise Search', 'Dokumentenmanagement', 'KI-Workflows'],
+    pricing: 'enterprise',
+    pricing_url: 'https://www.deepjudge.ai',
+    is_new: true,
+    featured: false,
+    long_description: 'DeepJudge ist eine Schweizer Plattform für KI-gestützte Suche und Workflows über das interne Wissen von Kanzleien und Rechtsabteilungen. Die Lösung indexiert Dokumente, Mandate, Personen und Metadaten über bestehende Systeme hinweg, ohne deren Berechtigungen und Ethical Walls zu umgehen. Neben semantischer Suche bietet DeepJudge agentische Workflows auf Basis des eigenen Wissensbestands. Cloud-, Private-Cloud- und On-Premise-Varianten sowie ISO-27001- und SOC-2-Nachweise machen das Produkt für besonders sensible Enterprise-Umgebungen interessant.',
+    best_for: ['Große Kanzleien mit umfangreichen DMS- und Wissensbeständen', 'Sichere Wiederverwendung von Präzedenzfällen und internem Know-how', 'Organisationen mit strikten Berechtigungen, Ethical Walls oder On-Premise-Anforderungen'],
+    not_for: ['Kleine Kanzleien ohne strukturierten internen Dokumentenbestand', 'Öffentliche Rechtsrecherche ohne eigene Content-Quellen', 'Teams, die eine günstige sofort nutzbare Einzelplatzlösung suchen'],
+    verdict: 'DeepJudge ist besonders stark, wenn das wertvollste Wissen bereits in der Kanzlei liegt. Die Sicherheits- und Deployment-Optionen sind überzeugend; Aufwand und Preis rechnen sich vor allem bei großen Wissensbeständen.',
+    score_praxisreife: 8, score_datenschutz: 9, score_dach: 7, score_ux: 7, score_preis: 3,
+  },
+  {
+    slug: 'bryter',
+    name: 'BRYTER',
+    url: 'https://bryter.com',
+    tagline: 'Legal-AI-Agents und regelbasierte Workflows ohne Code',
+    description: 'Deutsche Plattform für juristische KI-Assistenten, Hybrid Agents und deterministische End-to-End-Workflows in Kanzleien und Rechtsabteilungen.',
+    rechtsgebiet: ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['No-Code', 'KI-Workflows', 'Legal AI Workspace', 'Kanzleiautomatisierung'],
+    pricing: 'enterprise',
+    pricing_url: 'https://bryter.com',
+    is_new: true,
+    featured: false,
+    long_description: 'BRYTER ist eine in Deutschland gegründete Produktivitätssuite für juristische Teams. Sie kombiniert generative KI-Assistenten mit regelbasierten Workflows, sodass Ergebnisse nicht nur formuliert, sondern in nachvollziehbare Prozesse eingebettet werden können. Teams können eigene Agents und Self-Service-Anwendungen für wiederkehrende Beratungs-, Compliance- und Vertragsabläufe konfigurieren. Die Stärke liegt in der Verbindung flexibler Sprachmodelle mit deterministischen Regeln und Freigabeschritten.',
+    best_for: ['Rechtsabteilungen mit wiederkehrenden Beratungs- und Compliance-Prozessen', 'Kanzleien, die eigene Legal-AI-Workflows ohne klassische Softwareentwicklung bauen wollen', 'Standardisierte Self-Service- und Intake-Anwendungen'],
+    not_for: ['Teams, die nur eine fertige Rechtsrecherche ohne Konfiguration suchen', 'Sehr kleine Kanzleien ohne Prozessverantwortliche', 'Einmalige Dokumentenaufgaben ohne Automatisierungspotenzial'],
+    verdict: 'BRYTER ist besonders dann stark, wenn Legal AI in kontrollierte Prozesse übersetzt werden soll. Die Lern- und Einführungsphase ist höher als bei einem Chat-Tool, dafür sind wiederholbare Workflows und Governance deutlich belastbarer.',
+    score_praxisreife: 8, score_datenschutz: 8, score_dach: 8, score_ux: 7, score_preis: 4,
+  },
+  {
+    slug: 'lawlift',
+    name: 'LAWLIFT',
+    url: 'https://www.lawlift.com',
+    tagline: 'Dokumentenautomatisierung mit regelbasierter Präzision und Legal AI',
+    description: 'Deutsche Plattform für intelligente Vorlagen und agentisches Drafting, Review, Übersetzung und Anonymisierung direkt in Microsoft Word.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Vertragsautomatisierung', 'Document Drafting', 'Word Add-in', 'Dokumentenanalyse'],
+    pricing: 'paid',
+    pricing_url: 'https://www.lawlift.com',
+    is_new: true,
+    featured: false,
+    long_description: 'LAWLIFT kombiniert deterministische Dokumentenautomatisierung mit generativer Legal AI. Regelbasierte Vorlagen sichern wiederholbare und nachvollziehbare Standarddokumente; Lawlift Intelligence unterstützt Drafting, Überarbeitung, Übersetzung, Anonymisierung und Review direkt in Microsoft Word. Dadurch eignet sich die Plattform sowohl für Kanzleien als auch für Rechtsabteilungen mit hohem Volumen standardisierbarer Dokumente. Nach den veröffentlichten Vertragsbedingungen nutzt LAWLIFT ausschließlich ISO-27001-zertifizierte Server in Deutschland.',
+    best_for: ['Automatisierung wiederkehrender Verträge und gesellschaftsrechtlicher Dokumente', 'Teams, die deterministische Vorlagen mit KI-Drafting kombinieren wollen', 'DACH-Organisationen mit hohen Anforderungen an Hosting und Nachvollziehbarkeit'],
+    not_for: ['Freie Rechtsrecherche ohne Dokumentenworkflow', 'Einzelanwender mit sehr geringem Dokumentenvolumen', 'Teams ohne Bereitschaft, Vorlagen und Guardrails aufzubauen'],
+    verdict: 'LAWLIFT trifft einen wichtigen Mittelweg: Regeln für das, was exakt sein muss, KI für das, was flexibel sein darf. Die deutsche Infrastruktur und Word-Nähe sind klare Pluspunkte; der größte Nutzen entsteht erst nach sauberem Template-Setup.',
+    score_praxisreife: 8, score_datenschutz: 9, score_dach: 9, score_ux: 8, score_preis: 6,
+  },
+  {
+    slug: 'cocounsel-legal',
+    name: 'CoCounsel Legal',
+    url: 'https://legal.thomsonreuters.com/en/products/cocounsel-legal',
+    tagline: 'Agentische Legal AI auf Basis von Westlaw und Practical Law',
+    description: 'Thomson-Reuters-Plattform für Recherche, Analyse und Drafting mit belegten Westlaw-/Practical-Law-Quellen und Enterprise-Integrationen.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Legal AI Workspace', 'Rechtsrecherche', 'Document Drafting', 'Dokumentenanalyse'],
+    pricing: 'enterprise',
+    pricing_url: 'https://legal.thomsonreuters.com/en/products/cocounsel-legal',
+    is_new: true,
+    featured: false,
+    long_description: 'CoCounsel Legal ist die integrierte Legal-AI-Plattform von Thomson Reuters. Sie verbindet agentische Recherche-, Analyse- und Drafting-Funktionen mit Westlaw, Practical Law und dem internen Wissen einer Organisation. Quellen und Arbeitsschritte werden nachvollziehbar dargestellt; Microsoft-365-, HighQ- und DMS-Integrationen unterstützen den Enterprise-Einsatz. Der Anbieter erklärt, Nutzerdaten nicht zum Modelltraining zu verwenden und weist umfangreiche Sicherheitszertifizierungen aus.',
+    best_for: ['Internationale Kanzleien mit Westlaw- und Practical-Law-Stack', 'US-/UK-Recherche, Litigation und transaktionsbezogene Drafting-Workflows', 'Große Rechtsabteilungen mit Thomson-Reuters-Infrastruktur'],
+    not_for: ['Deutsche Kanzleien ohne regelmäßigen Common-Law-Bedarf', 'Teams, die deutsche Premium-Kommentare als primäre Quelle benötigen', 'Kleine Kanzleien mit begrenztem Lizenzbudget'],
+    verdict: 'CoCounsel ist international ein führendes Legal-AI-Produkt mit sehr starker Quellenbasis. Im deutschen Markt bleibt der Nutzen ohne US-/UK-Bezug begrenzt, weshalb die globale Produktreife nicht vollständig in den DACH-Score durchschlägt.',
+    score_praxisreife: 9, score_datenschutz: 7, score_dach: 3, score_ux: 8, score_preis: 3,
+  },
+  {
+    slug: 'vincent-ai',
+    name: 'Vincent AI',
+    url: 'https://vlex.com/vincent-ai',
+    tagline: 'Globale KI-Rechtsrecherche über mehr als 100 Jurisdiktionen',
+    description: 'KI-Assistent von vLex für grenzüberschreitende Rechtsrecherche, Dokumentenanalyse und zitierte Antworten über internationale Rechtsquellen.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Rechtsrecherche', 'Rechtsdatenbank', 'Internationales Recht', 'Dokumentenanalyse'],
+    pricing: 'paid',
+    pricing_url: 'https://vlex.com',
+    is_new: true,
+    featured: false,
+    long_description: 'Vincent AI ist der KI-Rechercheassistent von vLex und erschließt einen großen internationalen Rechtsdatenbestand. Das Produkt unterstützt vergleichende Recherche, Dokumentenanalyse und die Suche nach relevanter Rechtsprechung über zahlreiche Jurisdiktionen hinweg. Seine Stärke liegt im grenzüberschreitenden Arbeiten und in Märkten, die von der vLex-Content-Abdeckung gut erfasst werden. Für rein deutsche Mandate ist die lokale Kommentarliteratur weniger tief als bei führenden DACH-Fachverlagen.',
+    best_for: ['Grenzüberschreitende und rechtsvergleichende Recherche', 'Internationale Kanzleien mit vielen Jurisdiktionen', 'Erste Einordnung ausländischer Rechtsprechung und Rechtsquellen'],
+    not_for: ['Ausschließlich deutsche Rechtsrecherche mit Kommentarbedarf', 'Vertragsautomatisierung ohne Recherchebezug', 'Kleine Teams ohne internationalen Mandatsanteil'],
+    verdict: 'Vincent AI ist für internationale Recherche deutlich relevanter als der bisherige LexLab-Katalog erkennen ließ. Für deutsche Standardmandate bleibt es eine Ergänzung, bei grenzüberschreitenden Fragen kann die breite Jurisdiktionsabdeckung aber entscheidend sein.',
+    score_praxisreife: 8, score_datenschutz: 7, score_dach: 5, score_ux: 8, score_preis: 5,
+  },
+  {
+    slug: 'fides',
+    name: 'Fides',
+    url: 'https://fides.technology/de/ai',
+    tagline: 'Corporate-Governance-Plattform mit vertraulicher Legal AI',
+    description: 'Münchner Governance-Plattform für Gremien-, Beteiligungs- und Dokumentenarbeit mit KI-Suche, Drafting, Review und Self-Hosting-Option.',
+    rechtsgebiet: ['M&A', 'Gesellschaftsrecht', 'Venture Capital'],
+    category: ['Corporate Governance', 'Dokumentenmanagement', 'Vertragsanalyse', 'Document Drafting'],
+    pricing: 'enterprise',
+    pricing_url: 'https://fides.technology/de/ai',
+    is_new: true,
+    featured: false,
+    long_description: 'Fides ist eine deutsche Corporate-Governance-Plattform für die Verwaltung von Gesellschaften, Gremien und juristischen Dokumenten. Das optionale KI-Modul durchsucht interne Unterlagen, identifiziert relevante Passagen, unterstützt Drafting und Review und erstellt zweisprachige Dokumente. Für besonders vertrauliche Umgebungen bietet Fides nach eigenen Angaben eine Self-Hosting-Lizenz, bei der keine Daten an OpenAI gesendet werden. Das Unternehmen ist ISO-27001-zertifiziert und auf europäische Datenschutzanforderungen ausgerichtet.',
+    best_for: ['Inhouse-Rechtsteams mit komplexen Beteiligungs- und Governance-Strukturen', 'Gesellschaftsrechtliche Dokumentenbestände und Gremienarbeit', 'Organisationen mit Self-Hosting- oder hohen Vertraulichkeitsanforderungen'],
+    not_for: ['Allgemeine öffentliche Rechtsrecherche', 'Kanzleien ohne Corporate-Governance-Anwendungsfall', 'Einzelanwender, die nur einen generischen KI-Assistenten suchen'],
+    verdict: 'Fides ist kein universeller Legal-AI-Workspace, aber im Corporate-Governance-Kontext sehr relevant. Self-Hosting, deutsche Marktkenntnis und integrierte Gesellschaftsdaten rechtfertigen eine starke Bewertung in dieser Nische.',
+    score_praxisreife: 8, score_datenschutz: 10, score_dach: 10, score_ux: 8, score_preis: 5,
+  },
+  {
+    slug: 'juris-ki-suite',
+    name: 'juris KI-Suite',
+    url: 'https://www.juris.de',
+    tagline: 'KI-gestützte Recherche in vernetzter deutscher Premium-Literatur',
+    description: 'KI-Funktionen innerhalb der juris-Fachgebietsprodukte für Recherche in deutscher Rechtsprechung, Gesetzen und verlagsübergreifender Fachliteratur.',
+    rechtsgebiet: ['Steuerrecht', 'M&A', 'Gesellschaftsrecht'],
+    category: ['Rechtsrecherche', 'Rechtsdatenbank', 'Wissensmanagement', 'Steuerrecherche'],
+    pricing: 'paid',
+    pricing_url: 'https://www.juris.de',
+    is_new: true,
+    featured: false,
+    long_description: 'Die juris KI-Suite erweitert die etablierten Fachgebiets- und Rechercheprodukte von juris um KI-gestützte Zugänge zu deutscher Rechtsprechung, Gesetzen und Premium-Literatur der jurisAllianz. Besonders stark ist die vernetzte Quellenbasis in spezialisierten Paketen, darunter Steuerrecht, Arbeitsrecht sowie Zivil- und Zivilprozessrecht. Die Lösung ist weniger als freier Universal-Chat konzipiert, sondern als intelligenter Zugang zu einem kuratierten deutschen Rechtsinformationssystem.',
+    best_for: ['Quellenbasierte deutsche Rechts- und Steuerrecherche', 'Kanzleien mit bestehenden juris-Fachgebietslizenzen', 'Spezialisierte Recherche in vernetzter verlagsübergreifender Literatur'],
+    not_for: ['Freies Drafting über umfangreiche eigene Dokumentensammlungen', 'Internationale Common-Law-Recherche', 'Teams, die einen universellen Workflow-Agenten suchen'],
+    verdict: 'Die juris KI-Suite gehört wegen ihrer deutschen Quellenbasis zwingend in einen aktuellen DACH-Katalog. Sie ist weniger spektakulär als ein All-in-one-Agent, aber für belastbare Fachrecherche oft näher am eigentlichen juristischen Qualitätsproblem.',
+    score_praxisreife: 8, score_datenschutz: 9, score_dach: 10, score_ux: 7, score_preis: 6,
+  },
 ]
 
 // ─── Supabase helpers ─────────────────────────────────────────────────────────
 
 async function fetchExistingSlugs() {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/tools?select=slug&status=eq.approved&limit=500`,
+    `${SUPABASE_URL}/rest/v1/tools?select=slug&limit=500`,
     {
       headers: {
         'apikey': SERVICE_KEY,
@@ -473,7 +731,7 @@ async function fetchExistingSlugs() {
   return new Set(rows.map(r => r.slug))
 }
 
-async function updateTool(tool) {
+function serializeTool(tool, { forCreate = false } = {}) {
   const score = lexlabScore(
     tool.score_praxisreife,
     tool.score_datenschutz,
@@ -482,21 +740,40 @@ async function updateTool(tool) {
     tool.score_preis
   )
 
-  const body = JSON.stringify({
+  return {
+    ...(tool.name ? {
+      name:             tool.name,
+      tagline:          tool.tagline,
+      description:      tool.description,
+      rechtsgebiet:     tool.rechtsgebiet,
+      pricing:          tool.pricing ?? null,
+      pricing_url:      tool.pricing_url ?? null,
+      featured:         tool.featured ?? false,
+      ...(forCreate ? {
+        is_new:         tool.is_new ?? false,
+        status:         'approved',
+      } : {}),
+    } : {}),
     url:               tool.url,
     category:          tool.category,
     long_description:  tool.long_description,
     best_for:          tool.best_for,
     not_for:           tool.not_for,
     verdict:           tool.verdict,
-    last_reviewed_at:  new Date().toISOString().slice(0, 10),
+    ...((tool.last_reviewed_at || tool.name) ? {
+      last_reviewed_at: tool.last_reviewed_at ?? REVIEW_DATE,
+    } : {}),
     score_praxisreife: tool.score_praxisreife ?? null,
     score_datenschutz: tool.score_datenschutz ?? null,
     score_dach:        tool.score_dach        ?? null,
     score_ux:          tool.score_ux          ?? null,
     score_preis:       tool.score_preis       ?? null,
     lexlab_score:      score,
-  })
+  }
+}
+
+async function updateTool(tool) {
+  const body = JSON.stringify(serializeTool(tool))
 
   // return=representation lets us detect a slug-not-found (empty array = 0 rows matched)
   const res = await fetch(
@@ -520,10 +797,33 @@ async function updateTool(tool) {
 
   const updated = await res.json()
   if (!Array.isArray(updated) || updated.length === 0) {
-    return { slug: tool.slug, ok: false, error: 'Slug not found in DB (status=approved)' }
+    return { slug: tool.slug, ok: false, error: 'Slug not found in DB' }
   }
 
-  return { slug: tool.slug, ok: true, score }
+  return { slug: tool.slug, ok: true, score: serializeTool(tool).lexlab_score, action: 'updated' }
+}
+
+async function createTool(tool) {
+  if (!tool.name || !tool.tagline || !tool.description || !tool.rechtsgebiet?.length) {
+    return { slug: tool.slug, ok: false, error: 'Missing required base fields for insert' }
+  }
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/tools`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Prefer': 'return=representation',
+    },
+    body: JSON.stringify({ slug: tool.slug, ...serializeTool(tool, { forCreate: true }) }),
+  })
+
+  if (!res.ok) {
+    return { slug: tool.slug, ok: false, error: await res.text() }
+  }
+
+  return { slug: tool.slug, ok: true, score: serializeTool(tool).lexlab_score, action: 'created' }
 }
 
 // ─── Run ──────────────────────────────────────────────────────────────────────
@@ -539,7 +839,7 @@ process.stdout.write('Fetching existing slugs from Supabase… ')
 let existingSlugs
 try {
   existingSlugs = await fetchExistingSlugs()
-  console.log(`${existingSlugs.size} approved tools found.\n`)
+  console.log(`${existingSlugs.size} tools found.\n`)
 } catch (e) {
   console.error(`\nFailed: ${e.message}`)
   process.exit(1)
@@ -547,10 +847,18 @@ try {
 
 const missing  = TOOLS.filter(t => !existingSlugs.has(t.slug))
 const present  = TOOLS.filter(t =>  existingSlugs.has(t.slug))
+const creatable = missing.filter(t => t.name && t.tagline && t.description && t.rechtsgebiet?.length)
+const uncreatable = missing.filter(t => !creatable.includes(t))
 
-if (missing.length > 0) {
-  console.warn(`⚠️  ${missing.length} slug(s) not found in DB (will be skipped):`)
-  missing.forEach(t => console.warn(`     – ${t.slug}`))
+if (creatable.length > 0) {
+  console.log(`➕ ${creatable.length} new tool(s) will be created:`)
+  creatable.forEach(t => console.log(`     – ${t.slug}`))
+  console.log()
+}
+
+if (uncreatable.length > 0) {
+  console.warn(`⚠️  ${uncreatable.length} legacy slug(s) not found and cannot be recreated without base fields:`)
+  uncreatable.forEach(t => console.warn(`     – ${t.slug}`))
   console.log()
 }
 
@@ -563,23 +871,33 @@ if (DRY_RUN) {
     )
     console.log(`  • ${tool.slug.padEnd(28)} LexLab Score: ${score ?? '–'}`)
   }
-  console.log(`\n${missing.length} would be skipped (slug not in DB).`)
+  if (creatable.length > 0) {
+    console.log(`\nWould create ${creatable.length} tool(s):\n`)
+    for (const tool of creatable) {
+      console.log(`  + ${tool.slug.padEnd(28)} LexLab Score: ${serializeTool(tool).lexlab_score ?? '–'}`)
+    }
+  }
+  console.log(`\n${uncreatable.length} would be skipped (legacy slug missing in DB).`)
   process.exit(0)
 }
 
-console.log(`Updating ${present.length} tool(s)…\n`)
-let ok = 0, fail = 0, skipped = missing.length
+console.log(`Updating ${present.length} and creating ${creatable.length} tool(s)…\n`)
+let updated = 0, created = 0, fail = 0, skipped = uncreatable.length
 
 for (const tool of TOOLS) {
-  if (!existingSlugs.has(tool.slug)) {
+  if (!existingSlugs.has(tool.slug) && !creatable.includes(tool)) {
     console.warn(`  ⏭  ${tool.slug} (skipped — not in DB)`)
     continue
   }
 
-  const result = await updateTool(tool)
+  const result = existingSlugs.has(tool.slug)
+    ? await updateTool(tool)
+    : await createTool(tool)
   if (result.ok) {
-    console.log(`  ✅ ${result.slug.padEnd(28)} (LexLab Score: ${result.score ?? '–'})`)
-    ok++
+    const symbol = result.action === 'created' ? '➕' : '✅'
+    console.log(`  ${symbol} ${result.slug.padEnd(28)} (${result.action}, LexLab Score: ${result.score ?? '–'})`)
+    if (result.action === 'created') created++
+    else updated++
   } else {
     console.error(`  ❌ ${result.slug}: ${result.error}`)
     fail++
@@ -587,8 +905,9 @@ for (const tool of TOOLS) {
 }
 
 console.log(`\n─────────────────────────────────────────`)
-console.log(`✅ Updated:  ${ok}`)
+console.log(`✅ Updated:  ${updated}`)
+console.log(`➕ Created:  ${created}`)
 if (fail    > 0) console.error(`❌ Failed:   ${fail}`)
-if (skipped > 0) console.warn( `⏭  Skipped:  ${skipped}  (slug not in DB)`)
+if (skipped > 0) console.warn( `⏭  Skipped:  ${skipped}  (legacy slug not in DB)`)
 console.log(`─────────────────────────────────────────`)
 if (fail > 0) process.exit(1)

@@ -285,7 +285,7 @@ function LexLabScoreCard({ tool }: { tool: Tool }) {
         </div>
       )}
       <p className="text-[10px] text-gray-400 border-t border-black/5 pt-2 leading-relaxed">
-        Bewertet aus Sicht einer kleinen interdisziplinären Kanzlei mit DACH-Fokus. Praxisnähe (35&thinsp;%) und DACH-Relevanz (25&thinsp;%) gewichtet stärker als Datenschutz (20&thinsp;%), UX und Preis (je 10&thinsp;%).
+        Redaktionelle Einordnung für den DACH-Markt auf Basis dokumentierter Produkt-, Quellen- und Sicherheitsmerkmale. Praxisnähe (35&thinsp;%) und DACH-Relevanz (25&thinsp;%) gewichten stärker als Datenschutz (20&thinsp;%), UX und Preis (je 10&thinsp;%).
       </p>
     </div>
   )

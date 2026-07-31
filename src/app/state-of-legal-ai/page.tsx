@@ -80,7 +80,7 @@ export default function StateOfLegalAIPage() {
               Edition 2026
             </span>
             <span className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white/70 text-[11px] font-medium rounded-full px-3 py-1">
-              <Clock className="w-3 h-3" /> Stand April 2026
+              <Clock className="w-3 h-3" /> Stand Juli 2026
             </span>
           </div>
 
@@ -106,7 +106,7 @@ export default function StateOfLegalAIPage() {
           {/* Quick stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { value: '42+', label: 'evaluierte Tools' },
+              { value: '55', label: 'evaluierte Tools' },
               { value: '4', label: 'Rechtsgebiete' },
               { value: '8', label: 'Marktsegmente' },
               { value: '2026', label: 'aktuelle Ausgabe' },
@@ -182,14 +182,14 @@ export default function StateOfLegalAIPage() {
             />
             <InsightCard
               number="05"
-              title="Agentic AI ist 2026 Hype"
-              body="Fast alle Anbieter, die 'KI-Agenten' vermarkten, liefern fortgeschrittene Autocomplete- und Template-Funktionen. Echte autonome Workflow-Automatisierung für die Rechtspraxis ist noch nicht marktreif."
+              title="Agentic AI wird zur Plattformschicht"
+              body="Harvey, Legora, Beck-Noxtua, CoCounsel und BRYTER verschieben den Markt von einzelnen Prompts zu planenden, mehrstufigen Workflows. Menschliche Freigaben und belastbare Quellen bleiben unverzichtbar."
               accent
             />
             <InsightCard
               number="06"
-              title="Plattform-Konsolidierung läuft"
-              body="Etablierte Anbieter saugen Legal-AI-Features in ihre Plattformen. Nischen-Tools stehen unter Druck, ihre eigenständige Wertschöpfung gegenüber Microsoft, Google und DATEV zu beweisen."
+              title="Content und Plattform konsolidieren"
+              body="Wolters Kluwer hat Libra übernommen, C.H.BECK bündelt Inhalte mit Noxtua. Im DACH-Markt entscheidet zunehmend die Verbindung aus KI-Workspace, verlässlichen Quellen und bestehendem Workflow."
             />
           </div>
         </section>
@@ -523,8 +523,8 @@ export default function StateOfLegalAIPage() {
               },
               {
                 step: '05',
-                title: 'Pilotphase: 30 Tage mit echten Mandatsdaten messen',
-                body: 'Testen Sie ausschließlich mit realen Mandatsanfragen — nicht mit Demo-Daten. Messen Sie: Zeitersparnis pro Aufgabentyp, Fehlerrate, Nutzerakzeptanz. Kein KI-Tool rechtfertigt seinen Preis ohne messbare Produktivitätswirkung.',
+                title: 'Pilotphase: 30 Tage mit repräsentativen Fällen messen',
+                body: 'Testen Sie zunächst mit anonymisierten, repräsentativen Dokumenten und erst nach Freigabe des Datenflusses in einem begrenzten Realbetrieb. Messen Sie Zeitersparnis, Fehlerrate und Nutzerakzeptanz pro Aufgabentyp.',
                 icon: <BarChart3 className="w-4 h-4" />,
               },
             ].map(item => (
@@ -561,29 +561,29 @@ export default function StateOfLegalAIPage() {
                 body: 'DATEV integriert native KI-Funktionen in bestehende Produkte. Unabhängige Legal-AI-Anbieter im Steuerrechtssegment geraten unter Innovationsdruck von innen.',
               },
               {
-                signal: 'Microsoft Copilot als Einfallstor',
-                tag: 'Plattform',
-                body: 'Microsoft Copilot for Legal ist die meistgenutzte KI-Infrastruktur in deutschen Großkanzleien — nicht wegen überlegener Rechtsqualität, sondern wegen bestehender M365-Lizenzen.',
+                signal: 'Libra wird Teil von Wolters Kluwer',
+                tag: 'Konsolidierung',
+                body: 'Die Übernahme und die Einbindung von Wolters-Kluwer-Inhalten machen Libra zu einem der wichtigsten europäischen Full-Stack-Anbieter für DACH-Teams.',
               },
               {
-                signal: 'US-Legal-AI kommt nach Europa',
+                signal: 'Beck-Noxtua setzt den Quellenmaßstab',
+                tag: 'DACH-Research',
+                body: 'Die Verbindung aus souveräner Legal AI und beck-online-Inhalten erhöht den Wettbewerbsdruck auf jeden Anbieter, der deutsche Recherche ohne belastbare Premium-Quellen anbietet.',
+              },
+              {
+                signal: 'Europäische Workspaces werden erwachsen',
+                tag: 'Wettbewerb',
+                body: 'Legora, Pandektes, Noxtua und DeepJudge konkurrieren nicht mehr nur über Datenschutz, sondern über agentische Workflows, Quellenzugang, DMS-Integration und kollaborative Nutzung.',
+              },
+              {
+                signal: 'US-Plattformen bleiben Enterprise-relevant',
                 tag: 'Globalisierung',
-                body: 'Harvey, Ironclad und weitere US-Anbieter expandieren nach Europa. Datenschutzkonformität bleibt ihr strukturelles Hindernis im deutschen Markt.',
+                body: 'Harvey, CoCounsel und Lexis+ mit Protégé bauen ihre internationale Reichweite aus. Für DACH entscheidet das konkrete Hosting-, Content- und Vertragssetup — nicht allein der Unternehmenssitz.',
               },
               {
-                signal: 'EU AI Act verschärft Anforderungen',
-                tag: 'Regulierung',
-                body: 'Legal-AI-Anwendungen mit Hochrisikoklassifikation nach EU AI Act müssen 2026/2027 Transparenz- und Protokollierungspflichten erfüllen. Frühzeitige Compliance sichert Marktposition.',
-              },
-              {
-                signal: 'Halluzinations-Garantien als Differenzierungsmerkmal',
-                tag: 'Produktentwicklung',
-                body: 'Erste Anbieter bieten schriftliche Qualitätszusicherungen für KI-Output an. Dieser Trend wird Kaufentscheidungen zunehmend prägen und den Druck auf andere Anbieter erhöhen.',
-              },
-              {
-                signal: 'Lokale LLM-Anbieter gewinnen Glaubwürdigkeit',
-                tag: 'Infrastruktur',
-                body: 'Open-Source-Modelle auf deutschen Servern (Mistral, LLaMA-basierte Fine-Tunes) werden wettbewerbsfähiger. Das Argument "EU-Cloud, aber US-Modell" verliert an Überzeugungskraft.',
+                signal: 'Workflow-Nischen gewinnen gegen Generalisten',
+                tag: 'DACH-Praxis',
+                body: 'JUPUS, LAWLIFT, Fides und NWB NEO zeigen, dass ein tief integrierter Kanzlei-, Dokumenten-, Governance- oder Tax-Workflow höheren Praxiswert liefern kann als ein weiterer Universal-Chat.',
               },
             ].map((item, i) => (
               <div key={i} className="bg-white border border-gray-100 rounded-xl p-5">
@@ -599,7 +599,7 @@ export default function StateOfLegalAIPage() {
             href="/tools"
             className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
-            Alle 42+ Tools im LexLab-Verzeichnis ansehen <ArrowRight className="w-4 h-4" />
+            Alle 55 Tools im LexLab-Verzeichnis ansehen <ArrowRight className="w-4 h-4" />
           </Link>
         </section>
 
@@ -616,7 +616,7 @@ export default function StateOfLegalAIPage() {
               {
                 href: '/tools',
                 title: 'Tool-Verzeichnis',
-                desc: '42+ evaluierte KI-Tools für den deutschen Rechtsmarkt',
+                desc: '55 evaluierte KI-Tools für den deutschen Rechtsmarkt',
                 icon: <Search className="w-5 h-5" />,
                 color: 'text-blue-600',
                 bg: 'bg-blue-50',

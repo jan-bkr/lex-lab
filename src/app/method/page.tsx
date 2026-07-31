@@ -74,8 +74,8 @@ const PRINCIPLES = [
   },
   {
     num: '05',
-    title: 'Orientierung statt Vollständigkeit',
-    body: 'LexLab ist kein vollständiges Verzeichnis aller KI-Tools auf dem Markt. Das Ziel ist gezielte Orientierung — lieber 50 gut bewertete und eingeordnete Tools als 500 ohne Einordnung.',
+    title: 'Marktführer zuerst, Long Tail kuratiert',
+    body: 'Marktprägende Anbieter und relevante DACH-Spezialisten gehören zwingend in den Katalog. Kleinere Tools kommen hinzu, wenn ihr eigenständiger Praxisnutzen belastbar erkennbar ist — nicht allein wegen einer langen Feature-Liste.',
   },
 ]
 
@@ -135,7 +135,7 @@ export default function MethodPage() {
           Wie wir auswählen,<br className="hidden sm:block" /> bewerten und einordnen.
         </h1>
         <p className="text-gray-500 text-lg leading-relaxed max-w-2xl">
-          LexLab ist keine Suchmaschine und kein Aggregator. Jedes Tool im Verzeichnis wurde manuell geprüft und entlang eines transparenten Bewertungssystems eingeordnet — aus der Perspektive des DACH-Rechtsmarkts.
+          LexLab ist keine Suchmaschine und kein Aggregator. Jedes Tool im Verzeichnis wird redaktionell anhand veröffentlichter Produkt- und Sicherheitsnachweise, verfügbarer Praxissignale und seiner DACH-Eignung eingeordnet.
         </p>
       </section>
 
@@ -161,6 +161,9 @@ export default function MethodPage() {
           </h2>
           <p className="text-gray-500 text-sm leading-relaxed">
             Jedes Tool im Verzeichnis erhält einen Score von 0–100. Der Score ergibt sich aus fünf gewichteten Dimensionen, die jeweils auf einer Skala von 1–10 bewertet werden. Die Gewichtung spiegelt die tatsächlichen Prioritäten von DACH-Kanzleien wider.
+          </p>
+          <p className="text-gray-400 text-xs leading-relaxed mt-3">
+            Grundlage sind dokumentierte Funktionen, Rechtsquellen, Integrationen, Hosting- und Sicherheitsangaben, veröffentlichte Kunden- und Marktsignale sowie — soweit verfügbar — eigene Produkterfahrung. Anbieterangaben werden nicht als unabhängiger Labortest ausgegeben.
           </p>
         </div>
 
@@ -283,9 +286,9 @@ export default function MethodPage() {
             <div className="flex gap-4">
               <span className="text-gray-300 text-sm flex-shrink-0 mt-0.5">—</span>
               <div>
-                <p className="text-sm font-semibold text-[#111827] mb-1">Kein vollständiges Marktverzeichnis</p>
+                <p className="text-sm font-semibold text-[#111827] mb-1">Kein unkritischer Vollständigkeitsanspruch</p>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  LexLab listet keine Tools auf, die nicht manuell geprüft wurden. Es gibt weitaus mehr KI-Tools im Rechtsbereich als im Verzeichnis — das ist bewusst so.
+                  LexLab deckt die marktprägenden Anbieter und DACH-relevanten Spezialisten ab, listet aber nicht jedes neu gestartete KI-Tool. Aufnahme und Bewertung setzen eine überprüfbare Produkt- und Sicherheitsbasis voraus.
                 </p>
               </div>
             </div>
