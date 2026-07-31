@@ -186,6 +186,8 @@ export default async function HomePage() {
   const promptOfDay: Prompt | null =
     promptRes.data?.length ? mapPrompt(promptRes.data[0]) : null
 
+  const benchmarkPreview = legalBenchmark.rows.slice(0, 5)
+
   // Compute per-rechtsgebiet counts from all approved tools
   const fallbackCounts: Record<Rechtsgebiet, number> = { Steuerrecht: 0, 'M&A': 0, Gesellschaftsrecht: 0, 'Venture Capital': 0 }
   const rgCounts: Record<string, number> = {}
@@ -230,70 +232,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* RESEARCH — Legal benchmark + market report */}
-      <section className="mb-10 grid grid-cols-1 lg:grid-cols-[1.35fr_0.65fr] gap-4" aria-label="LexLab Research Highlights">
-        <Link
-          href="/research/legal-model-benchmark"
-          className="group relative overflow-hidden bg-[#111827] hover:bg-[#151e30] rounded-2xl p-6 sm:p-8 transition-colors"
-        >
-          <div className="absolute -right-14 -top-16 w-52 h-52 rounded-full bg-blue-500/10 blur-2xl pointer-events-none" />
-          <div className="relative">
-            <div className="flex flex-wrap items-center gap-2 mb-5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">Legal AI Benchmark</span>
-              <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-emerald-300 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5 uppercase tracking-wide">
-                <RefreshCw className="w-2.5 h-2.5" /> 24h Sync
-              </span>
-            </div>
-
-            <h2 className="font-display text-2xl sm:text-3xl text-white leading-tight tracking-tight max-w-xl mb-3">
-              ChatGPT, Claude oder Gemini für Legal?
-            </h2>
-            <p className="text-sm text-white/55 leading-relaxed max-w-2xl mb-6">
-              Führende KI-Modelle im Vergleich: juristische Zuverlässigkeit, Dokumentqualität, Faktentreue, Kosten und Eignung für Mandatsdaten.
-            </p>
-
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
-              <div className="flex items-center gap-5">
-                <div>
-                  <p className="font-display text-2xl text-white leading-none">{legalBenchmark.rows.length}</p>
-                  <p className="text-[10px] text-white/35 uppercase tracking-wider mt-1">Modelle</p>
-                </div>
-                <div className="w-px h-9 bg-white/10" />
-                <div>
-                  <p className="font-display text-2xl text-white leading-none">63</p>
-                  <p className="text-[10px] text-white/35 uppercase tracking-wider mt-1">Legal-Aufgaben</p>
-                </div>
-                <div className="w-px h-9 bg-white/10 hidden sm:block" />
-                <div className="hidden sm:block">
-                  <p className="text-xs font-medium text-white/70 leading-none">{legalBenchmark.sourceUpdatedAt}</p>
-                  <p className="text-[10px] text-white/35 uppercase tracking-wider mt-1.5">Datenstand</p>
-                </div>
-              </div>
-              <span className="inline-flex items-center gap-2 text-sm font-medium text-white group-hover:text-blue-300 transition-colors">
-                Modelle vergleichen <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </span>
-            </div>
-          </div>
-        </Link>
-
-        <Link
-          href="/state-of-legal-ai"
-          className="group bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl p-6 flex flex-col justify-between transition-colors"
-        >
-          <div>
-            <div className="flex items-center justify-between gap-3 mb-5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">LexLab Research</span>
-              <Scale className="w-4 h-4 text-gray-300" />
-            </div>
-            <h2 className="font-display text-xl text-[#111827] leading-tight mb-2">State of Legal AI Germany 2026</h2>
-            <p className="text-sm text-gray-500 leading-relaxed">Marktsegmente, Red Flags und Auswahlframework für den deutschen Rechtsmarkt.</p>
-          </div>
-          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 mt-6 group-hover:text-blue-600 transition-colors">
-            Report lesen <ArrowRight className="w-3.5 h-3.5" />
-          </span>
-        </Link>
-      </section>
-
       {/* TOOLS OF THE WEEK */}
       {topTools.length > 0 && (
         <section className="mb-6">
@@ -335,6 +273,97 @@ export default async function HomePage() {
               </Link>
             )
           })}
+        </div>
+      </section>
+
+      {/* LEGAL AI MODEL BENCHMARK — primary homepage feature */}
+      <section
+        className="relative overflow-hidden bg-[#0b1220] rounded-[1.75rem] px-5 py-7 sm:p-9 lg:p-11 mb-14"
+        aria-labelledby="legal-benchmark-heading"
+      >
+        <div className="absolute -right-28 -top-32 w-96 h-96 rounded-full bg-blue-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute -left-32 -bottom-40 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+
+        <div className="relative">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-7 mb-9">
+            <div className="max-w-2xl">
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-400">LexLab Legal AI Benchmark</span>
+                <span className="inline-flex items-center gap-1.5 text-[9px] font-semibold text-emerald-300 bg-emerald-400/10 border border-emerald-400/20 rounded-full px-2 py-1 uppercase tracking-wide">
+                  <RefreshCw className="w-2.5 h-2.5" /> täglich aktualisiert
+                </span>
+              </div>
+              <h2 id="legal-benchmark-heading" className="font-display text-3xl sm:text-4xl lg:text-5xl text-white leading-[1.08] tracking-tight">
+                Welches KI-Modell ist wirklich gut für juristische Arbeit?
+              </h2>
+              <p className="text-sm sm:text-base text-white/55 leading-relaxed mt-5 max-w-xl">
+                ChatGPT, Claude, Gemini und weitere Modelle im direkten Legal-Vergleich — gemessen an Zuverlässigkeit, Dokumentqualität und Kosten statt allgemeinem KI-Hype.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 gap-3 lg:min-w-56 xl:min-w-[25rem]">
+              <div className="rounded-xl bg-white/[0.06] border border-white/10 px-3 py-3.5">
+                <p className="font-display text-2xl text-white leading-none">{legalBenchmark.rows.length}</p>
+                <p className="text-[9px] text-white/35 uppercase tracking-wider mt-1.5">Modelle</p>
+              </div>
+              <div className="rounded-xl bg-white/[0.06] border border-white/10 px-3 py-3.5">
+                <p className="font-display text-2xl text-white leading-none">63</p>
+                <p className="text-[9px] text-white/35 uppercase tracking-wider mt-1.5">Legal Tasks</p>
+              </div>
+              <div className="rounded-xl bg-white/[0.06] border border-white/10 px-3 py-3.5">
+                <p className="text-xs sm:text-sm font-semibold text-white leading-none truncate">{legalBenchmark.sourceUpdatedAt}</p>
+                <p className="text-[9px] text-white/35 uppercase tracking-wider mt-2">Datenstand</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_0.55fr] gap-5">
+            <div className="rounded-2xl bg-white/[0.045] border border-white/10 overflow-hidden">
+              <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-white/10">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/45">Aktuelle Top 5</p>
+                <p className="text-[10px] text-white/30">Reliability Score</p>
+              </div>
+              <div className="divide-y divide-white/[0.07]">
+                {benchmarkPreview.map((row, index) => (
+                  <div key={`${row.provider}-${row.model}`} className="grid grid-cols-[1.5rem_minmax(0,1fr)_3.25rem] sm:grid-cols-[2rem_minmax(0,1fr)_minmax(7rem,0.7fr)_3.5rem] items-center gap-3 px-4 sm:px-5 py-3.5">
+                    <span className={`text-xs font-semibold ${index === 0 ? 'text-blue-300' : 'text-white/30'}`}>{index + 1}</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{row.model}</p>
+                      <p className="text-[10px] text-white/35 mt-0.5">{row.provider}</p>
+                    </div>
+                    <div className="hidden sm:block h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300" style={{ width: `${row.reliability}%` }} />
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums text-right text-white">{row.reliability.toFixed(1)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="rounded-2xl bg-blue-500/10 border border-blue-400/20 p-5 flex-1">
+                <Scale className="w-5 h-5 text-blue-300 mb-4" />
+                <p className="font-display text-xl text-white leading-tight">Mehr als eine Rangliste</p>
+                <p className="text-xs text-white/45 leading-relaxed mt-2">
+                  Einordnung für Kanzleien: Stärken, Kosten, Mandatsdaten-Risiken sowie ergänzende Signale von Arena und METR.
+                </p>
+              </div>
+              <Link
+                href="/research/legal-model-benchmark"
+                className="group inline-flex items-center justify-between gap-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl px-5 py-4 transition-colors"
+              >
+                Vollständigen Benchmark öffnen
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+              <Link href="/state-of-legal-ai" className="text-xs text-white/40 hover:text-white/70 transition-colors text-center">
+                Dazu: State of Legal AI Germany 2026 →
+              </Link>
+            </div>
+          </div>
+
+          <p className="text-[10px] text-white/25 leading-relaxed mt-5">
+            Der Score ist ein Orientierungspunkt und ersetzt keine eigene Prüfung für Rechtsgebiet, Datenschutz und konkreten Anwendungsfall.
+          </p>
         </div>
       </section>
 
