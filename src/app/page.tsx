@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase, Grid3X3, Newspaper, Mail } from 'lucide-react'
+import { ArrowRight, Flame, Calendar, BookOpen, Zap, Building2, TrendingUp, Briefcase, Grid3X3, Newspaper, Mail, RefreshCw, Scale } from 'lucide-react'
 import { ToolCard } from '@/components/ToolCard'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { PromptOfDay } from '@/components/PromptOfDay'
 import { FinderPanel } from '@/components/FinderPanel'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { getLegalModelBenchmark } from '@/lib/legal-model-benchmark'
 import { formatDistanceToNow, format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { Rechtsgebiet, Tool, Workflow, Prompt, NewsArticle, Event } from '@/types'
@@ -14,12 +15,12 @@ import { Rechtsgebiet, Tool, Workflow, Prompt, NewsArticle, Event } from '@/type
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: { absolute: 'LexLab — KI-Tools für Juristen' },
-  description: 'Die kuratierte Plattform für KI-Tools, Workflows und Prompts für Steuerrecht, M&A, Gesellschaftsrecht und Venture Capital.',
+  title: { absolute: 'LexLab — KI-Tools & Legal AI Benchmark für Juristen' },
+  description: 'KI-Tools für Juristen und aktueller Legal AI Benchmark: ChatGPT, Claude, Gemini und weitere Modelle für Kanzleien im Vergleich.',
   alternates: { canonical: 'https://www.lex-lab.de' },
   openGraph: {
-    title: 'LexLab — KI-Tools für Juristen',
-    description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt — kuratiert und bewertet für Kanzleien, Steuerberater und Inhouse-Teams.',
+    title: 'LexLab — KI-Tools & Legal AI Benchmark für Juristen',
+    description: 'KI-Tools und Legal AI Model Benchmark für den deutschen Rechtsmarkt — ChatGPT, Claude, Gemini und spezialisierte Lösungen im Vergleich.',
   },
 }
 
@@ -132,7 +133,7 @@ const jsonLdWebSite = {
   '@type': 'WebSite',
   name: 'LexLab',
   url: 'https://www.lex-lab.de',
-  description: 'KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt',
+  description: 'KI-Tools, Workflows, Prompts und Legal AI Model Benchmark für den deutschen Rechtsmarkt',
   inLanguage: 'de-DE',
   potentialAction: {
     '@type': 'SearchAction',
@@ -156,20 +157,21 @@ const jsonLdOrganization = {
     { '@type': 'Country', name: 'Austria' },
     { '@type': 'Country', name: 'Switzerland' },
   ],
-  knowsAbout: ['Legal Technology', 'Artificial Intelligence', 'German Tax Law', 'M&A', 'Corporate Law'],
+  knowsAbout: ['Legal Technology', 'Legal AI Benchmark', 'Artificial Intelligence', 'ChatGPT', 'Claude', 'Gemini', 'German Tax Law', 'M&A', 'Corporate Law'],
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
   // Fetch all sections in parallel
-  const [toolsRes, newsRes, eventsRes, workflowsRes, promptRes, allToolsRes] = await Promise.all([
+  const [toolsRes, newsRes, eventsRes, workflowsRes, promptRes, allToolsRes, legalBenchmark] = await Promise.all([
     adminSupabase.from('tools').select('id, name, slug, url, tagline, description, rechtsgebiet, category, votes, is_new, created_at').eq('status', 'approved').order('votes', { ascending: false }).limit(3),
     adminSupabase.from('news_articles').select('id, title, slug, summary, source_url, source_name, category, published_at, ai_generated').neq('source_url', '#').order('published_at', { ascending: false }).limit(4),
     adminSupabase.from('events').select('id, title, date, type, url, description').gte('date', new Date().toISOString().slice(0, 10)).order('date', { ascending: true }).limit(3),
     adminSupabase.from('workflows').select('id, title, slug, rechtsgebiet, reading_time, excerpt, created_at').eq('published', true).order('created_at', { ascending: false }).limit(3),
     adminSupabase.from('prompts').select('id, title, slug, prompt_text, use_case, rechtsgebiet, example_output, created_at').eq('is_prompt_of_day', true).limit(1),
     adminSupabase.from('tools').select('rechtsgebiet').eq('status', 'approved'),
+    getLegalModelBenchmark(),
   ])
 
   // Map without mock fallbacks — sections are hidden when data is absent
@@ -228,22 +230,67 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* STATE OF LEGAL AI — Research Report Callout */}
-      <section className="mb-10">
-        <Link href="/state-of-legal-ai" className="block group">
-          <div className="bg-[#111827] rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-[#1a2234] transition-colors">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">LexLab Research</span>
-                <span className="text-[10px] bg-blue-500 text-white font-bold px-2 py-0.5 rounded-full leading-none">Neu</span>
-              </div>
-              <p className="font-display font-bold text-lg text-white leading-snug">State of Legal AI Germany 2026</p>
-              <p className="text-sm text-gray-400 mt-1 leading-relaxed">Marktanalyse, Marktsegmente, Red Flags und Auswahlframework für den deutschen Rechts- und Steuermarkt.</p>
+      {/* RESEARCH — Legal benchmark + market report */}
+      <section className="mb-10 grid grid-cols-1 lg:grid-cols-[1.35fr_0.65fr] gap-4" aria-label="LexLab Research Highlights">
+        <Link
+          href="/research/legal-model-benchmark"
+          className="group relative overflow-hidden bg-[#111827] hover:bg-[#151e30] rounded-2xl p-6 sm:p-8 transition-colors"
+        >
+          <div className="absolute -right-14 -top-16 w-52 h-52 rounded-full bg-blue-500/10 blur-2xl pointer-events-none" />
+          <div className="relative">
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">Legal AI Benchmark</span>
+              <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-emerald-300 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5 uppercase tracking-wide">
+                <RefreshCw className="w-2.5 h-2.5" /> 24h Sync
+              </span>
             </div>
-            <div className="flex-shrink-0 inline-flex items-center gap-2 bg-white/10 group-hover:bg-white/15 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors">
-              Report lesen <ArrowRight className="w-4 h-4" />
+
+            <h2 className="font-display text-2xl sm:text-3xl text-white leading-tight tracking-tight max-w-xl mb-3">
+              ChatGPT, Claude oder Gemini für Legal?
+            </h2>
+            <p className="text-sm text-white/55 leading-relaxed max-w-2xl mb-6">
+              Führende KI-Modelle im Vergleich: juristische Zuverlässigkeit, Dokumentqualität, Faktentreue, Kosten und Eignung für Mandatsdaten.
+            </p>
+
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
+              <div className="flex items-center gap-5">
+                <div>
+                  <p className="font-display text-2xl text-white leading-none">{legalBenchmark.rows.length}</p>
+                  <p className="text-[10px] text-white/35 uppercase tracking-wider mt-1">Modelle</p>
+                </div>
+                <div className="w-px h-9 bg-white/10" />
+                <div>
+                  <p className="font-display text-2xl text-white leading-none">63</p>
+                  <p className="text-[10px] text-white/35 uppercase tracking-wider mt-1">Legal-Aufgaben</p>
+                </div>
+                <div className="w-px h-9 bg-white/10 hidden sm:block" />
+                <div className="hidden sm:block">
+                  <p className="text-xs font-medium text-white/70 leading-none">{legalBenchmark.sourceUpdatedAt}</p>
+                  <p className="text-[10px] text-white/35 uppercase tracking-wider mt-1.5">Datenstand</p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-2 text-sm font-medium text-white group-hover:text-blue-300 transition-colors">
+                Modelle vergleichen <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </span>
             </div>
           </div>
+        </Link>
+
+        <Link
+          href="/state-of-legal-ai"
+          className="group bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl p-6 flex flex-col justify-between transition-colors"
+        >
+          <div>
+            <div className="flex items-center justify-between gap-3 mb-5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">LexLab Research</span>
+              <Scale className="w-4 h-4 text-gray-300" />
+            </div>
+            <h2 className="font-display text-xl text-[#111827] leading-tight mb-2">State of Legal AI Germany 2026</h2>
+            <p className="text-sm text-gray-500 leading-relaxed">Marktsegmente, Red Flags und Auswahlframework für den deutschen Rechtsmarkt.</p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 mt-6 group-hover:text-blue-600 transition-colors">
+            Report lesen <ArrowRight className="w-3.5 h-3.5" />
+          </span>
         </Link>
       </section>
 
