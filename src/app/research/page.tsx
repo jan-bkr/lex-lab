@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight, TrendingUp, BarChart2, Newspaper, BookOpen, Scale } from 'lucide-react'
+import { NEWS_PIPELINE_PAUSED } from '@/lib/site-status'
 
 export const revalidate = 86400
 
@@ -46,11 +47,13 @@ const MODULES = [
   },
   {
     href: '/news',
-    badge: 'Täglich',
+    badge: NEWS_PIPELINE_PAUSED ? 'Archiv' : 'Täglich',
     icon: Newspaper,
     title: 'Kuratierte News',
-    desc: 'Täglich kuratierte Meldungen aus Rechtsprechung, Gesetzgebung und Legal-Tech-Markt — KI-zusammengefasst, manuell ausgewählt.',
-    meta: 'Täglich kuratiert',
+    desc: NEWS_PIPELINE_PAUSED
+      ? 'Kuratierte Meldungen aus Rechtsprechung, Gesetzgebung und Legal-Tech-Markt. Der Feed wird derzeit überarbeitet — das Archiv bleibt vollständig abrufbar.'
+      : 'Täglich kuratierte Meldungen aus Rechtsprechung, Gesetzgebung und Legal-Tech-Markt — KI-zusammengefasst, manuell ausgewählt.',
+    meta: NEWS_PIPELINE_PAUSED ? 'In Überarbeitung' : 'Täglich kuratiert',
     featured: false,
   },
   {

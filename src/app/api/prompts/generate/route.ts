@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { JURIST_PERSONA } from '@/lib/jurist-persona'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getHashedIp } from '@/lib/ip'
+import { PROMPT_BUILDER_PAUSED, PROMPT_BUILDER_PAUSED_MESSAGE } from '@/lib/site-status'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -43,6 +44,14 @@ function isSameOrigin(req: NextRequest): boolean {
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  // ── Pausiert ──
+  if (PROMPT_BUILDER_PAUSED) {
+    return NextResponse.json(
+      { error: 'PAUSED', message: PROMPT_BUILDER_PAUSED_MESSAGE },
+      { status: 503 }
+    )
+  }
+
   // ── Origin check ──
   if (!isSameOrigin(req)) {
     return NextResponse.json({ error: 'Ungültige Herkunft.' }, { status: 403 })

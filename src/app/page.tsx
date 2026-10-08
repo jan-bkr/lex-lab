@@ -8,6 +8,7 @@ import { PromptOfDay } from '@/components/PromptOfDay'
 import { FinderPanel } from '@/components/FinderPanel'
 import { adminSupabase } from '@/lib/supabase/admin'
 import { getLegalModelBenchmark } from '@/lib/legal-model-benchmark'
+import { NEWS_PIPELINE_PAUSED, PROMPT_BUILDER_PAUSED } from '@/lib/site-status'
 import { formatDistanceToNow, format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { Rechtsgebiet, Tool, Workflow, Prompt, NewsArticle, Event } from '@/types'
@@ -208,7 +209,7 @@ export default async function HomePage() {
       <section className="pt-16 pb-14 text-center">
         <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-3 py-1 mb-6">
           <Zap className="w-3 h-3 text-blue-500" />
-          <span className="text-xs text-blue-600 font-medium">Täglich kuratiert — KI für den deutschen Rechtsmarkt</span>
+          <span className="text-xs text-blue-600 font-medium">Unabhängig kuratiert — KI für den deutschen Rechtsmarkt</span>
         </div>
         <h1>
           <span className="block font-display text-5xl sm:text-6xl lg:text-7xl text-gray-900 leading-tight tracking-tight">
@@ -226,9 +227,15 @@ export default async function HomePage() {
           <Link href="/tools" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl transition-colors text-sm">
             Tools entdecken <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link href="/prompts/builder" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium px-5 py-2.5 rounded-xl border border-gray-200 transition-colors text-sm">
-            Prompt Builder testen
-          </Link>
+          {PROMPT_BUILDER_PAUSED ? (
+            <Link href="/prompts" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium px-5 py-2.5 rounded-xl border border-gray-200 transition-colors text-sm">
+              Prompt-Bibliothek
+            </Link>
+          ) : (
+            <Link href="/prompts/builder" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium px-5 py-2.5 rounded-xl border border-gray-200 transition-colors text-sm">
+              Prompt Builder testen
+            </Link>
+          )}
         </div>
       </section>
 
@@ -408,7 +415,14 @@ export default async function HomePage() {
           {recentNews.length > 0 && (
             <section className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2"><Newspaper className="w-5 h-5 text-gray-400" /> Aktuelles</h2>
+                <h2 className="font-display font-bold text-xl text-gray-900 flex items-center gap-2">
+                  <Newspaper className="w-5 h-5 text-gray-400" /> Aktuelles
+                  {NEWS_PIPELINE_PAUSED && (
+                    <span className="font-sans text-[9px] font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded px-1.5 py-0.5 uppercase tracking-wide">
+                      In Überarbeitung
+                    </span>
+                  )}
+                </h2>
                 <Link href="/news" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
                   Alle News <ArrowRight className="w-3.5 h-3.5" />
                 </Link>

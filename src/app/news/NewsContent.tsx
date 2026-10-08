@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { format } from 'date-fns'
+import { de } from 'date-fns/locale'
 import { NewsArticle } from '@/types'
+import { NEWS_PIPELINE_PAUSED } from '@/lib/site-status'
 
 const CATEGORIES = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Legal Tech', 'Regulierung', 'Venture Capital']
 
@@ -40,7 +43,8 @@ function relativeDate(dateStr: string): string {
   if (mins < 60)  return `vor ${mins} Min.`
   if (hours < 24) return `vor ${hours} Std.`
   if (days === 1) return 'Gestern'
-  return `vor ${days} Tagen`
+  if (days <= 7)  return `vor ${days} Tagen`
+  return format(new Date(dateStr), 'd. MMM yyyy', { locale: de })
 }
 
 export default function NewsContent({ initialArticles }: { initialArticles: NewsArticle[] }) {
@@ -56,14 +60,27 @@ export default function NewsContent({ initialArticles }: { initialArticles: News
       {/* Header */}
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-          Täglich kuratiert
+          <span className={`w-1.5 h-1.5 rounded-full inline-block ${NEWS_PIPELINE_PAUSED ? 'bg-amber-400' : 'bg-green-400'}`} />
+          {NEWS_PIPELINE_PAUSED ? 'In Überarbeitung' : 'Täglich kuratiert'}
         </div>
         <h1 className="font-display text-3xl text-gray-900">Aktuelles</h1>
         <p className="text-gray-500 mt-1.5 text-sm leading-relaxed max-w-xl">
           Ausgewählte Meldungen aus dem deutschen Rechts- und Steuermarkt — aus juristischen Fachquellen. Zusammenfassungen sind KI-generiert und dienen der Orientierung.
         </p>
       </div>
+
+      {/* Pausen-Hinweis */}
+      {NEWS_PIPELINE_PAUSED && (
+        <div className="bg-white border border-gray-100 rounded-xl px-5 py-4 mb-6 flex items-start gap-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Der News-Feed wird derzeit überarbeitet.</p>
+            <p className="text-sm text-gray-500 mt-0.5 leading-relaxed">
+              Vorübergehend erscheinen keine neuen Meldungen. Alle bisherigen Beiträge bleiben vollständig abrufbar.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Filter pills */}
       <div className="flex flex-wrap gap-1.5 mb-6">

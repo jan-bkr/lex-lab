@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import LexLabLogo from '@/components/LexLabLogo'
+import { PROMPT_BUILDER_PAUSED } from '@/lib/site-status'
 
 interface NavLink {
   href: string
@@ -13,7 +14,7 @@ interface NavLink {
   highlight?: boolean
 }
 
-const navLinks: NavLink[] = [
+const allNavLinks: NavLink[] = [
   { href: '/tools', label: 'Tools' },
   { href: '/tools/compare', label: 'Vergleiche', isNew: true },
   { href: '/prompts', label: 'Prompts' },
@@ -23,6 +24,10 @@ const navLinks: NavLink[] = [
   { href: '/radar', label: 'Radar' },
   { href: '/research', label: 'Research' },
 ]
+
+const navLinks = PROMPT_BUILDER_PAUSED
+  ? allNavLinks.filter(l => l.href !== '/prompts/builder')
+  : allNavLinks
 
 // Spotlight glow from the logo side — matches design file "spotlight" variant
 const HEADER_BG = 'radial-gradient(ellipse 60% 120% at 8% 50%, rgba(59,123,255,0.20) 0%, rgba(10,14,20,0) 60%), linear-gradient(180deg, #0E1422 0%, #0A0E14 100%)'

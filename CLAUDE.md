@@ -235,7 +235,9 @@ export default function Page() {
 
 **Plattform:** Vercel — automatischer Deploy bei Push auf `main`
 
-**Cron-Job:** `/api/pipeline` täglich 06:00 UTC **und 12:00 UTC** (konfiguriert in `vercel.json`)
+> **⏸ PAUSIERT (seit 2026-10-08):** News-Pipeline und Prompt Builder sind vorübergehend abgeschaltet. Zentrale Schalter in `src/lib/site-status.ts` (`NEWS_PIPELINE_PAUSED`, `PROMPT_BUILDER_PAUSED`). `vercel.json` enthält aktuell **keine** Crons. Die UI zeigt „In Überarbeitung"-Hinweise (News-Feed, Homepage-News, Research, Prompt-Bibliothek, Method), `/prompts/builder` rendert eine Pausen-Seite statt `BuilderClient`, `/api/prompts/generate` antwortet mit `503 { error: 'PAUSED' }`, „✦ Builder" ist aus der Navbar ausgeblendet. **Reaktivieren:** beide Flags auf `false` setzen und die zwei Cron-Einträge unten wieder in `vercel.json` eintragen. Manueller Pipeline-Lauf per `POST /api/pipeline` funktioniert weiterhin.
+
+**Cron-Job (derzeit deaktiviert, s. o.):** `/api/pipeline` täglich 06:00 UTC **und 12:00 UTC** (`{ "path": "/api/pipeline", "schedule": "0 6 * * *" }` + `"0 12 * * *"` in `vercel.json`)
 - Zwei Läufe pro Tag als Redundanz — Vercel Hobby-Cron feuert gelegentlich nicht zuverlässig
 - Vercel Cron sendet **GET** — Route exportiert sowohl `GET` als auch `POST` (GET = Cron, POST = manueller Trigger)
 - Auth: Vercel-Header `x-vercel-cron: 1` (automatisch) oder `Authorization: Bearer CRON_SECRET` (manuell)
