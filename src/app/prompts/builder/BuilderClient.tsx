@@ -189,6 +189,7 @@ export default function BuilderPage() {
         return
       }
 
+      if (res.status === 503 && data.error === 'PAUSED') throw new Error(data.message)
       if (!res.ok) throw new Error(data.error ?? 'Unbekannter Fehler')
 
       setGeneratedPrompt(JURIST_PERSONA + '\n\n---\n\n' + data.prompt.trim())

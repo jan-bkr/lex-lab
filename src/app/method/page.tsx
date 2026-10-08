@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { PROMPT_BUILDER_PAUSED } from '@/lib/site-status'
 
 export const revalidate = 86400
 
@@ -116,7 +117,9 @@ const MODULES = [
     href: '/prompts/builder',
     symbol: '✦',
     title: 'Prompt Builder',
-    desc: 'Professionelle juristische Prompts mit integrierter JURIST_PERSONA — für Gutachten, Vertragsanalysen, Due Diligence und mehr.',
+    desc: PROMPT_BUILDER_PAUSED
+      ? 'Derzeit in Überarbeitung und vorübergehend pausiert. Die Prompt-Bibliothek bleibt vollständig verfügbar.'
+      : 'Professionelle juristische Prompts mit integrierter JURIST_PERSONA — für Gutachten, Vertragsanalysen, Due Diligence und mehr.',
   },
 ]
 

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Bot, CheckCircle2 } from 'lucide-react'
 import { adminSupabase } from '@/lib/supabase/admin'
+import { PROMPT_BUILDER_PAUSED } from '@/lib/site-status'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import PromptActions from '@/components/PromptActions'
 import type { Prompt, Rechtsgebiet } from '@/types'
@@ -138,9 +139,15 @@ export default async function PromptDetailPage({ params }: Props) {
               </li>
             ))}
           </ul>
-          <Link href="/prompts/builder" className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-900">
-            Eigenen Prompt bauen <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          {PROMPT_BUILDER_PAUSED ? (
+            <Link href="/prompts" className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-900">
+              Weitere Prompts ansehen <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          ) : (
+            <Link href="/prompts/builder" className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-900">
+              Eigenen Prompt bauen <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
         </aside>
       </div>
     </div>
