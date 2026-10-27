@@ -57,7 +57,6 @@ export interface AdminPrompt {
   use_case: string | null
   rechtsgebiet: string[]
   example_output: string | null
-  is_prompt_of_day: boolean
   created_at: string
 }
 
@@ -318,35 +317,6 @@ export async function fetchAllPrompts(): Promise<AdminPrompt[]> {
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
   return (data ?? []) as AdminPrompt[]
-}
-
-export async function setPromptOfDay(id: string): Promise<void> {
-  await requireAdminSession()
-  // Clear all first
-  const { error: clearError } = await adminSupabase
-    .from('prompts')
-    .update({ is_prompt_of_day: false })
-    .not('id', 'is', null)
-  if (clearError) throw new Error(clearError.message)
-
-  const { error } = await adminSupabase
-    .from('prompts')
-    .update({ is_prompt_of_day: true })
-    .eq('id', id)
-  if (error) throw new Error(error.message)
-  revalidatePath('/admin/prompts')
-  revalidatePath('/prompts')
-}
-
-export async function clearPromptOfDay(id: string): Promise<void> {
-  await requireAdminSession()
-  const { error } = await adminSupabase
-    .from('prompts')
-    .update({ is_prompt_of_day: false })
-    .eq('id', id)
-  if (error) throw new Error(error.message)
-  revalidatePath('/admin/prompts')
-  revalidatePath('/prompts')
 }
 
 export async function deletePrompt(id: string): Promise<void> {

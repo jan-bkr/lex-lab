@@ -131,6 +131,9 @@ export default function MethodPage() {
         <p className="text-gray-500 text-lg leading-relaxed max-w-2xl">
           LexLab ist keine Suchmaschine und kein Aggregator. Jedes Tool im Verzeichnis wird redaktionell anhand veröffentlichter Produkt- und Sicherheitsnachweise, verfügbarer Praxissignale und seiner DACH-Eignung eingeordnet.
         </p>
+        <p className="text-xs text-gray-400 mt-4">
+          Stand der Methodik: Oktober 2026. Geprüfte Tool-Profile zeigen, wann sie zuletzt durchgesehen wurden.
+        </p>
       </section>
 
       {/* ─── Anchor nav ─── */}

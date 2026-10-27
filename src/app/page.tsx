@@ -181,7 +181,7 @@ export default async function HomePage() {
                 Welches KI-Modell ist wirklich gut für juristische Arbeit?
               </h2>
               <p className="text-sm sm:text-base text-white/55 leading-relaxed mt-5 max-w-xl">
-                ChatGPT, Claude, Gemini und weitere Modelle im direkten Legal-Vergleich — gemessen an Zuverlässigkeit, Dokumentqualität und Kosten statt allgemeinem KI-Hype.
+                ChatGPT, Claude, Gemini und weitere Modelle im Legal-Vergleich: Wie viele Vertragsaufgaben lösen sie vollständig richtig, und was kostet das?
               </p>
             </div>
 
@@ -191,8 +191,8 @@ export default async function HomePage() {
                 <p className="text-[9px] text-white/35 uppercase tracking-wider mt-1.5">Modelle</p>
               </div>
               <div className="rounded-xl bg-white/[0.06] border border-white/10 px-3 py-3.5">
-                <p className="font-display text-2xl text-white leading-none">63</p>
-                <p className="text-[9px] text-white/35 uppercase tracking-wider mt-1.5">Legal Tasks</p>
+                <p className="font-display text-2xl text-white leading-none">2×</p>
+                <p className="text-[9px] text-white/35 uppercase tracking-wider mt-1.5">Je Aufgabe</p>
               </div>
               <div className="rounded-xl bg-white/[0.06] border border-white/10 px-3 py-3.5">
                 <p className="text-xs sm:text-sm font-semibold text-white leading-none truncate">{legalBenchmark.sourceUpdatedAt}</p>
@@ -205,20 +205,20 @@ export default async function HomePage() {
             <div className="rounded-2xl bg-white/[0.045] border border-white/10 overflow-hidden">
               <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-white/10">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/45">Aktuelle Top 5</p>
-                <p className="text-[10px] text-white/30">Reliability Score</p>
+                <p className="text-[10px] text-white/30">Aufgaben bestanden</p>
               </div>
               <div className="divide-y divide-white/[0.07]">
-                {benchmarkPreview.map((row, index) => (
+                {benchmarkPreview.map(row => (
                   <div key={`${row.provider}-${row.model}`} className="grid grid-cols-[1.5rem_minmax(0,1fr)_3.25rem] sm:grid-cols-[2rem_minmax(0,1fr)_minmax(7rem,0.7fr)_3.5rem] items-center gap-3 px-4 sm:px-5 py-3.5">
-                    <span className={`text-xs font-semibold ${index === 0 ? 'text-blue-300' : 'text-white/30'}`}>{index + 1}</span>
+                    <span className={`text-xs font-semibold ${row.rank === 1 ? 'text-blue-300' : 'text-white/30'}`}>{row.rank}</span>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-white truncate">{row.model}</p>
                       <p className="text-[10px] text-white/35 mt-0.5">{row.provider}</p>
                     </div>
                     <div className="hidden sm:block h-1.5 rounded-full bg-white/10 overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300" style={{ width: `${row.reliability}%` }} />
+                      <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300" style={{ width: `${row.taskPass}%` }} />
                     </div>
-                    <span className="text-sm font-semibold tabular-nums text-right text-white">{row.reliability.toFixed(1)}%</span>
+                    <span className="text-sm font-semibold tabular-nums text-right text-white">{row.taskPass.toFixed(1).replace('.', ',')} %</span>
                   </div>
                 ))}
               </div>
@@ -229,7 +229,7 @@ export default async function HomePage() {
                 <Scale className="w-5 h-5 text-blue-300 mb-4" />
                 <p className="font-display text-xl text-white leading-tight">Mehr als eine Rangliste</p>
                 <p className="text-xs text-white/45 leading-relaxed mt-2">
-                  Einordnung für Kanzleien: Stärken, Kosten, Mandatsdaten-Risiken sowie ergänzende Signale von Arena und METR.
+                  Einordnung für Kanzleien: Kriterien-Quote, Form, Kosten, Mandatsdaten-Risiken sowie ergänzende Signale von Arena und METR.
                 </p>
               </div>
               <Link
@@ -246,7 +246,7 @@ export default async function HomePage() {
           </div>
 
           <p className="text-[10px] text-white/25 leading-relaxed mt-5">
-            Der Score ist ein Orientierungspunkt und ersetzt keine eigene Prüfung für Rechtsgebiet, Datenschutz und konkreten Anwendungsfall.
+            Die Rangliste ist ein Orientierungspunkt aus englischsprachigen, US-/UK-lastigen Aufgaben und ersetzt keine eigene Prüfung für Rechtsgebiet, Datenschutz und konkreten Anwendungsfall.
           </p>
         </div>
       </section>

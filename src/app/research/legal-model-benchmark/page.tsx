@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import {
   getLegalModelBenchmark,
+  LEGAL_BENCHMARK_METHODOLOGY,
   LEGAL_BENCHMARK_SOURCE,
   type LegalModelBenchmarkRow,
 } from '@/lib/legal-model-benchmark'
@@ -19,28 +20,49 @@ export const revalidate = 86400
 
 export const metadata: Metadata = {
   title: 'Legal AI Model Benchmark 2026',
-  description: 'Aktueller Vergleich führender KI-Modelle für juristische Aufgaben — mit Zuverlässigkeit, Nutzbarkeit, Kosten und Mandatsdaten-Check.',
+  description: 'Welche Sprachmodelle juristische Vertragsaufgaben vollständig richtig lösen: Aufgaben- und Kriterien-Quote, Form, Kosten und Mandatsdaten-Check. Stand Oktober 2026.',
   openGraph: {
     title: 'Legal AI Model Benchmark 2026 | LexLab',
-    description: 'Welche Basismodelle eignen sich für juristische Aufgaben? Aktuelle Ergebnisse und Datenschutz-Einordnung für Kanzleien.',
+    description: 'Welche Sprachmodelle eignen sich für juristische Aufgaben? Aktuelle Ergebnisse (Oktober 2026) und Datenschutz-Einordnung für Kanzleien.',
   },
   alternates: { canonical: 'https://www.lex-lab.de/research/legal-model-benchmark' },
 }
 
 const RELEASE_WATCH = [
   {
-    model: 'Claude Sonnet 5',
-    provider: 'Anthropic',
-    releasedAt: '30. Juni 2026',
-    note: 'Aktuelles Sonnet-Modell; im verwendeten Legal-Benchmark noch nicht separat ausgewiesen.',
-    href: 'https://www.anthropic.com/news/claude-sonnet-5',
+    model: 'Gemini 4 Argon',
+    provider: 'Google',
+    releasedAt: 'Oktober 2026',
+    note: 'Neues Spitzenmodell von Google, in der API als stabil gelistet. In der Legal-Rangliste noch nicht ausgewiesen; dort steht Google bisher nur mit Gemini 3.8 Flash.',
+    href: 'https://ai.google.dev/gemini-api/docs/models',
+  },
+]
+
+// Seit September 2026 neu in der Rangliste (Changelog der Quelle)
+const NEW_IN_RANKING = new Set([
+  'Claude Opus 5.5',
+  'Claude Sonnet 5.5',
+  'GPT-6.1 Sol',
+  'Claude Haiku 5.5',
+  'Mistral Large 4',
+])
+
+const TAKEAWAYS = [
+  {
+    title: 'Spitze geteilt, Preise nicht',
+    body: 'Claude Opus 5.5, Claude Fable 5.1 und Muse Spark 1.3 bestehen gleich viele Vertragsaufgaben. Muse Spark kostet je Aufgabe rund 86 % weniger als die beiden Claude-Modelle.',
   },
   {
-    model: 'Gemini 3.6 Flash',
-    provider: 'Google',
-    releasedAt: '21. Juli 2026',
-    note: 'Aktuelles produktionsreifes Flash-Modell; Legal-Evaluation steht noch aus.',
-    href: 'https://ai.google.dev/gemini-api/docs/latest-model',
+    title: 'Fast alles richtig ist nicht fertig',
+    body: 'GPT-6 Astra erfüllt 87,1 % der Einzelkriterien, besteht aber nur rund ein Viertel der Aufgaben vollständig. Ein verfehltes Kriterium lässt die ganze Aufgabe durchfallen.',
+  },
+  {
+    title: 'Hoher Rang, schmale Basis',
+    body: 'Qwen 3.8 Flash steht weit oben, erfüllt aber weniger als die Hälfte der Kriterien. Vor dem Rang lohnt der Blick auf die Kriterien-Quote.',
+  },
+  {
+    title: 'Kein Modell ohne Prüfung',
+    body: 'Auch das beste Ergebnis verfehlt in mehr als der Hälfte der Vertragsaufgaben mindestens eine Anforderung. Die anwaltliche Durchsicht bleibt Pflicht.',
   },
 ]
 
@@ -57,7 +79,7 @@ const DEPLOYMENTS = [
     product: 'Claude / Claude API',
     provider: 'Anthropic',
     consumer: 'Nur anonymisiert verwenden',
-    professional: 'Claude for Work oder API sind prüffähig',
+    professional: 'Team, Enterprise oder API sind prüffähig',
     protection: 'Ein- und Ausgaben kommerzieller Produkte werden standardmäßig nicht für das Modelltraining genutzt; Enterprise bietet zusätzliche Retention Controls.',
     href: 'https://privacy.anthropic.com/en/articles/7996868-is-my-data-used-for-model-training',
   },
@@ -85,22 +107,15 @@ const COMPLEMENTARY_SIGNALS = [
   },
   {
     source: 'METR',
-    badge: 'TH 1.1 · Periodisch',
+    badge: 'TH 1.1 · Stand Sept. 2026',
     title: 'Mehrstufige Aufgabenreichweite',
     adds: 'Die 50%-Time-Horizon beschreibt die menschliche Expertenzeit einer Aufgabe, bei der ein Agent voraussichtlich in der Hälfte der Fälle erfolgreich ist. Das ist ein nützlicher Hinweis auf planungsintensive Workflows.',
-    limit: 'Gemessen werden überwiegend Software-, ML- und Cybersecurity-Aufgaben — nicht Recht. Der Wert ist weder reale Laufzeit noch Garantie für selbstständige Kanzleiarbeit; Messungen über 16 Stunden gelten derzeit als unzuverlässig.',
+    limit: 'Gemessen werden überwiegend Software-, ML- und Cybersecurity-Aufgaben — nicht Recht. Der Wert ist weder reale Laufzeit noch Garantie für selbstständige Kanzleiarbeit; Messungen über 16 Stunden gelten als unzuverlässig. METR aktualisiert die Seite seit dem 8. September 2026 nicht mehr aktiv.',
     links: [
       { label: 'METR Time Horizons', href: 'https://metr.org/time-horizons/' },
     ],
   },
 ]
-
-const CURRENT_MODELS = new Set([
-  'GPT 5.6 Sol',
-  'Claude Fable 5',
-  'Claude Opus 5',
-  'Gemini 3.5 Flash',
-])
 
 function providerAccent(provider: string) {
   if (provider === 'OpenAI') return 'bg-emerald-500'
@@ -110,12 +125,18 @@ function providerAccent(provider: string) {
 }
 
 function formatCost(row: LegalModelBenchmarkRow) {
-  return `${row.approximateCost ? '≈ ' : ''}$${row.costPerTask.toFixed(2)}`
+  return `$${row.costPerTask.toFixed(2)}`
+}
+
+function formatPercent(value: number) {
+  return `${value.toFixed(1).replace('.', ',')} %`
 }
 
 export default async function LegalModelBenchmarkPage() {
   const benchmark = await getLegalModelBenchmark()
-  const leader = benchmark.rows[0]
+  const leaders = benchmark.rows.filter(row => row.rank === 1)
+  // Sobald die Quelle ein beobachtetes Modell rankt, verschwindet es aus dem Release Watch
+  const pendingReleases = RELEASE_WATCH.filter(item => !benchmark.rows.some(row => row.model === item.model))
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
@@ -126,22 +147,22 @@ export default async function LegalModelBenchmarkPage() {
           </span>
           <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded px-2 py-1 uppercase tracking-wider">
             <RefreshCw className="w-3 h-3" />
-            24h Source Sync
+            Täglicher Abgleich
           </span>
         </div>
         <h1 className="font-display text-4xl sm:text-6xl text-[#111827] leading-[1.05] tracking-tight mb-6">
           Legal AI<br />Model Benchmark
         </h1>
         <p className="text-gray-500 text-lg sm:text-xl leading-relaxed max-w-3xl">
-          Welche Basismodelle liefern bei juristischen Aufgaben verlässliche Ergebnisse — und unter welchen Bedingungen dürfen Kanzleien sie einsetzen? Leistung und Mandatsdatenschutz werden bewusst getrennt bewertet.
+          Welche Sprachmodelle erledigen juristische Aufgaben vollständig richtig, und unter welchen Bedingungen darf eine Kanzlei sie einsetzen? Leistung und Mandatsdatenschutz werden bewusst getrennt bewertet. Stand: {benchmark.sourceUpdatedAt}.
         </p>
       </section>
 
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-14 max-w-4xl">
         <div className="bg-[#111827] rounded-2xl p-5 text-white">
-          <p className="text-[10px] text-white/40 uppercase tracking-widest mb-3">Zuverlässigster Entwurf</p>
-          <p className="font-display text-xl leading-tight mb-1">{leader.model}</p>
-          <p className="text-sm text-white/50">{leader.reliability.toFixed(1)}% vollständig richtig</p>
+          <p className="text-[10px] text-white/40 uppercase tracking-widest mb-3">{leaders.length > 1 ? 'Geteilte Spitze' : 'Spitze'}</p>
+          <p className="font-display text-xl leading-tight mb-1">{leaders.map(row => row.model).join(' · ')}</p>
+          <p className="text-sm text-white/50">{formatPercent(leaders[0].taskPass)} der Aufgaben vollständig bestanden</p>
         </div>
         <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
           <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-3">Vergleichsfeld</p>
@@ -150,8 +171,8 @@ export default async function LegalModelBenchmarkPage() {
         </div>
         <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
           <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-3">Testumfang</p>
-          <p className="font-display text-2xl text-[#111827] mb-1">63 Aufgaben</p>
-          <p className="text-sm text-gray-500">davon 34 Vertragsentwürfe</p>
+          <p className="font-display text-2xl text-[#111827] mb-1">2 Durchläufe</p>
+          <p className="text-sm text-gray-500">je Aufgabe, beide müssen bestehen</p>
         </div>
       </section>
 
@@ -160,10 +181,10 @@ export default async function LegalModelBenchmarkPage() {
           <div className="max-w-2xl">
             <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Praxis-Benchmark</p>
             <h2 id="leaderboard-heading" className="font-display text-3xl text-[#111827] tracking-tight mb-2">
-              Vertragsentwurf: Zuverlässigkeit vor Stil
+              Vertragsarbeit: vollständig richtig oder durchgefallen
             </h2>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Zuverlässigkeit misst den Anteil vollständig bestandener Aufgaben. Nutzbarkeit bewertet Klarheit, Länge und Struktur von 1 bis 3. Die Werte werden nicht zu einem künstlichen Gesamtscore vermischt.
+              Der Rang folgt der Aufgaben-Quote: Eine Aufgabe gilt nur als bestanden, wenn jedes Kriterium in beiden Durchläufen erfüllt ist. Die Kriterien-Quote zeigt, wie nah ein Modell dran war. Form misst, ob ein Anwalt das Ergebnis so verwenden würde. Kosten und Dauer beeinflussen den Rang nicht.
             </p>
           </div>
           <a
@@ -181,28 +202,30 @@ export default async function LegalModelBenchmarkPage() {
             ← Seitlich scrollen für alle Werte →
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left">
+            <table className="w-full min-w-[880px] text-left">
               <thead className="bg-gray-50/80 border-b border-gray-100">
                 <tr className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                   <th className="py-3 px-4 w-12">#</th>
                   <th className="py-3 px-4">Modell</th>
-                  <th className="py-3 px-4">Zuverlässigkeit</th>
-                  <th className="py-3 px-4">Nutzbarkeit</th>
+                  <th className="py-3 px-4">Aufgaben bestanden</th>
+                  <th className="py-3 px-4">Kriterien erfüllt</th>
+                  <th className="py-3 px-4">Form</th>
                   <th className="py-3 px-4 text-right">Kosten / Aufgabe</th>
+                  <th className="py-3 px-4 text-right">Dauer</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {benchmark.rows.map((row, index) => (
+                {benchmark.rows.map(row => (
                   <tr key={`${row.provider}-${row.model}`} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 px-4 text-xs font-mono text-gray-300">{String(index + 1).padStart(2, '0')}</td>
+                    <td className="py-4 px-4 text-xs font-mono text-gray-300">{String(row.rank).padStart(2, '0')}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2.5">
                         <span className={`w-1.5 h-7 rounded-full flex-shrink-0 ${providerAccent(row.provider)}`} />
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-semibold text-[#111827]">{row.model}</span>
-                            {CURRENT_MODELS.has(row.model) && (
-                              <span className="text-[8px] font-bold text-emerald-700 bg-emerald-50 rounded px-1.5 py-0.5 uppercase tracking-wide">Aktuell</span>
+                            {NEW_IN_RANKING.has(row.model) && (
+                              <span className="text-[8px] font-bold text-emerald-700 bg-emerald-50 rounded px-1.5 py-0.5 uppercase tracking-wide">Neu</span>
                             )}
                           </div>
                           <span className="text-xs text-gray-400">{row.provider}</span>
@@ -211,23 +234,43 @@ export default async function LegalModelBenchmarkPage() {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold tabular-nums text-[#111827] w-12">{row.reliability.toFixed(1)}%</span>
-                        <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#111827] rounded-full" style={{ width: `${row.reliability}%` }} />
+                        <span className="text-sm font-semibold tabular-nums text-[#111827] w-14">{formatPercent(row.taskPass)}</span>
+                        <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-[#111827] rounded-full" style={{ width: `${row.taskPass}%` }} />
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 px-4 text-sm tabular-nums text-gray-600">{row.usefulness.toFixed(2)} / 3</td>
+                    <td className="py-4 px-4 text-sm tabular-nums text-gray-600">{formatPercent(row.criteriaPass)}</td>
+                    <td className="py-4 px-4 text-sm tabular-nums text-gray-600">{formatPercent(row.form)}</td>
                     <td className="py-4 px-4 text-sm tabular-nums text-gray-600 text-right">{formatCost(row)}</td>
+                    <td className="py-4 px-4 text-sm tabular-nums text-gray-400 text-right whitespace-nowrap">{row.latency}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="px-4 py-3 bg-gray-50/60 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-gray-400">
-            <span>Quelle: Legal AI Benchmarking · API-Modelle bei Standard-Reasoning · Kosten in USD</span>
-            <span>{benchmark.sourceMode === 'live' ? 'Quelle erfolgreich synchronisiert' : 'Geprüfter Fallback-Datensatz aktiv'}</span>
+            <span>Quelle: Legal AI Benchmarking · Contract Workflows · Kosten in USD zu Listenpreisen · „Neu“ = seit September 2026 aufgenommen</span>
+            <span>{benchmark.sourceMode === 'live' ? `Quelle synchronisiert · ${benchmark.sourceUpdatedAt}` : `Geprüfter Datensatz · ${benchmark.sourceUpdatedAt}`}</span>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-16" aria-labelledby="takeaways-heading">
+        <div className="max-w-3xl mb-6">
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Oktober-Runde</p>
+          <h2 id="takeaways-heading" className="font-display text-3xl text-[#111827] tracking-tight mb-2">Was die aktuelle Runde zeigt</h2>
+          <p className="text-sm text-gray-500 leading-relaxed">
+            Kernaussagen der Quelle zur Oktober-Auswertung, übersetzt und gekürzt.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {TAKEAWAYS.map(item => (
+            <article key={item.title} className="border border-gray-100 rounded-2xl bg-white p-5">
+              <h3 className="font-semibold text-[#111827] mb-1.5">{item.title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{item.body}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -248,7 +291,7 @@ export default async function LegalModelBenchmarkPage() {
                   <p className="text-[10px] font-semibold text-blue-600 uppercase tracking-wider mb-1">{signal.source}</p>
                   <h3 className="font-display text-xl text-[#111827]">{signal.title}</h3>
                 </div>
-                <span className="text-[9px] font-semibold text-gray-500 bg-gray-50 border border-gray-100 rounded px-2 py-1 whitespace-nowrap">
+                <span className="text-[9px] font-semibold text-gray-500 bg-gray-50 border border-gray-100 rounded px-2 py-1 text-right flex-shrink-0 max-w-[45%]">
                   {signal.badge}
                 </span>
               </div>
@@ -289,6 +332,7 @@ export default async function LegalModelBenchmarkPage() {
         </div>
       </section>
 
+      {pendingReleases.length > 0 && (
       <section className="mb-16" aria-labelledby="watch-heading">
         <div className="max-w-2xl mb-6">
           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Release Watch</p>
@@ -298,7 +342,7 @@ export default async function LegalModelBenchmarkPage() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {RELEASE_WATCH.map(item => (
+          {pendingReleases.map(item => (
             <a
               key={item.model}
               href={item.href}
@@ -319,13 +363,14 @@ export default async function LegalModelBenchmarkPage() {
           ))}
         </div>
       </section>
+      )}
 
       <section className="mb-16" aria-labelledby="privacy-heading">
         <div className="max-w-3xl mb-6">
           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Mandatsdaten-Check</p>
           <h2 id="privacy-heading" className="font-display text-3xl text-[#111827] tracking-tight mb-2">Modellleistung ist nicht Produktfreigabe</h2>
           <p className="text-sm text-gray-500 leading-relaxed">
-            ChatGPT, Claude und Gemini sind Anwendungen; GPT, Claude Fable oder Gemini 3.6 sind Modelle. Für Verschwiegenheit und Datenschutz zählt das konkrete Produkt, der Tarif, die Konfiguration und der Vertrag — nicht der Benchmarkplatz.
+            ChatGPT, Claude und Gemini sind Anwendungen; GPT-6, Claude Opus oder Gemini 4 Argon sind Modelle. Für Verschwiegenheit und Datenschutz zählt das konkrete Produkt, der Tarif, die Konfiguration und der Vertrag — nicht der Benchmarkplatz.
           </p>
         </div>
 
@@ -374,10 +419,10 @@ export default async function LegalModelBenchmarkPage() {
           <h2 className="font-display text-2xl text-[#111827] tracking-tight mb-5">Was die Zahlen aussagen — und was nicht</h2>
           <div className="space-y-4">
             {[
-              ['Praxisnaher Ausschnitt', '63 Single-Turn-Aufgaben aus Vertragsentwurf und Informationsextraktion; Schwerpunkt auf Commercial, IP, Employment, M&A und Competition.'],
-              ['Kein deutscher Rechtsbenchmark', 'Die Aufgaben sind englischsprachig und US-/UK-lastig. Aussagen zu deutschem Recht, deutscher Zitierpraxis oder Fachterminologie wären daraus nicht belastbar.'],
-              ['Momentaufnahme', 'Modelle und Produkte verändern sich. Die Quelle testet einen Lauf je Aufgabe; Konsistenz und Drift werden derzeit nicht gemessen.'],
-              ['Automatische Aktualisierung mit Sicherheitsnetz', 'LexLab synchronisiert die veröffentlichte Rangliste alle 24 Stunden. Neue getestete Modelle erscheinen automatisch; bei Quellenausfall bleibt der letzte geprüfte Datensatz sichtbar.'],
+              ['Praxisnaher Ausschnitt', 'Von Anwälten verfasste Aufgaben mit festen Bestanden-/Nicht-bestanden-Kriterien, Schwerpunkt Commercial, IP, Employment, M&A und Competition. Die Modelle arbeiten in einer abgeschlossenen Umgebung ohne Webzugriff und liefern Dateien ab.'],
+              ['Kein deutscher Rechtsbenchmark', 'Die Aufgaben stammen aus 21 Rechtsordnungen, sind aber englischsprachig und US-/UK-lastig. Aussagen zu deutschem Recht, deutscher Zitierpraxis oder Fachterminologie lassen sich daraus nicht ableiten.'],
+              ['Neue Methodik, kein Zeitvergleich', 'Seit August/September 2026 arbeiten die Modelle agentisch mit Dateien und jede Aufgabe läuft zweimal. Ergebnisse früherer Runden sind laut Quelle nicht vergleichbar. Bewertet wird durch geprüfte KI-Gutachter mit Stichproben durch Menschen.'],
+              ['Automatische Aktualisierung mit Sicherheitsnetz', 'LexLab gleicht die veröffentlichte Rangliste alle 24 Stunden ab. Neu getestete Modelle erscheinen automatisch; fällt die Quelle aus oder ändert ihr Format, bleibt der zuletzt geprüfte Datensatz sichtbar.'],
             ].map(([title, body], index) => (
               <div key={title} className="flex gap-4">
                 <span className="font-mono text-xs text-gray-200 pt-0.5">0{index + 1}</span>
@@ -393,11 +438,14 @@ export default async function LegalModelBenchmarkPage() {
           <Scale className="w-5 h-5 text-gray-300 mb-4" />
           <h3 className="font-semibold text-[#111827] mb-2">Weiterführende Quellen</h3>
           <p className="text-sm text-gray-500 leading-relaxed mb-5">
-            Die Rangliste basiert auf dem unabhängigen Legal AI Benchmarking. LegalBench der Stanford-Community liefert zusätzlich eine offene Sammlung von 162 Legal-Reasoning-Aufgaben.
+            Die Rangliste basiert auf dem unabhängigen Legal AI Benchmarking. Die Methodik der Quelle erklärt Aufgaben, Bewertung und Grenzen im Detail. LegalBench der Stanford-Community liefert zusätzlich eine offene Sammlung von 162 Legal-Reasoning-Aufgaben.
           </p>
           <div className="space-y-2">
             <a href={LEGAL_BENCHMARK_SOURCE} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between text-sm text-gray-600 hover:text-[#111827]">
               Legal AI Benchmarking <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <a href={LEGAL_BENCHMARK_METHODOLOGY} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between text-sm text-gray-600 hover:text-[#111827]">
+              Methodik der Quelle <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <a href="https://hazyresearch.stanford.edu/legalbench/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between text-sm text-gray-600 hover:text-[#111827]">
               Stanford LegalBench <ExternalLink className="w-3.5 h-3.5" />

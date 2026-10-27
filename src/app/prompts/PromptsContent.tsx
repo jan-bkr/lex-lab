@@ -1,21 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Star } from 'lucide-react'
 import Link from 'next/link'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { Prompt, Rechtsgebiet } from '@/types'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
 
-interface PromptWithDay extends Prompt {
-  isPromptOfDay: boolean
-}
-
 function PromptCard({
   prompt,
 }: {
-  prompt: PromptWithDay
+  prompt: Prompt
 }) {
   return (
     <Link
@@ -29,12 +24,6 @@ function PromptCard({
             <RechtsgebietTag key={tag} tag={tag} />
           ))}
         </div>
-        {prompt.isPromptOfDay && (
-          <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border border-amber-200 flex-shrink-0 whitespace-nowrap">
-            <Star className="w-2.5 h-2.5" />
-            Prompt des Tages
-          </span>
-        )}
       </div>
 
       {/* Title */}
@@ -53,7 +42,7 @@ function PromptCard({
   )
 }
 
-export default function PromptsContent({ initialPrompts }: { initialPrompts: PromptWithDay[] }) {
+export default function PromptsContent({ initialPrompts }: { initialPrompts: Prompt[] }) {
   const [activeFilter,   setActiveFilter]   = useState<Rechtsgebiet | 'Alle'>('Alle')
 
   const filtered = initialPrompts.filter(
