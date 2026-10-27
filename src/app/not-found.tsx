@@ -20,16 +20,16 @@ export default function NotFound() {
 
         <p className="text-sm text-gray-500 leading-relaxed mb-8">
           Diese Seite existiert nicht oder wurde verschoben.
-          Vielleicht hilft dir eines der folgenden Angebote weiter.
+          Vielleicht hilft Ihnen einer der folgenden Bereiche weiter.
         </p>
 
         {/* Quick links */}
         <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6 text-left space-y-2">
           {[
             { href: '/tools', label: 'KI-Tool-Verzeichnis', desc: 'Kuratierte Tools für Juristen' },
-            { href: '/workflows', label: 'Workflows', desc: 'Schritt-für-Schritt KI-Anleitungen' },
+            { href: '/skill-bibliothek', label: 'Skill-Bibliothek', desc: 'Kanzleiwissen, verbindlich für KI-Assistenten' },
             { href: '/prompts', label: 'Prompt-Bibliothek', desc: 'Praxiserprobte Prompts fürs Recht' },
-            { href: '/news', label: 'News', desc: 'Aktuelle LegalTech-Nachrichten' },
+            { href: '/research/legal-model-benchmark', label: 'Legal Model Benchmark', desc: 'Sprachmodelle für juristische Arbeit im Vergleich' },
           ].map(link => (
             <Link
               key={link.href}

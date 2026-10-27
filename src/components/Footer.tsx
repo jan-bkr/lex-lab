@@ -17,39 +17,38 @@ export default function Footer() {
               <LexLabLogo size="lg" />
             </div>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Die kuratierte Plattform für KI-Tools, Workflows und Prompts im deutschen Rechts- und Steuermarkt.
+              Wie Kanzleiwissen für KI-Assistenten verbindlich wird: der Aufbau einer Skill-Bibliothek, dazu Einordnungen zu Langdock, Klardaten und juristischen Sprachmodellen.
+            </p>
+            <p className="text-xs text-gray-400 leading-relaxed mt-3">
+              LexLab ist ein privates Projekt von Jan Becker und kein Angebot der Kanzlei.
             </p>
           </div>
 
           <div className="flex gap-10 sm:gap-12 flex-wrap">
             <div>
-              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Entdecken</p>
+              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Schwerpunkte</p>
               <div className="flex flex-col gap-2">
-                <Link href="/tools/finder" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Tool Finder</Link>
-                <Link href="/tools/compare" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  Vergleiche
-                  <span className="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded px-1 py-0.5 leading-none">Neu</span>
-                </Link>
-                <Link href="/collections" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Kuratierte Listen</Link>
-                <Link href="/radar" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Radar</Link>
+                <Link href="/skill-bibliothek" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Skill-Bibliothek</Link>
+                <Link href="/schwerpunkte/langdock" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Langdock</Link>
+                <Link href="/schwerpunkte/klardaten" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Klardaten</Link>
+                <Link href="/research/legal-model-benchmark" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Legal Model Benchmark</Link>
               </div>
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Research</p>
+              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Werkzeuge</p>
               <div className="flex flex-col gap-2">
-                <Link href="/research" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Research Hub</Link>
-                <Link href="/state-of-legal-ai" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  State of Legal AI 2026
-                </Link>
-                <Link href="/research/legal-model-benchmark" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  Legal Model Benchmark
-                </Link>
-                <Link href="/beitraege" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  Beiträge &amp; Einblicke
-                </Link>
-                <Link href="/method" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-                  LexLab Method
-                </Link>
+                <Link href="/tools" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Tool-Verzeichnis</Link>
+                <Link href="/tools/compare" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Vergleiche</Link>
+                <Link href="/prompts" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Prompt-Bibliothek</Link>
+                <Link href="/method" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">LexLab Method</Link>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Lesen</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/beitraege" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Beiträge</Link>
+                <Link href="/research" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Research</Link>
+                <Link href="/state-of-legal-ai" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">State of Legal AI 2026</Link>
               </div>
             </div>
             <div>
@@ -86,7 +85,7 @@ export default function Footer() {
         <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
             <p className="text-xs text-gray-400">
-              <span className="font-medium text-gray-500">Inhaltliche Verantwortung:</span> Jan Becker, Rechtsanwalt
+              <span className="font-medium text-gray-500">Betrieb und inhaltliche Verantwortung:</span> Jan Becker, Rechtsanwalt (privat)
             </p>
             <p className="text-xs text-gray-400">
               Kontakt: <a href="mailto:kontakt@lex-lab.de" className="hover:text-gray-600 transition-colors">kontakt@lex-lab.de</a>
@@ -100,7 +99,7 @@ export default function Footer() {
               className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-600 transition-colors"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-              <span>Folge mir auf LinkedIn</span>
+              <span>LinkedIn</span>
             </a>
             <p className="text-xs text-gray-400">© 2026 LexLab</p>
           </div>

@@ -1,16 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, TrendingUp, BarChart2, Newspaper, BookOpen, Scale } from 'lucide-react'
+import { ArrowRight, TrendingUp, Newspaper, BookOpen, Scale } from 'lucide-react'
 import { NEWS_PIPELINE_PAUSED } from '@/lib/site-status'
 
 export const revalidate = 86400
 
 export const metadata: Metadata = {
   title: 'LexLab Research',
-  description: 'Marktintelligenz für den deutschen Rechts- und Steuermarkt — State of Legal AI, Radar-Signale, News und kuratierte Einordnung.',
+  description: 'Legal Model Benchmark, State of Legal AI Germany 2026 und Einordnungen für den deutschen Rechts- und Steuermarkt.',
   openGraph: {
     title: 'LexLab Research — Marktintelligenz für den Rechtsmarkt',
-    description: 'State of Legal AI Germany 2026, Radar-Signale und kuratierte Marktbeobachtung.',
+    description: 'Legal Model Benchmark, State of Legal AI Germany 2026 und kuratierte Einordnung.',
   },
   alternates: { canonical: 'https://www.lex-lab.de/research' },
 }
@@ -34,15 +34,6 @@ const MODULES = [
     title: 'Legal AI Model Benchmark',
     desc: 'Aktueller Modellvergleich für juristische Aufgaben — Zuverlässigkeit, Nutzbarkeit, Kosten und Mandatsdaten-Check.',
     meta: 'Neue Tests automatisch',
-    featured: false,
-  },
-  {
-    href: '/radar',
-    badge: 'Laufend',
-    icon: BarChart2,
-    title: 'LexLab Radar',
-    desc: 'Kuratierte Marktsignale mit LexLab-Einschätzung: neue Tools, Feature-Updates, Pricing-Änderungen, regulatorische Entwicklungen und Marktbewegungen.',
-    meta: 'Regelmäßig aktualisiert',
     featured: false,
   },
   {
@@ -190,7 +181,7 @@ export default function ResearchPage() {
           <div>
             <p className="text-sm font-semibold text-[#111827] mb-1">Research-Updates per E-Mail</p>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Neue Radar-Signale, State-of-Legal-AI-Updates und kurierte Marktbeobachtungen — wöchentlich zusammengefasst.
+              Neue Beiträge, Benchmark-Einordnungen und Notizen zum Aufbau der Skill-Bibliothek — in unregelmäßigen Abständen.
             </p>
           </div>
           <Link

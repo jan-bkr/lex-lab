@@ -10,7 +10,3 @@
 //   { "path": "/api/pipeline", "schedule": "0 12 * * *" }
 
 export const NEWS_PIPELINE_PAUSED = true
-export const PROMPT_BUILDER_PAUSED = true
-
-export const PROMPT_BUILDER_PAUSED_MESSAGE =
-  'Der Prompt Builder wird derzeit überarbeitet und ist vorübergehend pausiert.'

@@ -59,7 +59,7 @@ export function NewsletterForm({
     <form onSubmit={handleSubmit} className={`flex flex-col sm:flex-row items-center justify-center gap-3 ${variant === 'page' ? 'max-w-lg mx-auto' : 'max-w-md mx-auto'}`}>
       <input
         type="email"
-        placeholder="deine@email.de"
+        placeholder="name@beispiel.de"
         value={email}
         onChange={e => setEmail(e.target.value)}
         required

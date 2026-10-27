@@ -11,7 +11,6 @@ import {
   LogOut,
   ArrowLeft,
   FlaskConical,
-  GitBranch,
   Calendar,
   Mail,
 } from 'lucide-react'
@@ -23,7 +22,6 @@ const NAV_ITEMS = [
   { href: '/admin/news',        label: 'News',         icon: Newspaper,       exact: false },
   { href: '/admin/prompts',     label: 'Prompts',      icon: BookOpen,        exact: false },
   { href: '/admin/comments',    label: 'Kommentare',   icon: MessageSquare,   exact: false },
-  { href: '/admin/workflows',   label: 'Workflows',    icon: GitBranch,       exact: false },
   { href: '/admin/events',      label: 'Events',       icon: Calendar,        exact: false },
   { href: '/admin/newsletter',  label: 'Newsletter',   icon: Mail,            exact: false },
 ]

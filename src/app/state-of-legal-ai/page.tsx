@@ -630,9 +630,9 @@ export default function StateOfLegalAIPage() {
                 bg: 'bg-purple-50',
               },
               {
-                href: '/workflows',
-                title: 'Workflow-Guides',
-                desc: 'Schritt-für-Schritt-Anleitungen für KI-Integration',
+                href: '/skill-bibliothek',
+                title: 'Skill-Bibliothek',
+                desc: 'Wie Kanzleiwissen für KI-Assistenten verbindlich wird',
                 icon: <BookOpen className="w-5 h-5" />,
                 color: 'text-emerald-600',
                 bg: 'bg-emerald-50',
@@ -640,7 +640,7 @@ export default function StateOfLegalAIPage() {
               {
                 href: '/newsletter',
                 title: 'LexLab Newsletter',
-                desc: 'Wöchentlich die wichtigsten Legal-AI-Updates',
+                desc: 'Neue Beiträge und Benchmark-Einordnungen',
                 icon: <Mail className="w-5 h-5" />,
                 color: 'text-orange-600',
                 bg: 'bg-orange-50',

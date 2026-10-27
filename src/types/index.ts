@@ -41,16 +41,6 @@ export interface ToolComment {
   created_at: string
 }
 
-export interface Workflow {
-  id: string
-  title: string
-  slug: string
-  rechtsgebiet: Rechtsgebiet[]
-  readingTime: number
-  excerpt: string
-  createdAt: string
-}
-
 export interface Prompt {
   id: string
   title: string

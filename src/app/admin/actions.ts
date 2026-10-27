@@ -377,61 +377,6 @@ export async function addPrompt(data: PromptInsert): Promise<void> {
   revalidatePath('/prompts')
 }
 
-// ─── Workflows ────────────────────────────────────────────────────────────────
-
-export interface AdminWorkflow {
-  id: string
-  title: string
-  slug: string
-  rechtsgebiet: string[] | null
-  reading_time: number | null
-  excerpt: string | null
-  published: boolean
-  created_at: string
-}
-
-export async function fetchAllWorkflows(): Promise<AdminWorkflow[]> {
-  await requireAdminSession()
-  const { data, error } = await adminSupabase
-    .from('workflows')
-    .select('id, title, slug, rechtsgebiet, reading_time, excerpt, published, created_at')
-    .order('created_at', { ascending: false })
-  if (error) throw new Error(error.message)
-  return (data ?? []) as AdminWorkflow[]
-}
-
-interface WorkflowInsert {
-  title: string
-  slug: string
-  rechtsgebiet: string[]
-  reading_time: number
-  excerpt: string
-}
-
-export async function addWorkflow(data: WorkflowInsert): Promise<void> {
-  await requireAdminSession()
-  const { error } = await adminSupabase.from('workflows').insert({ ...data, published: false })
-  if (error) throw new Error(error.message)
-  revalidatePath('/admin/workflows')
-  revalidatePath('/workflows')
-}
-
-export async function toggleWorkflowPublished(id: string, published: boolean): Promise<void> {
-  await requireAdminSession()
-  const { error } = await adminSupabase.from('workflows').update({ published }).eq('id', id)
-  if (error) throw new Error(error.message)
-  revalidatePath('/admin/workflows')
-  revalidatePath('/workflows')
-}
-
-export async function deleteWorkflow(id: string): Promise<void> {
-  await requireAdminSession()
-  const { error } = await adminSupabase.from('workflows').delete().eq('id', id)
-  if (error) throw new Error(error.message)
-  revalidatePath('/admin/workflows')
-  revalidatePath('/workflows')
-}
-
 // ─── Events ───────────────────────────────────────────────────────────────────
 
 export interface AdminEvent {

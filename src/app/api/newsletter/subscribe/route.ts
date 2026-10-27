@@ -90,8 +90,8 @@ export async function POST(request: Request): Promise<Response> {
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #111827;">Willkommen bei lex-lab.de</h1>
-          <p>Du erhältst ab jetzt wöchentlich die besten KI-Tools, Workflows und News für den deutschen Rechtsmarkt.</p>
-          <p style="color: #6B7280; font-size: 14px;">Kein Spam, versprochen.</p>
+          <p>Sie erhalten ab jetzt Updates von LexLab: neue Beiträge, Einordnungen zum Legal Model Benchmark und Notizen zum Aufbau einer Skill-Bibliothek für KI-Assistenten.</p>
+          <p style="color: #6B7280; font-size: 14px;">LexLab ist ein privates Projekt von Jan Becker und kein Angebot der Kanzlei.</p>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
           <p style="color: #9CA3AF; font-size: 12px;">
             lex-lab.de · Kein Rechtsrat · Keine Steuerberatung<br>

@@ -53,7 +53,7 @@ export default function NewsletterPage() {
         </p>
         <NewsletterForm variant="page" />
         <p className="text-xs text-gray-400 mt-4">
-          Mit der Anmeldung akzeptierst du unsere{' '}
+          Mit der Anmeldung akzeptieren Sie unsere{' '}
           <a href="/datenschutz" className="underline hover:text-gray-600">Datenschutzerklärung</a>.
           Jederzeit abmeldbar.
         </p>
