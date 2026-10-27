@@ -158,7 +158,7 @@ export const EDITORIAL_ARTICLES: EditorialArticle[] = [
         heading: 'Vom ersten Entwurf zur belastbaren Arbeit',
         paragraphs: [
           'Nutze die erste Antwort als Arbeitsmaterial. Lass Gegenargumente, fehlende Tatsachen und alternative Einordnungen ergänzen. Prüfe anschließend jeden entscheidenden Punkt am Originalmaterial und in autoritativen Quellen.',
-          'Der Prompt Builder und die Bibliothek auf LexLab liefern dafür strukturierte Ausgangspunkte. Sie ersetzen nicht die fachliche Kontrolle, reduzieren aber die Zeit bis zu einem prüfbaren ersten Entwurf.',
+          'Die Prompt-Bibliothek auf LexLab liefert dafür strukturierte Ausgangspunkte. Sie ersetzt nicht die fachliche Kontrolle, reduziert aber die Zeit bis zu einem prüfbaren ersten Entwurf.',
         ],
       },
     ],

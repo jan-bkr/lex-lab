@@ -277,7 +277,6 @@ export const COMPARE_PAIRS: CompareConfig[] = [
       'Du analysierst lange Verträge oder Dokumente (Claude verarbeitet mehr Kontext)',
       'Du brauchst präzises, nuanciertes juristisches Reasoning mit guter Unsicherheitskommunikation',
       'Deine Aufgaben erfordern genaues Befolgen langer, komplexer Anweisungen',
-      'Prompt Builder-Ergebnisse per API weiterverarbeiten — Claude ist das Backbone von LexLab',
     ],
     verdict: 'Für die meisten Kanzleiteams sind beide Tools sinnvoll — für verschiedene Aufgaben. ChatGPT ist die bessere Wahl für Produktivitätsaufgaben und schnelle Antworten; Claude ist das stärkere Tool für sorgfältige Analyse langer Dokumente und nuanciertes juristisches Reasoning. Wichtig für beide: keine sensiblen Mandantendaten ohne entsprechende Enterprise-Vereinbarungen verarbeiten.',
     relatedCollections: [

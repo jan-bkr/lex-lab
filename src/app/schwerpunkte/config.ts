@@ -2,8 +2,13 @@
 //
 // Geteilte Konfiguration für /schwerpunkte/[slug]. Angaben zu Anbietern beruhen
 // ausschließlich auf deren öffentlichen Informationen (Stand siehe `asOf`) und
-// werden als Herstellerangaben gekennzeichnet. Keine Aussagen darüber, ob oder
-// wie die Kanzlei ein Produkt einsetzt (keine internen Inhalte).
+// werden als Herstellerangaben gekennzeichnet. Offengelegt wird nur, dass sich
+// die Kanzlei für den Anbieter entschieden hat (schwerpunktDisclosure) — keine
+// Details zu Einsatz, Umfang oder Konfiguration (keine internen Inhalte).
+
+export function schwerpunktDisclosure(name: string): string {
+  return `Offenlegung: In der Kanzlei haben wir uns für ${name} entschieden. Es gibt keine Kooperation mit dem Anbieter, und weder LexLab noch ich erhalten dafür irgendwelche Vorteile.`
+}
 
 export interface SchwerpunktSection {
   title: string

@@ -421,8 +421,8 @@ export default async function LegalModelBenchmarkPage() {
           <Link href="/tools/compare" className="inline-flex items-center gap-1.5 border border-gray-200 text-sm font-medium text-gray-700 px-4 py-2.5 rounded-lg hover:border-gray-300 transition-colors">
             Tool-Vergleiche <ArrowRight className="w-3.5 h-3.5" />
           </Link>
-          <Link href="/research" className="inline-flex items-center gap-1.5 bg-[#111827] text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-[#1a2234] transition-colors">
-            Research Hub <ArrowRight className="w-3.5 h-3.5" />
+          <Link href="/skill-bibliothek" className="inline-flex items-center gap-1.5 bg-[#111827] text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-[#1a2234] transition-colors">
+            Skill-Bibliothek <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </section>

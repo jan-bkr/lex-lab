@@ -47,7 +47,6 @@ export default function Footer() {
               <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Lesen</p>
               <div className="flex flex-col gap-2">
                 <Link href="/beitraege" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Beiträge</Link>
-                <Link href="/research" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Research</Link>
                 <Link href="/state-of-legal-ai" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">State of Legal AI 2026</Link>
               </div>
             </div>
@@ -72,7 +71,7 @@ export default function Footer() {
             </summary>
             <div className="mt-4 pl-6 grid sm:grid-cols-2 gap-4">
               <p className="text-xs text-gray-400 leading-relaxed">
-                <strong className="text-gray-500 font-medium">Keine Rechtsberatung.</strong> Die auf dieser Website bereitgestellten Informationen stellen keine Rechtsberatung dar und sollen keine rechtlichen Fragen oder Probleme behandeln, die im individuellen Fall auftreten können. Die Informationen sind allgemeiner Natur und dienen ausschließlich zu Informationszwecken. Wenn Sie rechtlichen Rat für Ihre individuelle Situation benötigen, sollten Sie den Rat eines qualifizierten Anwalts einholen.
+                <strong className="text-gray-500 font-medium">Keine Rechtsberatung.</strong> Die auf dieser Website bereitgestellten Informationen stellen keine Rechtsberatung dar und sollen keine rechtlichen Fragen oder Probleme behandeln, die im individuellen Fall auftreten können. Die Informationen sind allgemeiner Natur und dienen ausschließlich zu Informationszwecken. Wenn du rechtlichen Rat für deine individuelle Situation brauchst, hol dir den Rat einer qualifizierten Anwältin oder eines qualifizierten Anwalts.
               </p>
               <p className="text-xs text-gray-400 leading-relaxed">
                 <strong className="text-gray-500 font-medium">Externe Links.</strong> Diese Website enthält Links zu Websites Dritter. Diese Links werden ausschließlich zu Informationszwecken bereitgestellt. Ein Link stellt keine Zustimmung, Billigung oder Empfehlung dieser Website durch uns dar. Wir übernehmen keine Verantwortung für die Richtigkeit, Vollständigkeit oder Rechtmäßigkeit des Inhalts verlinkter Websites sowie für eventuelle Schäden aus deren Nutzung.

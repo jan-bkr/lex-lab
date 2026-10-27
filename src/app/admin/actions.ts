@@ -377,52 +377,6 @@ export async function addPrompt(data: PromptInsert): Promise<void> {
   revalidatePath('/prompts')
 }
 
-// ─── Events ───────────────────────────────────────────────────────────────────
-
-export interface AdminEvent {
-  id: string
-  title: string
-  date: string
-  type: string
-  url: string | null
-  description: string | null
-  created_at: string
-}
-
-export async function fetchAllEvents(): Promise<AdminEvent[]> {
-  await requireAdminSession()
-  const { data, error } = await adminSupabase
-    .from('events')
-    .select('*')
-    .order('date', { ascending: true })
-  if (error) throw new Error(error.message)
-  return (data ?? []) as AdminEvent[]
-}
-
-interface EventInsert {
-  title: string
-  date: string
-  type: string
-  url: string
-  description: string
-}
-
-export async function addEvent(data: EventInsert): Promise<void> {
-  await requireAdminSession()
-  const { error } = await adminSupabase.from('events').insert(data)
-  if (error) throw new Error(error.message)
-  revalidatePath('/admin/events')
-  revalidatePath('/events')
-}
-
-export async function deleteEvent(id: string): Promise<void> {
-  await requireAdminSession()
-  const { error } = await adminSupabase.from('events').delete().eq('id', id)
-  if (error) throw new Error(error.message)
-  revalidatePath('/admin/events')
-  revalidatePath('/events')
-}
-
 // ─── Newsletter subscribers ───────────────────────────────────────────────────
 
 export interface AdminSubscriber {

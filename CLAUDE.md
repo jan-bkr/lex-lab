@@ -44,8 +44,9 @@ npm install <pkg>    # Paket hinzufügen
 **Inhaltsgrenzen (hart, berufsrechtlich):**
 - Verschwiegenheit (§ 43a Abs. 2 BRAO): keine Mandanten, keine Deals, keine Beispiele aus echten Mandaten.
 - Skill-Bibliothek: **keine Anzahl der Skills, keine Rechtsgebiete, keine internen Inhalte.** Der Teaser-Wortlaut in `src/lib/skill-bibliothek.ts` ist vom Bearbeiter freigegeben — **nicht umformulieren**, nur `label` ist redaktionell.
-- Ton: sachlich, **Sie-Form**, keine Verkaufssprache (kein Duzen, kein Countdown, keine Dringlichkeit, kein „Experte an deiner Seite"). Novist dient nur inhaltlich als Vorbild, nicht im Ton.
-- Keine Aussagen darüber, ob/wie die Kanzlei Langdock oder Klardaten einsetzt. Anbieterangaben immer als Herstellerangaben mit Stand kennzeichnen.
+- Ton: sachlich, **Du-Form** (in der Start-up- und Legal-Tech-Szene wird geduzt, Entscheidung 2026-10-27), aber keine Verkaufssprache (kein Countdown, keine Dringlichkeit, kein „Experte an deiner Seite"). Novist dient nur inhaltlich als Vorbild, nicht im Ton. Ausnahme: Impressum und Datenschutzerklärung bleiben als Rechtstexte in Sie-Form.
+- Langdock/Klardaten: offengelegt wird **nur**, dass sich die Kanzlei für beide entschieden hat, ohne Kooperation und ohne Vorteile (`schwerpunktDisclosure()` in `src/app/schwerpunkte/config.ts`). Keine Details zu Einsatz, Umfang oder Konfiguration. Anbieterangaben immer als Herstellerangaben mit Stand kennzeichnen.
+- Impressum-Anschrift „c/o BZG & Partner" bleibt bewusst (Entscheidung des Betreibers).
 
 **Vier Rechtsgebiete** durchziehen das gesamte System als zentrales Klassifikationsmerkmal:
 - `Steuerrecht` · `M&A` · `Gesellschaftsrecht` · `Venture Capital`
@@ -74,7 +75,6 @@ src/
 │   │       ├── news/               # News-Verwaltung
 │   │       ├── comments/           # Kommentar-Moderation
 │   │       ├── prompts/            # Prompt-Verwaltung
-│   │       ├── events/             # Termin-Verwaltung
 │   │       └── newsletter/
 │   │           ├── page.tsx        # Issues + Abonnenten-Tabelle
 │   │           └── IssuesClient.tsx # Client-UI für Draft/Send/Delete
@@ -101,9 +101,8 @@ src/
 │   ├── skill-bibliothek/           # Kern: Teaser der Skill-Bibliothek (Server Component, Wortlaut aus lib/skill-bibliothek.ts)
 │   ├── schwerpunkte/               # config.ts + [slug]/page.tsx → /schwerpunkte/langdock, /schwerpunkte/klardaten (SSG, dynamicParams=false)
 │   ├── newsletter/                 # Anmeldung + /abgemeldet-Bestätigung
-│   ├── events/                     # Rechtstermine — Server page.tsx + EventsClient.tsx (Client)
 │   ├── beitraege/                  # Beiträge (Placeholder, kein Inhalt)
-│   ├── state-of-legal-ai/          # Research Hub: "State of Legal AI Germany 2026" (pure Server Component)
+│   ├── state-of-legal-ai/          # Report "State of Legal AI Germany 2026" (pure Server Component)
 │   ├── sitemap.ts                  # Dynamische Sitemap (Skill-Bibliothek, Schwerpunkte, Tools, News, Prompts)
 │   ├── robots.ts                   # /robots.txt — disallow /admin
 │   ├── kontakt/                    # Kontaktformular — Server page.tsx + KontaktClient.tsx (Client)
@@ -241,7 +240,11 @@ export default function Page() {
 
 > **⏸ PAUSIERT (seit 2026-10-08):** Die News-Pipeline ist abgeschaltet. Schalter in `src/lib/site-status.ts` (`NEWS_PIPELINE_PAUSED`). `vercel.json` enthält **keine** Crons. **Reaktivieren:** Flag auf `false` und die zwei Cron-Einträge unten wieder in `vercel.json` eintragen. Manueller Lauf per `POST /api/pipeline` funktioniert weiterhin. News ist seit dem Relaunch nicht mehr in Navbar oder Startseite verlinkt (Seiten bleiben erreichbar).
 >
-> **🗑 ENTFERNT (Relaunch 2026-10-27):** Workflows (öffentlich + `/admin/workflows` + Server Actions + `Workflow`-Type), Prompt Builder (`/prompts/builder`, `/api/prompts/generate`, `jurist-persona.ts`, `PROMPT_BUILDER_PAUSED`), Radar (`/radar`). Alte URLs leiten per `redirects()` in `next.config.ts` um (`/workflows/*` → `/skill-bibliothek`, `/prompts/builder` → `/prompts`, `/radar` → `/research`). Die DB-Tabelle `workflows` existiert noch, wird aber nicht mehr gelesen.
+> **🗑 ENTFERNT (Relaunch 2026-10-27):** Workflows (öffentlich + `/admin/workflows` + Server Actions + `Workflow`-Type), Prompt Builder (`/prompts/builder`, `/api/prompts/generate`, `jurist-persona.ts`, `PROMPT_BUILDER_PAUSED`), Radar (`/radar`). Alte URLs leiten per `redirects()` in `next.config.ts` um (`/workflows/*` → `/skill-bibliothek`, `/prompts/builder` → `/prompts`, `/radar` → Benchmark). Die DB-Tabelle `workflows` existiert noch, wird aber nicht mehr gelesen.
+>
+> **🗑 ENTFERNT (Review 2026-10-27):** Research-Übersicht (`/research` → 308 auf `/research/legal-model-benchmark`; der Benchmark bleibt unter diesem Pfad), Termine (`/events` öffentlich + `/admin/events` + Server Actions + `Event`-Type; `/events` → `/`), ungenutzte Komponente `PromptOfDay`. Die DB-Tabelle `events` existiert noch, wird nicht mehr gelesen. Der „Prompt des Tages"-Schalter im Admin hat keine öffentliche Wirkung mehr.
+>
+> **⏸ NEWSLETTER PAUSIERT (seit 2026-10-27):** `NEWSLETTER_PAUSED` + `NEWSLETTER_PAUSED_NOTE` in `src/lib/site-status.ts`. Kennzeichnung auf `/newsletter`, Startseite, Beiträge, State of Legal AI und in der Willkommensmail. Anmeldung bleibt möglich (Vormerken), Admin-Versand technisch auch. Navbar-CTA ist „Kontakt", nicht „Newsletter".
 
 **Cron-Job (derzeit deaktiviert, s. o.):** `/api/pipeline` täglich 06:00 UTC **und 12:00 UTC** (`{ "path": "/api/pipeline", "schedule": "0 6 * * *" }` + `"0 12 * * *"` in `vercel.json`)
 - Zwei Läufe pro Tag als Redundanz — Vercel Hobby-Cron feuert gelegentlich nicht zuverlässig
@@ -330,7 +333,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 7. **`/tools`-, `/news`- und `/prompts`-Seiten sind server-seeded**: `page.tsx` ist jeweils Server Component (`adminSupabase`, `revalidate=3600`), der Client-Teil (`ToolsContent.tsx`, `NewsContent.tsx`, `PromptsContent.tsx`) erhält Daten als `initialTools`/`initialArticles`/`initialPrompts`-Prop und hat keinen eigenen Fetch-Lifecycle. Kein Skeleton auf First Load. Tool-Detailseite `/tools/[slug]` nutzt den Admin-Client im Server-Teil für `generateMetadata` und `fetchToolById`.
 
-8. **Events haben DB-Tabelle + Admin-UI** (`events`, `/admin/events`). Empty-State bei leerem Ergebnis, Fehler-State bei DB-Fehler — kein Mock-Fallback. Workflows wurden im Relaunch entfernt.
+8. **Workflows und Events wurden im Relaunch entfernt** (Seiten, Admin-UIs, Actions). DB-Tabellen bestehen noch.
 
 9. **Newsletter-Abmeldung** ist HMAC-signiert (`NEWSLETTER_HMAC_SECRET` als Schlüssel, SHA-256). Token-Generierung via `makeToken(email)` in `unsubscribe/route.ts`, importiert von `subscribe/route.ts`. Beide Routen schlagen hart fehl wenn `NEWSLETTER_HMAC_SECRET` nicht gesetzt ist.
 
@@ -372,6 +375,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
   - **Footer**: Spalten Schwerpunkte / Werkzeuge / Lesen / Rechtliches, Hinweis „privates Projekt … kein Angebot der Kanzlei".
   - **Impressum**: Abschnitt „Betreiber" (privat, keine Mandate über LexLab). Root-Metadata + JSON-LD (`WebSite` mit `author` Person) neu.
   - Entfernt: Workflows, Prompt Builder, Radar (siehe Deployment-Hinweis). Lint, tsc und Build clean.
+  - **Review-Runde** (gleicher Tag): Du-Form site-weit, Offenlegung Langdock/Klardaten, Newsletter als pausiert markiert, Research-Übersicht + Termine entfernt, Datenschutzerklärung (Anthropic-Abschnitt ohne Prompt Builder, Stand Oktober 2026).
 
 - [x] **Newsletter-Produktmodul — LexLab Weekly Brief** (2026-04-19) — Vollständiger Newsletter-Stack aufgebaut:
   - **`newsletter_issues` Tabelle** (`supabase/migrations/20260419000000_newsletter_issues.sql`): `title`, `preheader`, `issue_date`, `editors_note_auto`, `editors_note_manual`, `editors_note_mode` (`auto`/`manual`), JSONB-Felder für `top_developments`, `tool_watch`, `radar_signals`, `lexlab_pick`, `status` (`draft`/`ready`/`sent`), `sent_at`, `recipient_count`. RLS enabled, no public policies — nur service role.
@@ -495,7 +499,7 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 - **Privatprojekt-Hinweis**: Konstante `PRIVATE_PROJECT_NOTICE` in `src/lib/skill-bibliothek.ts` verwenden, nicht neu formulieren. Steht in Footer, Skill-Bibliothek, Schwerpunkt-Seiten, Startseite, Impressum, Willkommensmail.
 - **Neue Schwerpunkte** (weitere Anbieter): Eintrag in `SCHWERPUNKTE` (`src/app/schwerpunkte/config.ts`) + Sitemap ergänzen. `asOf` und `sources` sind Pflicht; Angaben nur aus öffentlichen Herstellerquellen.
-- **Sie-Form** für alle neuen Texte. Altbestände in Du-Form (Tool Finder, FinderPanel, Collections, Compare) sind noch nicht umgestellt.
+- **Du-Form** für alle Texte außer Impressum und Datenschutzerklärung.
 
 **Sofort arbeitsfähig mit:**
 - Stack: Next.js 16 App Router + Supabase + Tailwind v4 + TypeScript strict + Claude Haiku

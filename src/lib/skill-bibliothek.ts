@@ -5,7 +5,7 @@
 // umformulieren, kürzen oder ergänzen. Nur `label` ist redaktionelle Überschrift.
 //
 // Grenzen (bewusst): keine Anzahl der Skills, keine Rechtsgebiete, keine internen
-// Inhalte, keine Mandate (§ 43a Abs. 2 BRAO). Ton: sachlich, Sie-Form, keine
+// Inhalte, keine Mandate (§ 43a Abs. 2 BRAO). Ton: sachlich, Du-Form, keine
 // Verkaufssprache.
 
 export const SKILL_BIBLIOTHEK_INTRO =

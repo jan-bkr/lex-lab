@@ -25,7 +25,9 @@ const nextConfig: NextConfig = {
       { source: '/workflows', destination: '/skill-bibliothek', permanent: true },
       { source: '/workflows/:slug*', destination: '/skill-bibliothek', permanent: true },
       { source: '/prompts/builder', destination: '/prompts', permanent: true },
-      { source: '/radar', destination: '/research', permanent: true },
+      { source: '/radar', destination: '/research/legal-model-benchmark', permanent: true },
+      { source: '/research', destination: '/research/legal-model-benchmark', permanent: true },
+      { source: '/events', destination: '/', permanent: true },
       { source: '/schwerpunkte', destination: '/skill-bibliothek', permanent: false },
     ]
   },

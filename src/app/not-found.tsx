@@ -20,7 +20,7 @@ export default function NotFound() {
 
         <p className="text-sm text-gray-500 leading-relaxed mb-8">
           Diese Seite existiert nicht oder wurde verschoben.
-          Vielleicht hilft Ihnen einer der folgenden Bereiche weiter.
+          Vielleicht hilft dir einer der folgenden Bereiche weiter.
         </p>
 
         {/* Quick links */}

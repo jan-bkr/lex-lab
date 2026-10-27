@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react'
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { NEWSLETTER_PAUSED, NEWSLETTER_PAUSED_NOTE } from '@/lib/site-status'
 
 export const revalidate = 86400
 
@@ -500,31 +501,31 @@ export default function StateOfLegalAIPage() {
               {
                 step: '01',
                 title: 'Daten-Due-Diligence: Wo landen meine Daten?',
-                body: 'Klären Sie vor jeder anderen Frage: Wo werden Daten verarbeitet und gespeichert? EU-Serverstandort, Subauftragnehmer, Drittlandtransfer nach Art. 46 DSGVO — diese Antworten müssen vorliegen, bevor Sie Demo-Termine vereinbaren.',
+                body: 'Kläre vor jeder anderen Frage: Wo werden Daten verarbeitet und gespeichert? EU-Serverstandort, Subauftragnehmer, Drittlandtransfer nach Art. 46 DSGVO — diese Antworten müssen vorliegen, bevor du Demo-Termine vereinbarst.',
                 icon: <Shield className="w-4 h-4" />,
               },
               {
                 step: '02',
                 title: 'Use-Case-Priorisierung: Was löst das Tool konkret?',
-                body: 'Definieren Sie den primären Use Case präzise: Dokumentenentwurf, Rechtsprechungsrecherche, Vertragsreview oder Due Diligence? Kein Tool ist in allen Anwendungsfeldern gleich stark. Investieren Sie Evaluierungsaufwand zielgerichtet.',
+                body: 'Definiere den primären Use Case präzise: Dokumentenentwurf, Rechtsprechungsrecherche, Vertragsreview oder Due Diligence? Kein Tool ist in allen Anwendungsfeldern gleich stark. Investiere Evaluierungsaufwand zielgerichtet.',
                 icon: <Target className="w-4 h-4" />,
               },
               {
                 step: '03',
                 title: 'Integrations-Check: Passt es in die bestehende Infrastruktur?',
-                body: 'Prüfen Sie Kompatibilität mit bestehender Software: DATEV, Microsoft 365, beA, DMS-Systeme. Ein Tool, das als Insel ohne Anbindung läuft, erzeugt Medienbrüche und niedrige Adoption.',
+                body: 'Prüfe die Kompatibilität mit bestehender Software: DATEV, Microsoft 365, beA, DMS-Systeme. Ein Tool, das als Insel ohne Anbindung läuft, erzeugt Medienbrüche und niedrige Adoption.',
                 icon: <Zap className="w-4 h-4" />,
               },
               {
                 step: '04',
                 title: 'Compliance-Audit: Berufsrecht und DSGVO prüfen',
-                body: 'Fragen Sie konkret nach: AVV, TOM-Dokumentation, Unterauftragnehmerliste, Löschfristen. Lassen Sie sich nicht mit allgemeinen Datenschutzerklärungen abspeisen. Beziehen Sie bei Unsicherheit die Berufshaftpflicht ein.',
+                body: 'Frag konkret nach: AVV, TOM-Dokumentation, Unterauftragnehmerliste, Löschfristen. Lass dich nicht mit allgemeinen Datenschutzerklärungen abspeisen. Bezieh bei Unsicherheit die Berufshaftpflicht ein.',
                 icon: <Lock className="w-4 h-4" />,
               },
               {
                 step: '05',
                 title: 'Pilotphase: 30 Tage mit repräsentativen Fällen messen',
-                body: 'Testen Sie zunächst mit anonymisierten, repräsentativen Dokumenten und erst nach Freigabe des Datenflusses in einem begrenzten Realbetrieb. Messen Sie Zeitersparnis, Fehlerrate und Nutzerakzeptanz pro Aufgabentyp.',
+                body: 'Teste zunächst mit anonymisierten, repräsentativen Dokumenten und erst nach Freigabe des Datenflusses in einem begrenzten Realbetrieb. Miss Zeitersparnis, Fehlerrate und Nutzerakzeptanz pro Aufgabentyp.',
                 icon: <BarChart3 className="w-4 h-4" />,
               },
             ].map(item => (
@@ -608,7 +609,7 @@ export default function StateOfLegalAIPage() {
           <SectionLabel>Nächste Schritte</SectionLabel>
           <h2 className="font-display font-bold text-3xl text-gray-900 mb-2">Weiter auf der Plattform</h2>
           <p className="text-gray-500 text-sm mb-8 max-w-2xl">
-            Diese Analyse ist ein Ausgangspunkt. Die konkreten Entscheidungen treffen Sie mit den Werkzeugen der Plattform.
+            Diese Analyse ist ein Ausgangspunkt. Die konkreten Entscheidungen triffst du mit den Werkzeugen der Plattform.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
@@ -670,7 +671,7 @@ export default function StateOfLegalAIPage() {
             <p className="text-[11px] font-bold uppercase tracking-widest text-blue-600 mb-2">Newsletter</p>
             <h3 className="font-display font-bold text-2xl text-gray-900 mb-2">Bleib auf dem Laufenden</h3>
             <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
-              Die nächste Ausgabe des State of Legal AI erscheint Ende 2026. Im Newsletter bekommst du Updates, neue Tool-Evaluierungen und Marktbeobachtungen — wöchentlich, kostenlos.
+              {NEWSLETTER_PAUSED ? NEWSLETTER_PAUSED_NOTE : 'Die nächste Ausgabe des State of Legal AI erscheint Ende 2026. Im Newsletter bekommst du Updates, neue Tool-Evaluierungen und Marktbeobachtungen — wöchentlich, kostenlos.'}
             </p>
             <NewsletterForm />
             <p className="text-xs text-gray-400 mt-3">

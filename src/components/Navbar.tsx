@@ -79,7 +79,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="hidden md:flex items-center">
             <Link
-              href="/newsletter"
+              href="/kontakt"
               className="inline-flex items-center gap-1.5 text-sm font-medium px-3.5 py-1.5 rounded-lg transition-all duration-150"
               style={{
                 color: '#F4F1EA',
@@ -89,7 +89,7 @@ export default function Navbar() {
               onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(59,123,255,0.20)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(59,123,255,0.10)' }}
             >
-              Newsletter
+              Kontakt
             </Link>
           </div>
 
@@ -142,7 +142,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/newsletter"
+            href="/kontakt"
             onClick={() => setOpen(false)}
             className="mt-3 block text-center text-sm font-medium px-4 py-2 rounded-lg transition-all"
             style={{
@@ -151,7 +151,7 @@ export default function Navbar() {
               background: 'rgba(59,123,255,0.10)',
             }}
           >
-            Newsletter
+            Kontakt
           </Link>
         </div>
       )}

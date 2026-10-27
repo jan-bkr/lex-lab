@@ -64,15 +64,6 @@ export interface NewsArticle {
   aiGenerated: boolean
 }
 
-export interface Event {
-  id: string
-  title: string
-  date: string
-  type: 'BGH' | 'BFH' | 'Gesetz' | 'Konferenz'
-  url: string
-  description: string
-}
-
 // ─── Newsletter ────────────────────────────────────────────────────────────────
 
 export interface NewsletterDevelopment {

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { EDITORIAL_ARTICLES } from './articles'
+import { NEWSLETTER_PAUSED, NEWSLETTER_PAUSED_NOTE } from '@/lib/site-status'
 
 export const metadata: Metadata = {
   title: 'Beiträge & Einblicke',
@@ -75,7 +76,9 @@ export default function BeitraegePage() {
 
       <section className="mt-14 bg-blue-50 border border-blue-100 rounded-2xl p-6 sm:p-8">
         <h2 className="font-display text-2xl text-gray-900">Neue Beiträge nicht verpassen.</h2>
-        <p className="text-sm text-gray-600 mt-2 mb-5">Der Weekly Brief bringt neue Einordnungen und Marktbewegungen einmal pro Woche ins Postfach.</p>
+        <p className="text-sm text-gray-600 mt-2 mb-5">
+          {NEWSLETTER_PAUSED ? NEWSLETTER_PAUSED_NOTE : 'Der Weekly Brief bringt neue Einordnungen und Marktbewegungen einmal pro Woche ins Postfach.'}
+        </p>
         <NewsletterForm />
       </section>
     </div>

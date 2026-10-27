@@ -7,6 +7,7 @@ import { adminSupabase } from '@/lib/supabase/admin'
 import { getLegalModelBenchmark } from '@/lib/legal-model-benchmark'
 import { SKILL_BIBLIOTHEK_INTRO, SKILL_BIBLIOTHEK_PRINCIPLES, PRIVATE_PROJECT_NOTICE } from '@/lib/skill-bibliothek'
 import { SCHWERPUNKTE } from '@/app/schwerpunkte/config'
+import { NEWSLETTER_PAUSED, NEWSLETTER_PAUSED_NOTE } from '@/lib/site-status'
 import { Rechtsgebiet, Tool } from '@/types'
 
 export const revalidate = 3600
@@ -137,7 +138,10 @@ export default async function HomePage() {
 
       {/* SCHWERPUNKTE */}
       <section className="mb-14" aria-labelledby="schwerpunkte-heading">
-        <h2 id="schwerpunkte-heading" className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-4">Schwerpunkte</h2>
+        <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-4">
+          <h2 id="schwerpunkte-heading" className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Schwerpunkte</h2>
+          <p className="text-xs text-gray-400">In der Kanzlei haben wir uns für beide entschieden. Keine Kooperation, keinerlei Vorteile.</p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {SCHWERPUNKTE.map(s => (
             <Link
@@ -253,7 +257,7 @@ export default async function HomePage() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <h2 className="font-display text-xl text-gray-900">Aus dem Tool-Verzeichnis</h2>
-              <p className="text-sm text-gray-500 mt-1">KI-Werkzeuge für den Rechts- und Steuermarkt, nach LexLab Method bewertet.</p>
+              <p className="text-sm text-gray-500 mt-1">KI-Werkzeuge für den Rechts- und Steuermarkt, bewertet nach der LexLab Method.</p>
             </div>
             <Link href="/tools" className="text-sm text-gray-600 hover:text-[#111827] font-medium flex items-center gap-1 flex-shrink-0">
               Alle Tools <ArrowRight className="w-3.5 h-3.5" />
@@ -267,11 +271,18 @@ export default async function HomePage() {
 
       {/* NEWSLETTER CTA */}
       <section className="bg-white border border-gray-100 rounded-2xl p-8 mb-16 text-center">
-        <h2 className="font-display text-2xl text-gray-900 mb-2 flex items-center justify-center gap-2"><Mail className="w-5 h-5 text-gray-400" /> Neues von LexLab per E-Mail</h2>
-        <p className="text-gray-500 text-sm mb-6">Neue Beiträge, Benchmark-Einordnungen und Notizen zum Aufbau der Skill-Bibliothek. Jederzeit abmeldbar.</p>
+        <h2 className="font-display text-2xl text-gray-900 mb-2 flex items-center justify-center gap-2">
+          <Mail className="w-5 h-5 text-gray-400" /> Neues von LexLab per E-Mail
+          {NEWSLETTER_PAUSED && (
+            <span className="font-sans text-[9px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 uppercase tracking-wide">Pausiert</span>
+          )}
+        </h2>
+        <p className="text-gray-500 text-sm mb-6 max-w-xl mx-auto">
+          {NEWSLETTER_PAUSED ? NEWSLETTER_PAUSED_NOTE : 'Neue Beiträge, Benchmark-Einordnungen und Notizen zum Aufbau der Skill-Bibliothek. Jederzeit abmeldbar.'}
+        </p>
         <NewsletterForm />
         <p className="text-xs text-gray-400 mt-3">
-          Mit der Anmeldung akzeptieren Sie unsere <a href="/datenschutz" className="underline hover:text-gray-600">Datenschutzerklärung</a>.
+          Mit der Anmeldung akzeptierst du unsere <a href="/datenschutz" className="underline hover:text-gray-600">Datenschutzerklärung</a>.
         </p>
       </section>
     </div>

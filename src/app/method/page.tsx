@@ -107,10 +107,10 @@ const MODULES = [
     desc: 'Direkte Gegenüberstellungen nach echten Entscheidungskriterien: wann Tool A, wann Tool B — mit Score-Vergleich und LexLab-Einschätzung.',
   },
   {
-    href: '/research',
+    href: '/research/legal-model-benchmark',
     symbol: '◐',
-    title: 'Research',
-    desc: 'State of Legal AI Germany 2026 und der Legal Model Benchmark. Strukturierte Marktbeobachtung für den DACH-Rechtsmarkt.',
+    title: 'Benchmark',
+    desc: 'Legal Model Benchmark und State of Legal AI Germany 2026: welche Sprachmodelle und Anbieter für juristische Arbeit taugen.',
   },
 ]
 

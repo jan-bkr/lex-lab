@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowRight, ExternalLink, ListChecks } from 'lucide-react'
-import { SCHWERPUNKTE, getSchwerpunkt } from '../config'
+import { SCHWERPUNKTE, getSchwerpunkt, schwerpunktDisclosure } from '../config'
 import { PRIVATE_PROJECT_NOTICE } from '@/lib/skill-bibliothek'
 
 export const dynamicParams = false
@@ -65,6 +65,9 @@ export default async function SchwerpunktPage({ params }: { params: Promise<{ sl
         >
           {s.vendor.name}, {s.vendor.seat} <ExternalLink className="w-3.5 h-3.5" />
         </a>
+        <p className="mt-5 text-xs text-gray-500 leading-relaxed bg-white border border-gray-100 rounded-xl px-4 py-3">
+          {schwerpunktDisclosure(s.name)}
+        </p>
       </section>
 
       {/* ─── Warum Schwerpunkt ─── */}
