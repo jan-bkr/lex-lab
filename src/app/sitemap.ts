@@ -10,12 +10,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static routes
   const static_routes: MetadataRoute.Sitemap = [
     { url: BASE,               lastModified: now, changeFrequency: 'daily',   priority: 1.0 },
-    { url: `${BASE}/tools`,              lastModified: now, changeFrequency: 'daily',   priority: 0.9 },
+    { url: `${BASE}/skill-bibliothek`,   lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${BASE}/schwerpunkte/langdock`,  lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/schwerpunkte/klardaten`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/tools`,              lastModified: now, changeFrequency: 'daily',   priority: 0.8 },
     { url: `${BASE}/tools/finder`,       lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/tools/steuerrecht`,  lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/tools/ma`,           lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/news`,               lastModified: now, changeFrequency: 'daily',   priority: 0.9 },
-    { url: `${BASE}/radar`,              lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/collections`,        lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/collections/ma-due-diligence`,       lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/collections/datenschutzstark`,       lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
@@ -23,11 +25,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/collections/inhouse-stack`,          lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/collections/einsteiger-stack`,       lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/state-of-legal-ai`,  lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE}/workflows`,          lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/prompts`,            lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
-    { url: `${BASE}/prompts/builder`,    lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/method`,             lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE}/research`,           lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE}/research/legal-model-benchmark`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
     { url: `${BASE}/tools/compare`,      lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/tools/compare/harvey-vs-luminance`,   lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
@@ -35,7 +34,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/tools/compare/chatgpt-vs-claude`,     lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/tools/compare/datev-vs-lexisnexis`,   lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/tools/compare/clio-vs-advoware`,      lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE}/events`,             lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${BASE}/beitraege`,          lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE}/newsletter`,         lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE}/kontakt`,            lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
@@ -53,18 +51,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(t.created_at),
     changeFrequency: 'monthly',
     priority: 0.7,
-  }))
-
-  // Dynamic workflow routes
-  const { data: workflows } = await adminSupabase
-    .from('workflows')
-    .select('slug, created_at')
-    .eq('published', true)
-  const workflow_routes: MetadataRoute.Sitemap = (workflows ?? []).map(w => ({
-    url: `${BASE}/workflows/${w.slug}`,
-    lastModified: new Date(w.created_at),
-    changeFrequency: 'monthly',
-    priority: 0.6,
   }))
 
   const [{ data: prompts }, { data: news }] = await Promise.all([
@@ -95,5 +81,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...static_routes, ...tool_routes, ...workflow_routes, ...prompt_routes, ...news_routes, ...editorial_routes]
+  return [...static_routes, ...tool_routes, ...prompt_routes, ...news_routes, ...editorial_routes]
 }

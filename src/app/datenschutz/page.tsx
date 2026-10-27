@@ -20,7 +20,7 @@ export default function DatenschutzPage() {
       </Link>
 
       <h1 className="font-display text-3xl text-gray-900 mb-2">Datenschutzerklärung</h1>
-      <p className="text-sm text-gray-400 mb-10">Stand: April 2026</p>
+      <p className="text-sm text-gray-400 mb-10">Stand: Oktober 2026</p>
 
       <div className="space-y-8 text-sm leading-relaxed text-gray-600">
 
@@ -219,9 +219,10 @@ export default function DatenschutzPage() {
             <div className="bg-gray-50 rounded-xl p-4">
               <h3 className="font-semibold text-gray-800 mb-1.5">Anthropic PBC (KI-Verarbeitung)</h3>
               <p className="mb-1.5">
-                Für den Prompt Builder und die automatisierte News-Pipeline wird die Claude-API von
-                Anthropic genutzt. Dabei werden vom Nutzer eingegebene Texte (Prompt Builder) bzw.
-                Nachrichteninhalte (News-Zusammenfassungen) an Anthropic übermittelt. Anthropic
+                Für die automatisierte News-Pipeline (derzeit pausiert) und die Erstellung von
+                Newsletter-Entwürfen wird die Claude-API von Anthropic genutzt. Dabei werden
+                Nachrichteninhalte und öffentliche Tool-Daten an Anthropic übermittelt, keine
+                Eingaben von Besuchern dieser Website. Anthropic
                 verarbeitet Daten auf Basis von Standardvertragsklauseln gemäß Art. 46 DSGVO.
               </p>
               <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener noreferrer"

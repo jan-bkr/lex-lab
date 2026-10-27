@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { PROMPT_BUILDER_PAUSED } from '@/lib/site-status'
 
 export const revalidate = 86400
 
@@ -108,18 +107,10 @@ const MODULES = [
     desc: 'Direkte Gegenüberstellungen nach echten Entscheidungskriterien: wann Tool A, wann Tool B — mit Score-Vergleich und LexLab-Einschätzung.',
   },
   {
-    href: '/research',
+    href: '/research/legal-model-benchmark',
     symbol: '◐',
-    title: 'Research',
-    desc: 'State of Legal AI Germany 2026, Markt-Radar und kuratierte Signale. Strukturierte Marktbeobachtung für den DACH-Rechtsmarkt.',
-  },
-  {
-    href: '/prompts/builder',
-    symbol: '✦',
-    title: 'Prompt Builder',
-    desc: PROMPT_BUILDER_PAUSED
-      ? 'Derzeit in Überarbeitung und vorübergehend pausiert. Die Prompt-Bibliothek bleibt vollständig verfügbar.'
-      : 'Professionelle juristische Prompts mit integrierter JURIST_PERSONA — für Gutachten, Vertragsanalysen, Due Diligence und mehr.',
+    title: 'Benchmark',
+    desc: 'Legal Model Benchmark und State of Legal AI Germany 2026: welche Sprachmodelle und Anbieter für juristische Arbeit taugen.',
   },
 ]
 
@@ -139,6 +130,9 @@ export default function MethodPage() {
         </h1>
         <p className="text-gray-500 text-lg leading-relaxed max-w-2xl">
           LexLab ist keine Suchmaschine und kein Aggregator. Jedes Tool im Verzeichnis wird redaktionell anhand veröffentlichter Produkt- und Sicherheitsnachweise, verfügbarer Praxissignale und seiner DACH-Eignung eingeordnet.
+        </p>
+        <p className="text-xs text-gray-400 mt-4">
+          Stand der Methodik: Oktober 2026. Geprüfte Tool-Profile zeigen, wann sie zuletzt durchgesehen wurden.
         </p>
       </section>
 

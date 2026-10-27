@@ -13,7 +13,6 @@
 | Auth (Server) | @supabase/ssr | ^0.10.2 |
 | E-Mail | Resend | ^6.18.1 |
 | KI (Pipeline) | Claude Haiku via raw `fetch` | `claude-haiku-4-5-20251001` |
-| KI (Prompt Builder) | Claude Haiku via `@anthropic-ai/sdk` ^0.115.0 | `claude-haiku-4-5` |
 | KI (Newsletter) | Claude Haiku via `@anthropic-ai/sdk` | `claude-haiku-4-5-20251001` |
 | Analytics | @vercel/analytics + @vercel/speed-insights | ^2 |
 | RSS | rss-parser | ^3.13.0 |
@@ -40,7 +39,14 @@ npm install <pkg>    # Paket hinzufügen
 
 ## Produkt-Kontext
 
-**LexLab** (`https://www.lex-lab.de`) ist eine kuratierte Plattform für KI-Tools, Workflows und Prompts für den deutschen Rechtsmarkt. Zielgruppe: Kanzleien, Steuerberater, Inhouse-Teams.
+**LexLab** (`https://www.lex-lab.de`) ist ein **privates Projekt von Jan Becker** (Rechtsanwalt) — **kein Angebot der Kanzlei**. Seit dem Relaunch (2026-10-27) ist der Kern die **Skill-Bibliothek**: das KI-Entwicklungsprojekt der Kanzlei, das Jan Becker aufbaut und verantwortet, als Teaser gezeigt. Schwerpunkte daneben: **Langdock**, **Klardaten**, **Legal Model Benchmark**. Tool-Verzeichnis, Vergleiche, Prompt-Bibliothek und Beiträge bleiben als nachgeordnete Bereiche. Zielgruppe: Kolleginnen und Kollegen mit großem Interesse an der Legal-Tech-Szene.
+
+**Inhaltsgrenzen (hart, berufsrechtlich):**
+- Verschwiegenheit (§ 43a Abs. 2 BRAO): keine Mandanten, keine Deals, keine Beispiele aus echten Mandaten.
+- Skill-Bibliothek: **keine Anzahl der Skills, keine Rechtsgebiete, keine internen Inhalte.** Der Teaser-Wortlaut in `src/lib/skill-bibliothek.ts` ist vom Bearbeiter freigegeben — **nicht umformulieren**, nur `label` ist redaktionell.
+- Ton: sachlich, **Du-Form** (in der Start-up- und Legal-Tech-Szene wird geduzt, Entscheidung 2026-10-27), aber keine Verkaufssprache (kein Countdown, keine Dringlichkeit, kein „Experte an deiner Seite"). Novist dient nur inhaltlich als Vorbild, nicht im Ton. Ausnahme: Impressum und Datenschutzerklärung bleiben als Rechtstexte in Sie-Form.
+- Langdock/Klardaten: offengelegt wird **nur**, dass sich die Kanzlei für beide entschieden hat, ohne Kooperation und ohne Vorteile (`schwerpunktDisclosure()` in `src/app/schwerpunkte/config.ts`). Keine Details zu Einsatz, Umfang oder Konfiguration. Anbieterangaben immer als Herstellerangaben mit Stand kennzeichnen.
+- Impressum-Anschrift „c/o BZG & Partner" bleibt bewusst (Entscheidung des Betreibers).
 
 **Vier Rechtsgebiete** durchziehen das gesamte System als zentrales Klassifikationsmerkmal:
 - `Steuerrecht` · `M&A` · `Gesellschaftsrecht` · `Venture Capital`
@@ -69,8 +75,6 @@ src/
 │   │       ├── news/               # News-Verwaltung
 │   │       ├── comments/           # Kommentar-Moderation
 │   │       ├── prompts/            # Prompt-Verwaltung
-│   │       ├── workflows/          # Workflow-Verwaltung
-│   │       ├── events/             # Termin-Verwaltung
 │   │       └── newsletter/
 │   │           ├── page.tsx        # Issues + Abonnenten-Tabelle
 │   │           └── IssuesClient.tsx # Client-UI für Draft/Send/Delete
@@ -80,7 +84,6 @@ src/
 │   │   ├── tools/vote/             # Vote-Toggle (POST, IP-Ratelimit: 20/24h pro IP+Tool)
 │   │   ├── tools/vote-status/      # Vote-Status abfragen (GET)
 │   │   ├── tools/[id]/comments/    # Kommentare laden + speichern
-│   │   ├── prompts/generate/       # Claude Prompt Builder (POST, 10/Tag pro IP)
 │   │   ├── newsletter/subscribe/   # Newsletter-Anmeldung (POST, 5/h pro IP)
 │   │   ├── newsletter/unsubscribe/ # Abmeldung via HMAC-Token (GET)
 │   │   ├── kontakt/                # Kontaktformular → Resend (POST)
@@ -89,19 +92,18 @@ src/
 │   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → ToolsContent
 │   │   ├── ToolsContent.tsx        # Client Component — Filter/Suche/Sort (initialTools prop)
 │   │   └── [slug]/                 # Detailseite: Server page.tsx + Client ToolDetailClient.tsx
-│   ├── prompts/                    # Prompt-Bibliothek + Builder
+│   ├── prompts/                    # Prompt-Bibliothek
 │   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → PromptsContent
 │   │   ├── PromptsContent.tsx      # Client Component — Filter + Modal (initialPrompts prop)
-│   │   └── builder/                # /prompts/builder — Server page.tsx + BuilderClient.tsx (Client)
 │   ├── news/                       # News-Feed
 │   │   ├── page.tsx                # Server Component (adminSupabase, revalidate=3600) → NewsContent
 │   │   └── NewsContent.tsx         # Client Component — Kategorie-Filter (initialArticles prop)
-│   ├── workflows/                  # Workflow-Guides — Server page.tsx + WorkflowsClient.tsx (Client)
+│   ├── skill-bibliothek/           # Kern: Teaser der Skill-Bibliothek (Server Component, Wortlaut aus lib/skill-bibliothek.ts)
+│   ├── schwerpunkte/               # config.ts + [slug]/page.tsx → /schwerpunkte/langdock, /schwerpunkte/klardaten (SSG, dynamicParams=false)
 │   ├── newsletter/                 # Anmeldung + /abgemeldet-Bestätigung
-│   ├── events/                     # Rechtstermine — Server page.tsx + EventsClient.tsx (Client)
 │   ├── beitraege/                  # Beiträge (Placeholder, kein Inhalt)
-│   ├── state-of-legal-ai/          # Research Hub: "State of Legal AI Germany 2026" (pure Server Component)
-│   ├── sitemap.ts                  # Dynamische Sitemap (Tools, News, Prompts, Workflows)
+│   ├── state-of-legal-ai/          # Report "State of Legal AI Germany 2026" (pure Server Component)
+│   ├── sitemap.ts                  # Dynamische Sitemap (Skill-Bibliothek, Schwerpunkte, Tools, News, Prompts)
 │   ├── robots.ts                   # /robots.txt — disallow /admin
 │   ├── kontakt/                    # Kontaktformular — Server page.tsx + KontaktClient.tsx (Client)
 │   ├── impressum/ datenschutz/ beitraege/
@@ -123,13 +125,14 @@ src/
 │   ├── ip.ts                       # IP-Pseudonymisierung: HMAC-SHA256 (IP_HASH_SECRET) → 16-char hex
 │   ├── lexlab-score.ts             # Score-Berechnung: Ø gewichtet (35/20/25/10/10)×10
 │   ├── jurist-persona.ts           # JURIST_PERSONA — System-Prompt für Claude
+│   ├── skill-bibliothek.ts         # Freigegebener Teaser-Wortlaut + PRIVATE_PROJECT_NOTICE (einzige Quelle)
 │   ├── rss-sources.ts              # 11 RSS-Quellen (M&A, Steuer, LegalTech, VC)
 │   ├── analytics.ts                # Vercel Analytics Helper
 │   └── clean-text.ts               # Text-Bereinigung für Pipeline
 ├── hooks/
 │   └── useAnalytics.ts
 ├── types/
-│   └── index.ts                    # Tool, Workflow, Prompt, NewsArticle, Event, ToolComment
+│   └── index.ts                    # Tool, Prompt, NewsArticle, Event, ToolComment
 └── proxy.ts                        # Next.js-16-Proxy für Admin-Auth (optimistischer Cookie-Check)
 
 scripts/
@@ -188,7 +191,7 @@ Niemals DB-Rohdaten direkt als Domain-Types verwenden.
 const tools: Tool[] = toolsRes.data?.length ? toolsRes.data.map(mapTool) : []
 // → Sektion wird nur gerendert wenn tools.length > 0
 
-// Client Component (Tools-/Prompts-/Workflows-/Events-Page):
+// Client Component (Tools-/Prompts-/Events-Page):
 if (error) {
   setLoadError(true)      // → Fehler-State: "… konnten nicht geladen werden"
 } else {
@@ -235,7 +238,13 @@ export default function Page() {
 
 **Plattform:** Vercel — automatischer Deploy bei Push auf `main`
 
-> **⏸ PAUSIERT (seit 2026-10-08):** News-Pipeline und Prompt Builder sind vorübergehend abgeschaltet. Zentrale Schalter in `src/lib/site-status.ts` (`NEWS_PIPELINE_PAUSED`, `PROMPT_BUILDER_PAUSED`). `vercel.json` enthält aktuell **keine** Crons. Die UI zeigt „In Überarbeitung"-Hinweise (News-Feed, Homepage-News, Research, Prompt-Bibliothek, Method), `/prompts/builder` rendert eine Pausen-Seite statt `BuilderClient`, `/api/prompts/generate` antwortet mit `503 { error: 'PAUSED' }`, „✦ Builder" ist aus der Navbar ausgeblendet. **Reaktivieren:** beide Flags auf `false` setzen und die zwei Cron-Einträge unten wieder in `vercel.json` eintragen. Manueller Pipeline-Lauf per `POST /api/pipeline` funktioniert weiterhin.
+> **⏸ PAUSIERT (seit 2026-10-08):** Die News-Pipeline ist abgeschaltet. Schalter in `src/lib/site-status.ts` (`NEWS_PIPELINE_PAUSED`). `vercel.json` enthält **keine** Crons. **Reaktivieren:** Flag auf `false` und die zwei Cron-Einträge unten wieder in `vercel.json` eintragen. Manueller Lauf per `POST /api/pipeline` funktioniert weiterhin. News ist seit dem Relaunch nicht mehr in Navbar oder Startseite verlinkt (Seiten bleiben erreichbar).
+>
+> **🗑 ENTFERNT (Relaunch 2026-10-27):** Workflows (öffentlich + `/admin/workflows` + Server Actions + `Workflow`-Type), Prompt Builder (`/prompts/builder`, `/api/prompts/generate`, `jurist-persona.ts`, `PROMPT_BUILDER_PAUSED`), Radar (`/radar`). Alte URLs leiten per `redirects()` in `next.config.ts` um (`/workflows/*` → `/skill-bibliothek`, `/prompts/builder` → `/prompts`, `/radar` → Benchmark). Die DB-Tabelle `workflows` existiert noch, wird aber nicht mehr gelesen.
+>
+> **🗑 ENTFERNT (Review 2026-10-27):** Research-Übersicht (`/research` → 308 auf `/research/legal-model-benchmark`; der Benchmark bleibt unter diesem Pfad), Termine (`/events` öffentlich + `/admin/events` + Server Actions + `Event`-Type; `/events` → `/`), ungenutzte Komponente `PromptOfDay`. Die DB-Tabelle `events` existiert noch, wird nicht mehr gelesen. Der „Prompt des Tages"-Schalter im Admin hat keine öffentliche Wirkung mehr.
+>
+> **⏸ NEWSLETTER PAUSIERT (seit 2026-10-27):** `NEWSLETTER_PAUSED` + `NEWSLETTER_PAUSED_NOTE` in `src/lib/site-status.ts`. Kennzeichnung auf `/newsletter`, Startseite, Beiträge, State of Legal AI und in der Willkommensmail. Anmeldung bleibt möglich (Vormerken), Admin-Versand technisch auch. Navbar-CTA ist „Kontakt", nicht „Newsletter".
 
 **Cron-Job (derzeit deaktiviert, s. o.):** `/api/pipeline` täglich 06:00 UTC **und 12:00 UTC** (`{ "path": "/api/pipeline", "schedule": "0 6 * * *" }` + `"0 12 * * *"` in `vercel.json`)
 - Zwei Läufe pro Tag als Redundanz — Vercel Hobby-Cron feuert gelegentlich nicht zuverlässig
@@ -259,7 +268,7 @@ export default function Page() {
 | `NEXT_PUBLIC_SUPABASE_URL` | Public | Supabase-Projekt-URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Supabase anon Key (RLS aktiv) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | Admin-Client (bypasses RLS) |
-| `ANTHROPIC_API_KEY` | Server only | Claude API — Pipeline + Prompt Builder |
+| `ANTHROPIC_API_KEY` | Server only | Claude API — Pipeline + Newsletter-Generator |
 | `RESEND_API_KEY` | Server only | Newsletter-E-Mails + Kontaktformular |
 | `CRON_SECRET` | Server only | Auth für Pipeline + Cleanup |
 | `NEWSLETTER_HMAC_SECRET` | Server only | HMAC-Key für Newsletter-Abmelde-Token (SHA-256) |
@@ -313,7 +322,6 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 5. **Rate Limiting via Upstash Redis** — `src/lib/rate-limit.ts`, Sliding Window, multi-instance-safe:
    - Vote: 20/24h pro `IP:toolId`
    - Comments: 5/h pro IP
-   - Prompt Builder: 10/Tag pro IP
    - Newsletter: 5/h pro IP
    - Kontaktformular: 5/h pro IP
    - Tool-Einreichung: 5/Tag pro IP (`toolsubmit`)
@@ -321,12 +329,11 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 6. **Claude-Modelle:**
    - Pipeline (`/api/pipeline`): direkte `fetch`-Aufrufe, Modell `claude-haiku-4-5-20251001`
-   - Prompt Builder (`/api/prompts/generate`): Anthropic SDK, Modell `claude-haiku-4-5`
    - `JURIST_PERSONA` (`lib/jurist-persona.ts`) wird als System-Prompt übergeben UND dem Output für die UI vorangestellt — zwei verschiedene Verwendungszwecke.
 
 7. **`/tools`-, `/news`- und `/prompts`-Seiten sind server-seeded**: `page.tsx` ist jeweils Server Component (`adminSupabase`, `revalidate=3600`), der Client-Teil (`ToolsContent.tsx`, `NewsContent.tsx`, `PromptsContent.tsx`) erhält Daten als `initialTools`/`initialArticles`/`initialPrompts`-Prop und hat keinen eigenen Fetch-Lifecycle. Kein Skeleton auf First Load. Tool-Detailseite `/tools/[slug]` nutzt den Admin-Client im Server-Teil für `generateMetadata` und `fetchToolById`.
 
-8. **Workflows + Events haben DB-Tabellen + Admin-UI** (`workflows`, `events` in Supabase). Die Listing-Seiten und Detailseiten zeigen bei leerem Ergebnis einen Empty-State und bei DB-Fehler einen Fehler-State — kein Mock-Fallback mehr. Admin-UIs unter `/admin/workflows` und `/admin/events` vorhanden.
+8. **Workflows und Events wurden im Relaunch entfernt** (Seiten, Admin-UIs, Actions). DB-Tabellen bestehen noch.
 
 9. **Newsletter-Abmeldung** ist HMAC-signiert (`NEWSLETTER_HMAC_SECRET` als Schlüssel, SHA-256). Token-Generierung via `makeToken(email)` in `unsubscribe/route.ts`, importiert von `subscribe/route.ts`. Beide Routen schlagen hart fehl wenn `NEWSLETTER_HMAC_SECRET` nicht gesetzt ist.
 
@@ -356,10 +363,20 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - [ ] **Supabase Migrationen CI** — kein `supabase link` / automatischer Migrations-Deploy
 - [x] **Prompt-Detailseiten** — `/prompts/[slug]` mit kopierfertigem Prompt, Claude-Deep-Link, SEO und Sicherheitscheckliste
 - [x] **News-Detailseiten** — `/news/[slug]` mit Quellenlink, Transparenzhinweis, Related News, SEO und NewsArticle-JSON-LD
-- [ ] **Radar: DB-backed Signals** — aktuell statische Seed-Daten. Für echten Redaktionsbetrieb: `radar_signals`-Tabelle + Admin-UI aufbauen.
 - [ ] **Collections: Admin-UI** — Collections-Inhalte sind statisch in `config.ts` definiert. Kein Admin-Flow für Neuanlage.
 
 ## Erledigte Meilensteine
+
+- [x] **Relaunch: Skill-Bibliothek als Kern** (2026-10-27) — LexLab grundlegend neu ausgerichtet:
+  - **Neue Startseite** (`src/app/page.tsx`): Hero „Kanzleiwissen, verbindlich für die KI." → Skill-Bibliothek-Teaser (Einleitungssatz + 5 Grundsätze, wörtlich) → Schwerpunkte Langdock/Klardaten → Legal AI Benchmark (unverändert) → 3 Tools → Newsletter (Sie-Form). Entfernt: Finder, Rechtsgebiets-Kacheln, Workflows, Prompt des Tages, News, Events.
+  - **`/skill-bibliothek`**: Kernseite mit freigegebenem Wortlaut, Block „Was hier bewusst fehlt" (§ 43a Abs. 2 BRAO) und Privatprojekt-Hinweis.
+  - **`/schwerpunkte/langdock` + `/schwerpunkte/klardaten`**: Einordnungsseiten aus `src/app/schwerpunkte/config.ts` — Herstellerangaben (Stand Oktober 2026, mit Quellen), Bezug zur Skill-Bibliothek, Prüfpunkte (§ 43e BRAO, § 62a StBerG, Art. 28 DSGVO).
+  - **Navbar**: Skill-Bibliothek · Langdock · Klardaten · Benchmark · Tools · Beiträge, CTA „Newsletter". „Tool einreichen" nur noch auf `/tools`.
+  - **Footer**: Spalten Schwerpunkte / Werkzeuge / Lesen / Rechtliches, Hinweis „privates Projekt … kein Angebot der Kanzlei".
+  - **Impressum**: Abschnitt „Betreiber" (privat, keine Mandate über LexLab). Root-Metadata + JSON-LD (`WebSite` mit `author` Person) neu.
+  - Entfernt: Workflows, Prompt Builder, Radar (siehe Deployment-Hinweis). Lint, tsc und Build clean.
+  - **Oktober-Stand** (gleicher Tag): Legal Model Benchmark auf neue Quell-Methodik umgestellt (siehe Hinweis unten), State of Legal AI auf „Stand Oktober 2026“ (Vendor Watch mit 9 belegten Marktbewegungen + Quellenliste), 9 Tool-Profile in `scripts/bulk-import-tools.mjs` geprüft und mit `last_reviewed_at: '2026-10-27'` versehen (ChatGPT, Gemini, Claude, DATEV KI, Harvey, Noxtua, Beck-Noxtua, Libra, Legora). **Nachschritt: `node scripts/bulk-import-tools.mjs` ausführen**, sonst bleiben die DB-Profile auf Juli-Stand. „Prompt des Tages“ komplett entfernt (Admin-Schalter, Actions, Badge und Sortierung auf `/prompts`).
+  - **Review-Runde** (gleicher Tag): Du-Form site-weit, Offenlegung Langdock/Klardaten, Newsletter als pausiert markiert, Research-Übersicht + Termine entfernt, Datenschutzerklärung (Anthropic-Abschnitt ohne Prompt Builder, Stand Oktober 2026).
 
 - [x] **Newsletter-Produktmodul — LexLab Weekly Brief** (2026-04-19) — Vollständiger Newsletter-Stack aufgebaut:
   - **`newsletter_issues` Tabelle** (`supabase/migrations/20260419000000_newsletter_issues.sql`): `title`, `preheader`, `issue_date`, `editors_note_auto`, `editors_note_manual`, `editors_note_mode` (`auto`/`manual`), JSONB-Felder für `top_developments`, `tool_watch`, `radar_signals`, `lexlab_pick`, `status` (`draft`/`ready`/`sent`), `sent_at`, `recipient_count`. RLS enabled, no public policies — nur service role.
@@ -481,6 +498,11 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 
 ## Hinweise für neue Sessions
 
+- **Legal Model Benchmark** (`src/lib/legal-model-benchmark.ts`): Quelle legalbenchmarks.ai hat im Aug./Sept. 2026 die Methodik geändert. Kennzahlen jetzt `taskPass` (Rang), `criteriaPass`, `form`, `costPerTask`, `latency`, plus `rank` aus der Quelle (Gleichstände möglich). Parser ordnet Spalten über die `<thead>`-Beschriftungen zu und wirft bei fehlenden Spalten → Fallback-Datensatz (Stand Oktober 2026) + `console.error('[legal-model-benchmark] …')`. Bei Formatwechsel der Quelle: Parser + `FALLBACK_ROWS` anpassen. Auf der Seite von Hand gepflegt: `RELEASE_WATCH` (blendet sich aus, sobald das Modell gerankt ist), `NEW_IN_RANKING`, `TAKEAWAYS` (Oktober-Runde). Beim nächsten Quell-Update prüfen.
+- **Privatprojekt-Hinweis**: Konstante `PRIVATE_PROJECT_NOTICE` in `src/lib/skill-bibliothek.ts` verwenden, nicht neu formulieren. Steht in Footer, Skill-Bibliothek, Schwerpunkt-Seiten, Startseite, Impressum, Willkommensmail.
+- **Neue Schwerpunkte** (weitere Anbieter): Eintrag in `SCHWERPUNKTE` (`src/app/schwerpunkte/config.ts`) + Sitemap ergänzen. `asOf` und `sources` sind Pflicht; Angaben nur aus öffentlichen Herstellerquellen.
+- **Du-Form** für alle Texte außer Impressum und Datenschutzerklärung.
+
 **Sofort arbeitsfähig mit:**
 - Stack: Next.js 16 App Router + Supabase + Tailwind v4 + TypeScript strict + Claude Haiku
 - Package Manager: **npm** · Dev starten: `npm run dev`
@@ -504,31 +526,24 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - Security Headers: `next.config.ts` setzt `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security` für alle Routen
 - `ADMIN_EMAIL` env var: in Vercel gesetzt und aktiv — `src/app/admin/login/actions.ts`, `src/app/admin/(protected)/layout.tsx` und `requireAdminSession()` erzwingen dieselbe Allowlist ✅
 - `CONTACT_EMAIL` env var: optionaler Override für das Kontaktformular-Empfänger-Ziel in `/api/kontakt/route.ts`. Fallback: `janiklas.dropbox@web.de`. In Vercel setzen um E-Mail-Ziel zu ändern ohne Code-Deploy.
-- **Server-Wrapper-Muster für Client-Pages**: Pages, die `'use client'` brauchen (Events, Workflows, Kontakt, Prompts Builder), exportieren keine Metadata-Tags direkt. Stattdessen: Server-Wrapper `page.tsx` (ohne `'use client'`) exportiert `metadata` und rendert `<NameClient />`. Client-Logik liegt in `NameClient.tsx`. Dieses Muster immer einhalten bei neuen Client-Pages.
+- **Server-Wrapper-Muster für Client-Pages**: Pages, die `'use client'` brauchen (Events, Kontakt), exportieren keine Metadata-Tags direkt. Stattdessen: Server-Wrapper `page.tsx` (ohne `'use client'`) exportiert `metadata` und rendert `<NameClient />`. Client-Logik liegt in `NameClient.tsx`. Dieses Muster immer einhalten bei neuen Client-Pages.
 - **Root-Layout-Canonical ist absichtlich entfernt** — das `alternates.canonical` im Root-Layout `layout.tsx` war ein SEO-Bug (alle Seiten erbten den Homepage-Canonical). Jede Page definiert ihren eigenen Canonical. Nie wieder einen Canonical ins Root-Layout schreiben.
 - **Öffentliche Supabase-Selects**: niemals `select('*')` in öffentlichen Queries verwenden — gilt für alle Tabellen, alle Client-Komponenten und die Homepage. Explizite Spaltenliste ist Pflicht. Für `tools` zusätzlich: `submitted_by` ist via column-level REVOKE für `anon` gesperrt (nur noch INSERT/UPDATE/REFERENCES).
 - **`ToolDetailClient.tsx`** lädt das Tool per `.eq('slug', slug).maybeSingle()` (kein fetch-all mehr). Ähnliche Tools kommen aus einer separaten `.overlaps('rechtsgebiet', ...)` Abfrage mit minimalen Spalten. `SimilarToolsList` akzeptiert `Pick<Tool, 'id' | 'name' | 'slug' | 'rechtsgebiet'>[]`.
 - **`vote/route.ts`**: prüft `status = 'approved'` via DB-Lookup vor dem `toggle_tool_vote`-RPC — Votes auf nicht-öffentliche Tools werden mit 404 abgewiesen.
 - **`tools`-Spaltenname `pricing`**: Die DB-Spalte für den Preistyp heißt `pricing` (nicht `pricing_type`). Code in `ToolDetailClient.tsx`, `actions.ts` (`UpdateToolPayload`, `updateTool`) und `EditForm.tsx` verwenden `pricing`. Niemals `pricing_type` schreiben — die Spalte existiert nicht in der DB (Fehlercode `42703`).
 - **Eigene 404- und Error-Seiten**: `src/app/not-found.tsx` (Server Component) und `src/app/error.tsx` (`'use client'`) existieren. Bei Routing-Änderungen nicht vergessen, dass diese globalen Fehlerseiten das Framework-Default ersetzen. `error.tsx` zeigt `error.digest` dem User, aber keinen Stack Trace.
-- **`/state-of-legal-ai`**: Pure Server Component, kein `'use client'`. Hero ist full-bleed dark (`bg-[#111827]`), kein `max-w` auf dem äußeren `<div>`. Sticky Anchor-Nav bei `top-14` (40px Höhe, `z-40` unter Navbar `z-50`). Alle Sections haben `scroll-mt-[100px]` (deckt 56px Navbar + 40px Anchor-Nav ab). Entry Points: Homepage (dark Callout-Card zwischen Finder + Tools-Sektion) + Footer (neue „Research"-Sektion). Nicht in primärer Navbar verlinkt — bewusste Entscheidung zur Nav-Entlastung. Inline Sub-Komponenten: `SectionLabel`, `InsightCard`, `SegmentCard` — nicht auslagern.
+- **`/state-of-legal-ai`**: Stand Oktober 2026; Vendor-Watch-Aussagen nur mit Eintrag in `VENDOR_WATCH_SOURCES`. Pure Server Component, kein `'use client'`. Hero ist full-bleed dark (`bg-[#111827]`), kein `max-w` auf dem äußeren `<div>`. Sticky Anchor-Nav bei `top-14` (40px Höhe, `z-40` unter Navbar `z-50`). Alle Sections haben `scroll-mt-[100px]` (deckt 56px Navbar + 40px Anchor-Nav ab). Entry Points: Homepage (dark Callout-Card zwischen Finder + Tools-Sektion) + Footer (neue „Research"-Sektion). Nicht in primärer Navbar verlinkt — bewusste Entscheidung zur Nav-Entlastung. Inline Sub-Komponenten: `SectionLabel`, `InsightCard`, `SegmentCard` — nicht auslagern.
 - **Tool Finder** (`/tools/finder`): `FinderClient.tsx` lädt alle approved Tools client-seitig, berechnet pro Tool einen `matchScore` aus 4 Antworten (Besucher-Typ, Use Case, Datenschutz, Teamgröße) und zeigt die Top 5. Entry Points: `FinderPanel` auf `/tools` (compact) und auf der Startseite (full). Besucher-Typen: `anwalt | steuerberater | interdisziplinaer | inhouse` — diese 4 Kategorien sind kanonisch für LexLab, werden ggf. site-weit eingebaut.
-- **`FinderPanel`** (`src/components/FinderPanel.tsx`): Wiederverwendbares Premium-CTA-Panel für den Tool Finder. Props: `compact?: boolean`. Zeigt „Persönliche Empfehlung"-Eyebrow (kein Icon), Display-Headline in **Du-Form** (konsistent mit FinderClient), Subtext und dunklen CTA-Button (`bg-[#111827]`). `compact=true` für Tools-Seite (kleinere Schrift/Padding), default für Homepage. Keine `'use client'`-Direktive — reine Server Component mit `<Link>`. **Reihenfolge auf der Startseite**: Hero → Research-Callout → Top-Tools → FinderPanel (mit `border-t`-Trenner) → Kategorien → Workflows/Prompt → News → Newsletter. FinderPanel steht bewusst nach den Tools, damit der Hero keine konkurrierende CTA direkt darunter hat.
+- **`FinderPanel`** (`src/components/FinderPanel.tsx`): Wiederverwendbares Premium-CTA-Panel für den Tool Finder. Props: `compact?: boolean`. Zeigt „Persönliche Empfehlung"-Eyebrow (kein Icon), Display-Headline in **Du-Form** (konsistent mit FinderClient), Subtext und dunklen CTA-Button (`bg-[#111827]`). `compact=true` für Tools-Seite (kleinere Schrift/Padding), default für Homepage. Keine `'use client'`-Direktive — reine Server Component mit `<Link>`. Seit dem Relaunch nur noch auf `/tools` (compact) eingesetzt, nicht mehr auf der Startseite.
 - **FinderClient Results-Design**: Ergebnis #1 bekommt `border-[#111827]/20` + `shadow-[0_1px_4px_rgba(0,0,0,0.06)]` + schwarzes „Top-Pick"-Badge (oben rechts in Title-Row). Antworten-Summary als Pills (`getAnswerLabel()` aus STEPS-Array) über dem Heading. Alle anderen Cards: `border-gray-100`. Dieses Top-Pick-Muster wird **auch in Collections Detail** eingesetzt — konsistente Design-DNA.
 - **Du-Form im Finder**: FinderClient und FinderPanel verwenden durchgehend „du"-Form. Nicht auf „Sie" wechseln — das wurde bewusst entschieden und ist konsistent ausgerichtet.
-- **WorkflowDetailClient hat keinen WORKFLOW_STEPS-Hardcode mehr** — alle Workflow-Detailseiten zeigen `WorkflowStepsTeaser` (generische Lock-Icon-Schritte + Newsletter-CTA). Kein slug-spezifischer Content-Hardcode. `WorkflowStepsTeaser` ist als Sub-Komponente inline in `WorkflowDetailClient.tsx` definiert — nicht auslagern.
-- **Workflow-Karten auf `/workflows` sind vollständig klickbar** — der `<Link>` wraps die gesamte Karte (group-Hover, Titelfarbe ändert sich bei Hover). Keine separaten Klickbereiche. Die WORKFLOW_TEASERS (Empty-State wenn DB leer) sind NICHT als Link umgesetzt — sie haben kein Ziel. **Statussystem**: Echte Workflow-Karten (DB-Daten) tragen ein dezentes `Vorschau`-Badge (slate, oben rechts); CTA-Text ist "Vorschau" statt "Lesen". Wenn DB-Daten vorhanden, erscheint eine schlanke Info-Note mit Lock-Icon und Newsletter-Link oben auf der Listing-Seite. Workflow-Detailseiten haben einen Preview-Banner (slate, Lock-Icon, "Workflow-Vorschau") zwischen Metadaten und Excerpt-Block. Navbar: `Workflows` hat `soon: true` (wie Beiträge).
 - **`/beitraege`**: Teaser-Format mit zwei Artikel-Cards + Founder/Editor-Block "Hinter LexLab" am Ende (Jan Becker, Foto, Bio, Slogan). Artikel-Array in `ARTICLES` konstante in `page.tsx` — neue Teaser dort ergänzen. Foto-Pfad: `/jan-becker.jpg`.
 - **`ANTHROPIC_API_KEY` 401-Fehler**: Wenn `/api/pipeline` oder `/api/prompts/generate` mit `401 Invalid authentication credentials` schlagen, ist der Key in Vercel abgelaufen oder falsch gesetzt. Prüfen: console.anthropic.com → API Keys + Vercel → Settings → Environment Variables → `ANTHROPIC_API_KEY`. Nach Änderung: neues Deployment nötig.
-- **`sitemap.ts`**: Erfasst Tools, News, Prompts, Workflows, Radar, alle 5 Collections-Slugs, `/state-of-legal-ai`. Nur `/beitraege` fehlt noch (kein eigener Inhalt).
-- **Radar-Signale (`/radar`)**: Statische Seed-Daten in `src/app/radar/page.tsx` (SIGNALS-Array). Stand-Datum wird dynamisch aus `sorted[0].date` berechnet — bei neuen Signalen im Array zieht es automatisch mit. Für Redaktionsbetrieb: `radar_signals`-Tabelle + Admin-UI bauen, Page auf DB-Fetch umstellen.
 - **Collections-Config (`src/app/collections/config.ts`)**: Geteilte Konfiguration für `/collections` (Listing) und `/collections/[slug]` (Detail). 5 Collections: `ma-due-diligence`, `datenschutzstark`, `steuerrecht-essentials`, `inhouse-stack`, `einsteiger-stack`. Filter via `rechtsgebietOverlaps`, `minScore`, `minDatenschutz`. Neue Collections → Config ergänzen, `generateStaticParams` updaten.
-- **Navbar**: `Radar` hat `isNew: true` Badge (blau). `isNew` ist jetzt in der `NavLink`-Interface definiert. Badge-Rendering in Desktop-Nav und Mobile-Menü vorhanden.
-- **Footer**: Neue Spalte „Entdecken" mit Tool Finder, Radar (Neu-Badge), Kuratierte Listen (Neu-Badge). Steht vor „Research" und „Rechtliches".
 - **Homepage Top-Tools-Label**: Heißt "Meist empfohlen" (nicht "Tools der Woche") — Semantik entspricht dem tatsächlichen votes-basierten All-time-Ranking. Nicht zurückändern.
 - **Newsletter-Erfolg**: `NewsletterForm` zeigt `"Angemeldet — eine Willkommens-E-Mail ist unterwegs."` — es gibt **kein** Double Opt-in, die Anmeldung ist nach API-Aufruf sofort aktiv. Success-Message darf das nicht anders kommunizieren.
 - **News-Eyebrow**: "Täglich kuratiert" (nicht "Täglich aktualisiert"). Footer-Note: "Zusammenfassungen sind KI-generiert" — so lassen, Transparenz ist hier Produktentscheidung.
-- **Workflows-Filter-Aktiv**: `bg-[#111827]` (wie News/Prompts/Tools), nicht `bg-blue-600`.
 - **Collections-Beschreibung**: "Von LexLab zusammengestellte Shortlists... nach Anforderungsprofil gefiltert" — **nicht** "redaktionell zusammengestellte" (wäre Overstatement, Collections sind DB-Filter-Konfigurationen).
 - **ToolCard Stretched-Link-Pattern**: `ToolCard.tsx` nutzt ein absolut positioniertes `<Link>` (`absolute inset-0 rounded-xl`) als primäres Klickziel für die Detailseite. „Ansehen →" (`<a>`) und der Vote-Button (`<button>`) liegen im `relative z-10`-Container darunter und bleiben eigenständig klickbar. Kein `<a>` in `<a>` — HTML-valide. Nicht auf `onClick`-Navigation am div umbauen.
 - **Event-Kacheln Homepage**: Kacheln werden in `<a target="_blank">` gerendert wenn `ev.url !== '#'`, sonst `<div>`. Hover-State (`group-hover:text-blue-600`) nur wenn URL vorhanden. Nicht als `<Link>` — Events verlinken auf externe Seiten.
@@ -537,10 +552,8 @@ npx vercel ls                                  # Zeigt aktuelle Deployments (Bui
 - **Metadata-Titel-Muster**: Seiten-`title` darf **kein** "— LexLab" enthalten (führt zu "Page — LexLab | LexLab" durch den Title-Template in `layout.tsx`). Nur `openGraph.title` erhält "— LexLab" für Social-Sharing-Qualität. Dieses Muster gilt für alle neuen Pages.
 - **Event-Datumsvergleich**: Immer `todayStr = new Date().toISOString().slice(0,10)` und `e.date >= todayStr` (String-Vergleich) — niemals `new Date(e.date) >= new Date()` (UTC/CEST-Fehler: date-only strings parsen als UTC-Mitternacht, erscheinen in CEST 2h zu früh als vergangen).
 - **SEO-Hub-Seiten** für Rechtsgebiete: `src/app/tools/steuerrecht/page.tsx` + `src/app/tools/ma/page.tsx` existieren als statische Server Components (ISR 1h). Muster für neue Rechtsgebiets-Hubs: gleiche Datei-Struktur, `.overlaps('rechtsgebiet', ['<Gebiet>'])`, BreadcrumbList JSON-LD, thematische Resource-CTAs. Statische Routen haben in App Router immer Vorrang vor `[slug]`.
-- **`sitemap.ts`**: Erfasst jetzt auch `/tools/steuerrecht`, `/tools/ma`, `/prompts/builder`. Insgesamt 40 Seiten im Build.
 - **`CollectionDef.methodology`**: Pflichtfeld in `src/app/collections/config.ts`. Muss bei neuen Collections gesetzt werden — erklärt die Filterbasis in Kurzform (Rechtsgebiet, Score-Schwellen, Sortierung, Bewertungsperspektive).
 - **`RelatedCollections`-Widget (ToolDetailClient)**: Sidebar-Widget zeigt passende Collections basierend auf `RECHTSGEBIET_COLLECTIONS`-Mapping + `scoreDatenschutz ≥ 7` → datenschutzstark. Gibt `null` zurück wenn kein Treffer. Bei neuen Collections: Mapping in `RECHTSGEBIET_COLLECTIONS` ergänzen wenn sinnvoll.
-- **CTA-Farbe Prompt Builder**: Step 1 + Step 2 Primär-Buttons verwenden `bg-[#111827]` (nicht blue) — konsistent mit der dunklen Design-Sprache der Plattform. Nicht zurücksetzen.
 - **Collections-Detail Bottom-CTAs**: 3er-Grid "Weiter entdecken" mit weißen Card-Links (nicht flex-Zeile). Muster für neue Collection-Seiten verwenden.
 - **Hover-Farbe Design-Regel**: Titel-Hover auf Cards und Listen: `group-hover:text-[#111827]` (nicht `group-hover:text-blue-600`). Blue bleibt für aktive States (Votes, Filter-Pills) reserviert.
 - **Newsletter Weekly Brief — Modul-Überblick**: Vollständiges Issue-basiertes Newsletter-Modul vorhanden. Tabelle `newsletter_issues` in Supabase (muss manuell via SQL-Editor angelegt werden: `supabase/migrations/20260419000000_newsletter_issues.sql`). Drei Kern-Libs: `newsletter-token.ts` (HMAC), `newsletter-generator.ts` (Claude→JSON), `newsletter-template.ts` (HTML-Email). Admin-Flow: `/admin/newsletter` → "Neue Ausgabe generieren" → Draft erscheint → ggf. Editor's Note überschreiben → "Versenden".

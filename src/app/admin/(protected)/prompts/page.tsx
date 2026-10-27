@@ -1,13 +1,11 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { Trash2, Plus, ChevronDown, ChevronUp, Star, StarOff } from 'lucide-react'
+import { Trash2, Plus, ChevronDown, ChevronUp } from 'lucide-react'
 import {
   fetchAllPrompts,
   deletePrompt,
   addPrompt,
-  setPromptOfDay,
-  clearPromptOfDay,
   type AdminPrompt,
 } from '../../actions'
 
@@ -81,43 +79,6 @@ export default function AdminPromptsPage() {
         setError('Fehler beim Löschen.')
       }
     })
-  }
-
-  function handleTogglePromptOfDay(prompt: AdminPrompt) {
-    if (prompt.is_prompt_of_day) {
-      // Clear it
-      setPrompts(prev =>
-        prev.map(p => (p.id === prompt.id ? { ...p, is_prompt_of_day: false } : p))
-      )
-      startTransition(async () => {
-        try {
-          await clearPromptOfDay(prompt.id)
-        } catch {
-          setPrompts(prev =>
-            prev.map(p => (p.id === prompt.id ? { ...p, is_prompt_of_day: true } : p))
-          )
-          setError('Fehler beim Aktualisieren.')
-        }
-      })
-    } else {
-      // Set this one, clear all others
-      setPrompts(prev =>
-        prev.map(p => ({ ...p, is_prompt_of_day: p.id === prompt.id }))
-      )
-      startTransition(async () => {
-        try {
-          await setPromptOfDay(prompt.id)
-        } catch {
-          setPrompts(prev =>
-            prev.map(p => ({
-              ...p,
-              is_prompt_of_day: p.id === prompt.id ? false : p.is_prompt_of_day,
-            }))
-          )
-          setError('Fehler beim Aktualisieren.')
-        }
-      })
-    }
   }
 
   function handleTitleChange(title: string) {
@@ -315,18 +276,10 @@ export default function AdminPromptsPage() {
           {prompts.map(prompt => (
             <div
               key={prompt.id}
-              className={`bg-white border rounded-xl px-4 py-3 flex items-start gap-3 transition-colors ${
-                prompt.is_prompt_of_day ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100'
-              }`}
+              className="bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-start gap-3 transition-colors"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  {prompt.is_prompt_of_day && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md">
-                      <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
-                      Prompt des Tages
-                    </span>
-                  )}
                   {prompt.use_case && (
                     <span className="text-[10px] text-gray-400 font-medium">{prompt.use_case}</span>
                   )}
@@ -340,22 +293,6 @@ export default function AdminPromptsPage() {
               </div>
 
               <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
-                <button
-                  onClick={() => handleTogglePromptOfDay(prompt)}
-                  disabled={isPending}
-                  className={`p-1.5 rounded-lg transition-colors disabled:opacity-40 ${
-                    prompt.is_prompt_of_day
-                      ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50'
-                      : 'text-gray-300 hover:text-amber-400 hover:bg-amber-50'
-                  }`}
-                  title={prompt.is_prompt_of_day ? 'Als Prompt des Tages entfernen' : 'Als Prompt des Tages setzen'}
-                >
-                  {prompt.is_prompt_of_day ? (
-                    <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                  ) : (
-                    <StarOff className="w-4 h-4" />
-                  )}
-                </button>
                 <button
                   onClick={() => handleDelete(prompt.id)}
                   disabled={isPending}

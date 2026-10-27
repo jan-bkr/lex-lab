@@ -10,7 +10,11 @@
 //   { "path": "/api/pipeline", "schedule": "0 12 * * *" }
 
 export const NEWS_PIPELINE_PAUSED = true
-export const PROMPT_BUILDER_PAUSED = true
 
-export const PROMPT_BUILDER_PAUSED_MESSAGE =
-  'Der Prompt Builder wird derzeit überarbeitet und ist vorübergehend pausiert.'
+// NEWSLETTER_PAUSED kennzeichnet den Weekly Brief als pausiert (Newsletter-Seite,
+// Anmelde-Boxen, Willkommensmail). Anmeldung und Admin-Versand bleiben technisch
+// möglich — Abonnenten werden vorgemerkt.
+export const NEWSLETTER_PAUSED = true
+
+export const NEWSLETTER_PAUSED_NOTE =
+  'Der Newsletter ist pausiert, solange LexLab neu aufgestellt wird. Wenn du dich jetzt einträgst, bekommst du die nächste Ausgabe, sobald es weitergeht.'

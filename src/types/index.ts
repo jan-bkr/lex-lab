@@ -41,16 +41,6 @@ export interface ToolComment {
   created_at: string
 }
 
-export interface Workflow {
-  id: string
-  title: string
-  slug: string
-  rechtsgebiet: Rechtsgebiet[]
-  readingTime: number
-  excerpt: string
-  createdAt: string
-}
-
 export interface Prompt {
   id: string
   title: string
@@ -72,15 +62,6 @@ export interface NewsArticle {
   category: string
   publishedAt: string
   aiGenerated: boolean
-}
-
-export interface Event {
-  id: string
-  title: string
-  date: string
-  type: 'BGH' | 'BFH' | 'Gesetz' | 'Konferenz'
-  url: string
-  description: string
 }
 
 // ─── Newsletter ────────────────────────────────────────────────────────────────

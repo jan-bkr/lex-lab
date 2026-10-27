@@ -39,6 +39,17 @@ export default function ImpressumPage() {
           </p>
         </section>
 
+        {/* Betreiber */}
+        <section>
+          <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">
+            Betreiber
+          </h2>
+          <p>
+            LexLab ist ein privates Projekt von Jan Becker und kein Angebot der Kanzlei. Über LexLab werden
+            keine anwaltlichen Leistungen angeboten und keine Mandate angenommen.
+          </p>
+        </section>
+
         {/* Zuständige Kammer */}
         <section>
           <h2 className="font-display font-semibold text-base text-gray-900 pb-2 mb-4 border-b border-gray-100">

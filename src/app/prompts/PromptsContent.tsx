@@ -1,22 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Star, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { RechtsgebietTag } from '@/components/RechtsgebietTag'
 import { Prompt, Rechtsgebiet } from '@/types'
-import { PROMPT_BUILDER_PAUSED } from '@/lib/site-status'
 
 const RECHTSGEBIETE: Rechtsgebiet[] = ['Steuerrecht', 'M&A', 'Gesellschaftsrecht', 'Venture Capital']
-
-interface PromptWithDay extends Prompt {
-  isPromptOfDay: boolean
-}
 
 function PromptCard({
   prompt,
 }: {
-  prompt: PromptWithDay
+  prompt: Prompt
 }) {
   return (
     <Link
@@ -30,12 +24,6 @@ function PromptCard({
             <RechtsgebietTag key={tag} tag={tag} />
           ))}
         </div>
-        {prompt.isPromptOfDay && (
-          <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border border-amber-200 flex-shrink-0 whitespace-nowrap">
-            <Star className="w-2.5 h-2.5" />
-            Prompt des Tages
-          </span>
-        )}
       </div>
 
       {/* Title */}
@@ -54,7 +42,7 @@ function PromptCard({
   )
 }
 
-export default function PromptsContent({ initialPrompts }: { initialPrompts: PromptWithDay[] }) {
+export default function PromptsContent({ initialPrompts }: { initialPrompts: Prompt[] }) {
   const [activeFilter,   setActiveFilter]   = useState<Rechtsgebiet | 'Alle'>('Alle')
 
   const filtered = initialPrompts.filter(
@@ -69,42 +57,6 @@ export default function PromptsContent({ initialPrompts }: { initialPrompts: Pro
           Kopierfertige KI-Prompts für Steuerrecht, M&amp;A, Gesellschaftsrecht und Venture Capital
         </p>
       </div>
-
-      {/* Builder CTA */}
-      {PROMPT_BUILDER_PAUSED ? (
-        <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6 flex items-start gap-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
-          <div>
-            <p className="text-sm font-semibold text-gray-900">
-              Prompt Builder
-              <span className="ml-2 align-middle text-[9px] font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded px-1.5 py-0.5 uppercase tracking-wide">
-                In Überarbeitung
-              </span>
-            </p>
-            <p className="text-sm text-gray-500 mt-1 leading-relaxed">
-              Der Builder ist vorübergehend pausiert. Die Prompt-Bibliothek bleibt vollständig verfügbar — alle Prompts unten sind kopierfertig.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-blue-900">Prompt Builder</p>
-              <p className="text-sm text-blue-700 mt-0.5">
-                Lass LexLab deinen optimalen Prompt generieren — in 30 Sekunden.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/prompts/builder"
-            className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
-          >
-            Jetzt ausprobieren →
-          </Link>
-        </div>
-      )}
 
       {/* Filter pills */}
       <div className="flex flex-wrap gap-1.5 mb-6">

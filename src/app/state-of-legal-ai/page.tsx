@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react'
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { NEWSLETTER_PAUSED, NEWSLETTER_PAUSED_NOTE } from '@/lib/site-status'
 
 export const revalidate = 86400
 
@@ -61,6 +62,18 @@ function SegmentCard({
   )
 }
 
+// ─── Quellen ──────────────────────────────────────────────────────────────────
+
+const VENDOR_WATCH_SOURCES = [
+  { label: 'Harvey: Finanzierungsrunde (ABA Journal, 09/2026)', href: 'https://www.abajournal.com/news/article/harvey-raises-550-million-in-latest-round-of-funding' },
+  { label: 'Legora Newsroom (10/2026)', href: 'https://legora.com/newsroom' },
+  { label: 'Legora Skills (Legaltech News, 06.10.2026)', href: 'https://www.law.com/legaltechnews/2026/10/06/legora-launches-skills-pre-built-and-custom-instructions-for-its-ai-agent-/' },
+  { label: 'Noxtua: Series C (23.09.2026)', href: 'https://www.noxtua.com/news/press-releases/series-c' },
+  { label: 'Wolters Kluwer: Libra in Deutschland', href: 'https://www.wolterskluwer.com/de-de/news/wolters-kluwer-integriert-inhalte-fuer-deutschland-in-libra-ai-workspace' },
+  { label: 'DATEV Copilot', href: 'https://www.datev.de/web/de/berufsgruppenuebergreifend/mydatev/cloud-anwendungen/datev-copilot' },
+  { label: 'KI-Omnibus, VO (EU) 2026/1744', href: 'https://artificialintelligenceact.eu/ai-act-explorer/digital-omnibus/' },
+]
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function StateOfLegalAIPage() {
@@ -80,7 +93,7 @@ export default function StateOfLegalAIPage() {
               Edition 2026
             </span>
             <span className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white/70 text-[11px] font-medium rounded-full px-3 py-1">
-              <Clock className="w-3 h-3" /> Stand Juli 2026
+              <Clock className="w-3 h-3" /> Stand Oktober 2026
             </span>
           </div>
 
@@ -183,13 +196,13 @@ export default function StateOfLegalAIPage() {
             <InsightCard
               number="05"
               title="Agentic AI wird zur Plattformschicht"
-              body="Harvey, Legora, Beck-Noxtua, CoCounsel und BRYTER verschieben den Markt von einzelnen Prompts zu planenden, mehrstufigen Workflows. Menschliche Freigaben und belastbare Quellen bleiben unverzichtbar."
+              body="Harvey, Legora, Beck-Noxtua, CoCounsel und BRYTER verschieben den Markt von einzelnen Prompts zu planenden, mehrstufigen Workflows. Seit Oktober 2026 verkauft Legora dafür eine Bibliothek aus über 250 vorgefertigten „Skills“. Menschliche Freigaben und belastbare Quellen bleiben unverzichtbar."
               accent
             />
             <InsightCard
               number="06"
               title="Content und Plattform konsolidieren"
-              body="Wolters Kluwer hat Libra übernommen, C.H.BECK bündelt Inhalte mit Noxtua. Im DACH-Markt entscheidet zunehmend die Verbindung aus KI-Workspace, verlässlichen Quellen und bestehendem Workflow."
+              body="Wolters Kluwer hat Libra übernommen, C.H.BECK ist seit September 2026 Mehrheitsgesellschafter von Noxtua. Im DACH-Markt entscheidet zunehmend die Verbindung aus KI-Workspace, verlässlichen Quellen und bestehendem Workflow."
             />
           </div>
         </section>
@@ -500,31 +513,31 @@ export default function StateOfLegalAIPage() {
               {
                 step: '01',
                 title: 'Daten-Due-Diligence: Wo landen meine Daten?',
-                body: 'Klären Sie vor jeder anderen Frage: Wo werden Daten verarbeitet und gespeichert? EU-Serverstandort, Subauftragnehmer, Drittlandtransfer nach Art. 46 DSGVO — diese Antworten müssen vorliegen, bevor Sie Demo-Termine vereinbaren.',
+                body: 'Kläre vor jeder anderen Frage: Wo werden Daten verarbeitet und gespeichert? EU-Serverstandort, Subauftragnehmer, Drittlandtransfer nach Art. 46 DSGVO — diese Antworten müssen vorliegen, bevor du Demo-Termine vereinbarst.',
                 icon: <Shield className="w-4 h-4" />,
               },
               {
                 step: '02',
                 title: 'Use-Case-Priorisierung: Was löst das Tool konkret?',
-                body: 'Definieren Sie den primären Use Case präzise: Dokumentenentwurf, Rechtsprechungsrecherche, Vertragsreview oder Due Diligence? Kein Tool ist in allen Anwendungsfeldern gleich stark. Investieren Sie Evaluierungsaufwand zielgerichtet.',
+                body: 'Definiere den primären Use Case präzise: Dokumentenentwurf, Rechtsprechungsrecherche, Vertragsreview oder Due Diligence? Kein Tool ist in allen Anwendungsfeldern gleich stark. Investiere Evaluierungsaufwand zielgerichtet.',
                 icon: <Target className="w-4 h-4" />,
               },
               {
                 step: '03',
                 title: 'Integrations-Check: Passt es in die bestehende Infrastruktur?',
-                body: 'Prüfen Sie Kompatibilität mit bestehender Software: DATEV, Microsoft 365, beA, DMS-Systeme. Ein Tool, das als Insel ohne Anbindung läuft, erzeugt Medienbrüche und niedrige Adoption.',
+                body: 'Prüfe die Kompatibilität mit bestehender Software: DATEV, Microsoft 365, beA, DMS-Systeme. Ein Tool, das als Insel ohne Anbindung läuft, erzeugt Medienbrüche und niedrige Adoption.',
                 icon: <Zap className="w-4 h-4" />,
               },
               {
                 step: '04',
                 title: 'Compliance-Audit: Berufsrecht und DSGVO prüfen',
-                body: 'Fragen Sie konkret nach: AVV, TOM-Dokumentation, Unterauftragnehmerliste, Löschfristen. Lassen Sie sich nicht mit allgemeinen Datenschutzerklärungen abspeisen. Beziehen Sie bei Unsicherheit die Berufshaftpflicht ein.',
+                body: 'Frag konkret nach: AVV, TOM-Dokumentation, Unterauftragnehmerliste, Löschfristen. Lass dich nicht mit allgemeinen Datenschutzerklärungen abspeisen. Bezieh bei Unsicherheit die Berufshaftpflicht ein.',
                 icon: <Lock className="w-4 h-4" />,
               },
               {
                 step: '05',
                 title: 'Pilotphase: 30 Tage mit repräsentativen Fällen messen',
-                body: 'Testen Sie zunächst mit anonymisierten, repräsentativen Dokumenten und erst nach Freigabe des Datenflusses in einem begrenzten Realbetrieb. Messen Sie Zeitersparnis, Fehlerrate und Nutzerakzeptanz pro Aufgabentyp.',
+                body: 'Teste zunächst mit anonymisierten, repräsentativen Dokumenten und erst nach Freigabe des Datenflusses in einem begrenzten Realbetrieb. Miss Zeitersparnis, Fehlerrate und Nutzerakzeptanz pro Aufgabentyp.',
                 icon: <BarChart3 className="w-4 h-4" />,
               },
             ].map(item => (
@@ -551,24 +564,39 @@ export default function StateOfLegalAIPage() {
           <SectionLabel>Vendor Watch 2026</SectionLabel>
           <h2 className="font-display font-bold text-3xl text-gray-900 mb-2">Marktbewegungen im Blick</h2>
           <p className="text-gray-500 text-sm mb-8 max-w-2xl">
-            Sechs prägende Marktbewegungen, die Legal-AI-Entscheider im Blick behalten sollten.
+            Neun Marktbewegungen, die Legal-AI-Entscheider im Blick behalten sollten. Stand Oktober 2026.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             {[
               {
-                signal: 'DATEV-Ökosystem wächst von innen',
-                tag: 'Marktstruktur',
-                body: 'DATEV integriert native KI-Funktionen in bestehende Produkte. Unabhängige Legal-AI-Anbieter im Steuerrechtssegment geraten unter Innovationsdruck von innen.',
+                signal: 'Kapital sammelt sich bei zwei Plattformen',
+                tag: 'Finanzierung',
+                body: 'Harvey hat im September 2026 550 Mio. US-Dollar bei rund 15,5 Mrd. Bewertung eingesammelt und zugleich die vierte Übernahme des Jahres gemeldet. Legora folgte im Oktober mit 550 Mio. US-Dollar bei 8,8 Mrd. Bewertung.',
+              },
+              {
+                signal: 'Skills werden zur Produktkategorie',
+                tag: 'Agentic AI',
+                body: 'Legora hat im Oktober 2026 „Skills“ gestartet: über 250 vorgefertigte Arbeitsanleitungen für seinen Agenten, die Kanzleien um eigene ergänzen können. Kanzleiwissen als verbindliche Anleitung wandert vom Eigenbau ins Produkt.',
+              },
+              {
+                signal: 'C.H.BECK übernimmt die Mehrheit an Noxtua',
+                tag: 'Konsolidierung',
+                body: 'Mit einer Series C von über 100 Mio. Euro wurde C.H.BECK im September 2026 Mehrheitsgesellschafter, MANZ stieg als Minderheitsinvestor ein. CMS und Dentons gaben ihre Anteile ab und bleiben Kunden. Beck-Noxtua setzt damit den Quellenmaßstab für deutsche Recherche.',
               },
               {
                 signal: 'Libra wird Teil von Wolters Kluwer',
                 tag: 'Konsolidierung',
-                body: 'Die Übernahme und die Einbindung von Wolters-Kluwer-Inhalten machen Libra zu einem der wichtigsten europäischen Full-Stack-Anbieter für DACH-Teams.',
+                body: 'Die Übernahme und die Einbindung deutscher Wolters-Kluwer-Inhalte machen Libra zu einem der wichtigsten europäischen Full-Stack-Anbieter für DACH-Teams.',
               },
               {
-                signal: 'Beck-Noxtua setzt den Quellenmaßstab',
-                tag: 'DACH-Research',
-                body: 'Die Verbindung aus souveräner Legal AI und beck-online-Inhalten erhöht den Wettbewerbsdruck auf jeden Anbieter, der deutsche Recherche ohne belastbare Premium-Quellen anbietet.',
+                signal: 'DATEV-Ökosystem wächst von innen und außen',
+                tag: 'Marktstruktur',
+                body: 'DATEV baut mit dem Copilot eigene KI-Funktionen für Steuerberater und Wirtschaftsprüfer aus. Daneben entstehen Anbieter wie Klardaten, die DATEV-Daten per MCP an externe KI-Werkzeuge anbinden.',
+              },
+              {
+                signal: 'KI-Omnibus verschiebt Hochrisiko-Fristen',
+                tag: 'Regulierung',
+                body: 'Die Verordnung (EU) 2026/1744 ist am 27. Juli 2026 in Kraft getreten. Pflichten für Hochrisiko-Systeme nach Anhang III gelten erst ab 2. Dezember 2027, nach Anhang I ab 2. August 2028. Die Pflichten selbst entfallen nicht, nur ihr Beginn verschiebt sich.',
               },
               {
                 signal: 'Europäische Workspaces werden erwachsen',
@@ -578,7 +606,7 @@ export default function StateOfLegalAIPage() {
               {
                 signal: 'US-Plattformen bleiben Enterprise-relevant',
                 tag: 'Globalisierung',
-                body: 'Harvey, CoCounsel und Lexis+ mit Protégé bauen ihre internationale Reichweite aus. Für DACH entscheidet das konkrete Hosting-, Content- und Vertragssetup — nicht allein der Unternehmenssitz.',
+                body: 'Harvey, CoCounsel und Lexis+ mit Protégé bauen ihre internationale Reichweite aus. Für DACH entscheidet das konkrete Hosting-, Content- und Vertragssetup, nicht allein der Unternehmenssitz.',
               },
               {
                 signal: 'Workflow-Nischen gewinnen gegen Generalisten',
@@ -595,6 +623,18 @@ export default function StateOfLegalAIPage() {
               </div>
             ))}
           </div>
+          <div className="mb-6">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-2">Quellen Vendor Watch</p>
+            <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
+              {VENDOR_WATCH_SOURCES.map(src => (
+                <li key={src.href}>
+                  <a href={src.href} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-gray-700 underline underline-offset-2">
+                    {src.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
           <Link
             href="/tools"
             className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -608,7 +648,7 @@ export default function StateOfLegalAIPage() {
           <SectionLabel>Nächste Schritte</SectionLabel>
           <h2 className="font-display font-bold text-3xl text-gray-900 mb-2">Weiter auf der Plattform</h2>
           <p className="text-gray-500 text-sm mb-8 max-w-2xl">
-            Diese Analyse ist ein Ausgangspunkt. Die konkreten Entscheidungen treffen Sie mit den Werkzeugen der Plattform.
+            Diese Analyse ist ein Ausgangspunkt. Die konkreten Entscheidungen triffst du mit den Werkzeugen der Plattform.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
@@ -630,9 +670,9 @@ export default function StateOfLegalAIPage() {
                 bg: 'bg-purple-50',
               },
               {
-                href: '/workflows',
-                title: 'Workflow-Guides',
-                desc: 'Schritt-für-Schritt-Anleitungen für KI-Integration',
+                href: '/skill-bibliothek',
+                title: 'Skill-Bibliothek',
+                desc: 'Wie Kanzleiwissen für KI-Assistenten verbindlich wird',
                 icon: <BookOpen className="w-5 h-5" />,
                 color: 'text-emerald-600',
                 bg: 'bg-emerald-50',
@@ -640,7 +680,7 @@ export default function StateOfLegalAIPage() {
               {
                 href: '/newsletter',
                 title: 'LexLab Newsletter',
-                desc: 'Wöchentlich die wichtigsten Legal-AI-Updates',
+                desc: 'Neue Beiträge und Benchmark-Einordnungen',
                 icon: <Mail className="w-5 h-5" />,
                 color: 'text-orange-600',
                 bg: 'bg-orange-50',
@@ -670,7 +710,7 @@ export default function StateOfLegalAIPage() {
             <p className="text-[11px] font-bold uppercase tracking-widest text-blue-600 mb-2">Newsletter</p>
             <h3 className="font-display font-bold text-2xl text-gray-900 mb-2">Bleib auf dem Laufenden</h3>
             <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
-              Die nächste Ausgabe des State of Legal AI erscheint Ende 2026. Im Newsletter bekommst du Updates, neue Tool-Evaluierungen und Marktbeobachtungen — wöchentlich, kostenlos.
+              {NEWSLETTER_PAUSED ? NEWSLETTER_PAUSED_NOTE : 'Die nächste Ausgabe des State of Legal AI erscheint Ende 2026. Im Newsletter bekommst du Updates, neue Tool-Evaluierungen und Marktbeobachtungen — wöchentlich, kostenlos.'}
             </p>
             <NewsletterForm />
             <p className="text-xs text-gray-400 mt-3">

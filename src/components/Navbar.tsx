@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import LexLabLogo from '@/components/LexLabLogo'
-import { PROMPT_BUILDER_PAUSED } from '@/lib/site-status'
 
 interface NavLink {
   href: string
@@ -14,20 +13,14 @@ interface NavLink {
   highlight?: boolean
 }
 
-const allNavLinks: NavLink[] = [
+const navLinks: NavLink[] = [
+  { href: '/skill-bibliothek', label: 'Skill-Bibliothek', highlight: true },
+  { href: '/schwerpunkte/langdock', label: 'Langdock' },
+  { href: '/schwerpunkte/klardaten', label: 'Klardaten' },
+  { href: '/research/legal-model-benchmark', label: 'Benchmark' },
   { href: '/tools', label: 'Tools' },
-  { href: '/tools/compare', label: 'Vergleiche', isNew: true },
-  { href: '/prompts', label: 'Prompts' },
-  { href: '/prompts/builder', label: '✦ Builder', highlight: true },
-  { href: '/workflows', label: 'Workflows' },
-  { href: '/news', label: 'News' },
-  { href: '/radar', label: 'Radar' },
-  { href: '/research', label: 'Research' },
+  { href: '/beitraege', label: 'Beiträge' },
 ]
-
-const navLinks = PROMPT_BUILDER_PAUSED
-  ? allNavLinks.filter(l => l.href !== '/prompts/builder')
-  : allNavLinks
 
 // Spotlight glow from the logo side — matches design file "spotlight" variant
 const HEADER_BG = 'radial-gradient(ellipse 60% 120% at 8% 50%, rgba(59,123,255,0.20) 0%, rgba(10,14,20,0) 60%), linear-gradient(180deg, #0E1422 0%, #0A0E14 100%)'
@@ -84,18 +77,9 @@ export default function Navbar() {
           </nav>
 
           {/* CTA */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center">
             <Link
-              href="/newsletter"
-              className="text-sm font-medium transition-colors"
-              style={{ color: 'rgba(244,241,234,0.5)' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#F4F1EA' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(244,241,234,0.5)' }}
-            >
-              Newsletter
-            </Link>
-            <Link
-              href="/tools/submit"
+              href="/kontakt"
               className="inline-flex items-center gap-1.5 text-sm font-medium px-3.5 py-1.5 rounded-lg transition-all duration-150"
               style={{
                 color: '#F4F1EA',
@@ -105,7 +89,7 @@ export default function Navbar() {
               onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(59,123,255,0.20)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(59,123,255,0.10)' }}
             >
-              Tool einreichen
+              Kontakt
             </Link>
           </div>
 
@@ -158,15 +142,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/newsletter"
-            onClick={() => setOpen(false)}
-            className="block py-2.5 text-sm font-medium"
-            style={{ color: 'rgba(244,241,234,0.6)' }}
-          >
-            Newsletter
-          </Link>
-          <Link
-            href="/tools/submit"
+            href="/kontakt"
             onClick={() => setOpen(false)}
             className="mt-3 block text-center text-sm font-medium px-4 py-2 rounded-lg transition-all"
             style={{
@@ -175,7 +151,7 @@ export default function Navbar() {
               background: 'rgba(59,123,255,0.10)',
             }}
           >
-            Tool einreichen
+            Kontakt
           </Link>
         </div>
       )}
